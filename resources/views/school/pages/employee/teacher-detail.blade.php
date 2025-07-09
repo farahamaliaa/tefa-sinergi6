@@ -19,7 +19,7 @@
         }
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #007bff;
+            background-color: #E02123;
             border: 1px solid #0056b3;
             color: white;
             padding: 2px 5px;

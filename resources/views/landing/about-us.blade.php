@@ -56,8 +56,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="section_title" data-aos="fade-in" data-aos-duration="1500">
-                            <h1 class="text-primary">Tentang Mischool</h1>
-                            <p>Mischool adalah website manajemen sekolah yang dirancang untuk memudahkan pengelolaan sekolah. Website ini dilengkapi dengan fitur-fitur seperti absensi, jurnal mengajar, jurnal staff, pelanggaran dan perbaikan, tanggapan siswa, serta buku tamu.</p>
+                            <h1 class="text-primary">Tentang Sinergi6</h1>
+                            <p>Sinergi6 adalah website manajemen sekolah yang dirancang untuk memudahkan pengelolaan sekolah. Website ini dilengkapi dengan fitur-fitur seperti absensi, jurnal mengajar, jurnal staff, pelanggaran dan perbaikan, tanggapan siswa, serta buku tamu.</p>
                             <p>Terdapat empat peran pengguna di dalam mischool, yaitu admin sekolah, guru, staf dan siswa. Pada setiap peran memiliki fitur dan hak akses yang berbeda-beda.</p>
                         </div>
                     </div>
@@ -117,8 +117,8 @@
                 <div class="col-md-6">
                     <div class="sl_two_colom_text" data-aos="fade-in" data-aos-duration="2000" data-aos-delay="100">
                         <div class="section_title">
-                            <h2>Kenapa Memilih Mischool </h2>
-                            <p>Berikut beberapa alasan anda memilih Mischool untuk mengelola sekolah Anda.</p>
+                            <h2>Kenapa Memilih Sinergi6 </h2>
+                            <p>Berikut beberapa alasan anda memilih Sinergi6 untuk mengelola sekolah Anda.</p>
                         </div>
 
                         <div class="service_list_point">

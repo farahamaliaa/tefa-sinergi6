@@ -21,7 +21,7 @@
     }
 
     .navbar-nav .nav-item .dark_btn {
-        background-color: #007bff;
+        background-color: #E02123;
         color: #fff;
         border: none;
         border-radius: 5px;
@@ -48,7 +48,7 @@
     }
 
     .nav-item.active .nav-link {
-        color: #007bff !important;
+        color: #E02123 !important;
     }
 
 </style>
@@ -60,8 +60,8 @@
     <div class="container">
         <!-- navigation bar -->
         <nav class="navbar navbar-expand-lg">
-            <a class="navbar-brand" href="index.html">
-                <img src="{{ asset('assets/images/logo/logo-miscool.png') }}" alt="image">
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" style="width:160px" alt="image">
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
@@ -79,9 +79,9 @@
                     <li class="nav-item {{ request()->routeIs('about-us') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('about-us') }}">Tentang Kami</a>
                     </li>
-                    <li class="nav-item {{ request()->routeIS('news') ? 'active' : '' }}">
+                    {{-- <li class="nav-item {{ request()->routeIS('news') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('news') }}">Berita</a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item {{ request()->routeIS('contact-us') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('contact-us') }}">Kontak</a>
                     </li>

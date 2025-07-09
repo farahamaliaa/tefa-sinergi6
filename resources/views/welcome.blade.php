@@ -14,7 +14,7 @@
         }
 
         .btn_main {
-            background: linear-gradient(45deg, #79C7FF, #0042FF);
+            background: linear-gradient(45deg, #79C7FF, #0896D1);
             /* Gradasi biru */
             color: white;
             /* Warna teks putih */
@@ -31,7 +31,7 @@
         }
 
         .btn_main:hover {
-            background: linear-gradient(45deg, #0042FF, #79C7FF);
+            background: linear-gradient(45deg, #0896D1, #79C7FF);
             /* Ubah gradasi saat hover */
         }
 
@@ -49,7 +49,7 @@
         }
 
         a.btn-stroke-gradient:hover {
-            background: linear-gradient(45deg, #79C7FF, #0042FF);
+            background: linear-gradient(45deg, #79C7FF, #0896D1);
             color: #fff;
             transition: 0.3s ease-in-out;
         }
@@ -78,7 +78,7 @@
         }
 
         .text-primary {
-            color: #0042FF;
+            color: #0896D1;
         }
 
         .analyze_section .analyze_image {
@@ -161,8 +161,8 @@
         <div class="container">
             <div class="section_title" data-aos="fade-up" data-aos-duration="1500" data-aos-delay="100">
                 <h2>Fitur - Fitur </h2>
-                <p>Mischool dilengkapi dengan fitur - fitur penting untuk management sekolah, dibawah ini adalah fitur -
-                    fitur dari Mischool</p>
+                <p>Sinergi6 dilengkapi dengan fitur - fitur penting untuk management sekolah, dibawah ini adalah fitur -
+                    fitur dari Sinergi6</p>
             </div>
             <div class="container mt-5">
                 <div class="row">
@@ -248,8 +248,8 @@
                 <div class="col-md-6 d-flex align-items-center ms-3">
                     <div class="analyze_text" data-aos="fade-in" data-aos-duration="2000" data-aos-delay="100">
                         <div class="section_title align-center">
-                            <h2>Tentang Mischool</h2>
-                            <p>Mischool adalah website manajemen sekolah yang dirancang untuk memudahkan pengelolaan
+                            <h2>Tentang Sinergi6</h2>
+                            <p>Sinergi6 adalah website manajemen sekolah yang dirancang untuk memudahkan pengelolaan
                                 sekolah. Website ini dilengkapi dengan fitur-fitur seperti absensi, jurnal mengajar, jurnal
                                 staff, pelanggaran dan perbaikan, tanggapan siswa, serta buku tamu.</p>
                         </div>
@@ -261,11 +261,11 @@
     <!-- Analyze Section End -->
 
     <!-- Interface overview-Section start -->
-    <section class="row_am interface_section mb-5 pb-5">
+    {{-- <section class="row_am interface_section mb-5 pb-5">
         <div class="section_title" data-aos="fade-up" data-aos-duration="1500" data-aos-delay="300">
-            <h2>Preview Fitur MISCHOOL</h2>
+            <h2>Preview Fitur SINERGI6</h2>
             <p>
-                Berikut beberapa preview dari website Mischool, mulai dari halaman untuk sekolah, guru, staff, hingga siswa.
+                Berikut beberapa preview dari website Sinergi6, mulai dari halaman untuk sekolah, guru, staff, hingga siswa.
             </p>
         </div>
         <!-- screen slider start -->
@@ -328,7 +328,7 @@
             </div>
         </div>
         <!-- screen slider end -->
-    </section>
+    </section> --}}
     <!-- Interface overview-Section end -->
 
     <!-- Powerful solution for your business Section Start -->
@@ -337,9 +337,9 @@
             <div class="container">
                 <div class="section_title" data-aos="fade-up" data-aos-duration="1500" data-aos-delay="100">
                     <!-- h2 -->
-                    <h2>Pengguna MISCHOOL</h2>
+                    <h2>Pengguna SINERGI6</h2>
                     <!-- p -->
-                    <p>Mischool hadir sebagai solusi manajemen sekolah yang inovatif, mendukung berbagai aktivitas dan
+                    <p>Sinergi6 hadir sebagai solusi manajemen sekolah yang inovatif, mendukung berbagai aktivitas dan
                         proses dalam lingkungan pendidikan.</p>
                 </div>
                 <div class="features_inner" data-aos="fade-up" data-aos-duration="2000" data-aos-delay="100">
@@ -405,8 +405,8 @@
                 <!-- container start -->
                 <div class="container">
                     <div class="section_title" data-aos="fade-up" data-aos-duration="1500" data-aos-delay="100">
-                        <h2>Mitra Mischool</h2>
-                        <p>Daftar - daftar sekolah yang telah bekerja sama dan menggunakan Mischool untuk management sekolah
+                        <h2>Mitra Sinergi6</h2>
+                        <p>Daftar - daftar sekolah yang telah bekerja sama dan menggunakan Sinergi6 untuk management sekolah
                         </p>
                     </div>
                     <!-- logos slider start -->
@@ -573,7 +573,7 @@
             <div class="container">
                 <div class="section_title" data-aos="fade-in" data-aos-duration="1500" data-aos-delay="100">
                     <h2>Berita Terbaru</h2>
-                    <p>Berita berita terbaru yang menyediakan tentang informasi kerja sama Mischool antar sekolah</p>
+                    <p>Berita berita terbaru yang menyediakan tentang informasi kerja sama Sinergi6 antar sekolah</p>
                 </div>
                 <!-- row start -->
                 <div class="row">

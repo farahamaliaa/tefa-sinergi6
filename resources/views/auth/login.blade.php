@@ -3,7 +3,7 @@
 
 <head>
     <!--  Title -->
-    <title>Mischool | Login</title>
+    <title>Sinergi6 | Login</title>
     <!--  Required Meta Tag -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +14,7 @@
     <meta name="keywords" content="Mordenize">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--  Favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logo/logo-M.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}">
     <!-- Core Css -->
     <style>
 
@@ -30,7 +30,7 @@
                 <div class="row">
                     <div class="col-xl-7 col-xxl-8">
                         <a href="javascript:void(0)" class="text-nowrap logo-img d-block px-4 py-9 w-100">
-                            <img src="{{ asset('assets/images/logo/logo-M.png') }}" width="8%" alt="">
+                            <img src="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" width="8%" alt="">
                         </a>
                         <div class="d-none d-xl-flex align-items-center justify-content-center" style="height: calc(89vh - 80px);">
                             <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/backgrounds/login-security.svg" alt="" class="img-fluid" width="500">
@@ -39,7 +39,7 @@
                     <div class="col-xl-5 col-xxl-4">
                         <div class="authentication-login min-vh-100 bg-body row justify-content-center align-items-center p-4">
                             <div class="col-sm-8 col-md-6 col-xl-9">
-                                <h2 class="mb-3 fs-7 fw-bolder">Selamat Datang di Mischool</h2>
+                                <h2 class="mb-3 fs-7 fw-bolder">Selamat Datang di Sinergi6</h2>
                                 <form method="POST" action="{{ route('login') }}">
                                     @method('post')
                                     @csrf

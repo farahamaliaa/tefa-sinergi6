@@ -3,20 +3,20 @@
 @section('style')
 <style>
     .contact_list_section .contact_list_inner .icons .dot_anim {
-        background-color: #007bff;
+        background-color: #E02123;
     }
 
     .contact_list_section .contact_list_inner .c_list_card:nth-child(1) .dot_anim {
-        background-color: #007bff;
+        background-color: #E02123;
     }
 
     .contact_list_section .contact_list_inner .c_list_card:nth-child(3) .dot_anim {
-        background-color: #007bff;
+        background-color: #E02123;
     }
 
 
     .btn_main {
-        background: linear-gradient(45deg, #79C7FF, #0042FF);
+        background: linear-gradient(45deg, #79C7FF, #0896D1);
         color: white;
         border: none;
         padding: 10px 20px;
@@ -26,7 +26,7 @@
     }
 
     .btn_main:hover {
-        background: linear-gradient(45deg, #0042FF, #79C7FF);
+        background: linear-gradient(45deg, #0896D1, #79C7FF);
     }
 
 </style>
