@@ -17,7 +17,7 @@ class TeacherImport implements ToModel
     public $errors = [];
 
     public function model(array $row)
-    {
+    {   
         if ($row[0] == 'NAMA' || $row[0] == null || $row[0] == 'Contoh Format (Jangan Dihapus)') {
             return null;
         }
