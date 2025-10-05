@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceMasterController;
 use App\Http\Controllers\Api\AttendanceRuleApiController;
 use App\Http\Controllers\Api\LessonScheduleApiController;
 use App\Http\Controllers\Api\LoginApiController;
+use App\Http\Controllers\Api\ParentController;
 use App\Http\Controllers\Api\SchoolDetailController;
 use App\Http\Controllers\Api\StafApiController;
 use App\Http\Controllers\Api\StudentApiController;
@@ -109,3 +110,8 @@ Route::post('teacher/store-journal/{lessonSchedule}', [LessonScheduleApiControll
 
 Route::get('teacher/detail-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'show']);
 Route::put('teacher/update-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'update']);
+
+Route::get('/parents', [ParentController::class, 'index']);
+Route::get('/parents/{id}', [ParentController::class, 'show']);
+Route::post('/parents/{id}/students', [ParentController::class, 'attachStudent']);
+Route::delete('/parents/{id}/students/{student_id}', [ParentController::class, 'detachStudent']);
