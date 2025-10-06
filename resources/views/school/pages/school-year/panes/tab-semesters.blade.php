@@ -2,12 +2,12 @@
     use App\Enums\SemesterEnum;
     use Carbon\Carbon;
 
-    $firstSemester = $semesters->sortBy('created_at')->first();
-    $latestSemester = $semesters->sortByDesc('created_at')->first();
+    // $firstSemester = $semesters->sortBy('created_at')->first();
+    // $latestSemester = $semesters->sortByDesc('created_at')->first();
 @endphp
 <div class="card card-body">
 
-    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
+    {{-- <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
         <li class="nav-item">
             <button class="nav-link {{ $latestSemester->type == SemesterEnum::GANJIL->value ? 'active' : 'btn-ganjil' }}">
                 Ganjil
@@ -18,7 +18,7 @@
                 Genap
             </button>
         </li>
-    </ul>
+    </ul> --}}
     <div class="tab-content mt-4">
         <div class="tab-pane fade show active" id="pills-ganjil" role="tabpanel">
             <div class="position-relative mb-4">
@@ -27,12 +27,12 @@
                     <h6 class="text-white mb-3">Semester Saat Ini :</h6>
                 </div>
                 <div class="position-absolute top-50 start-50 translate-middle text-center">
-                    <h1 class="text-white pt-3">{{ Str::upper($latestSemester->type) }}</h1>
+                    <h1 class="text-white pt-3">{{ Str::upper($currentSemester) }}</h1>
                 </div>
             </div>
 
 
-            <div class="table-responsive rounded-2 mb-4">
+            {{-- <div class="table-responsive rounded-2 mb-4">
                 <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
                     <thead class="text-dark fs-4">
                         <tr class="">
@@ -58,7 +58,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

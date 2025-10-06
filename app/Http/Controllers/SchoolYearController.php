@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateSchoolYearRequest;
 use App\Services\SchoolYearService;
 use Illuminate\Http\Request;
 use App\Models\SchoolYear;
+use App\Services\SemesterService;
 
 class SchoolYearController extends Controller
 {
@@ -17,13 +18,14 @@ class SchoolYearController extends Controller
     private SchoolYearService $service;
     private ModelHasRfidInterface $rfid;
     private SemesterInterface $semester;
+    private SemesterService $semesterService;
 
-    public function __construct(SchoolYearInterface $schoolYear, SchoolYearService $service, ModelHasRfidInterface $rfid, SemesterInterface $semester)
+    public function __construct(SchoolYearInterface $schoolYear, SchoolYearService $service, ModelHasRfidInterface $rfid, SemesterInterface $semester, SemesterService $semesterService)
     {
         $this->schoolYear = $schoolYear;
         $this->service = $service;
         $this->rfid = $rfid;
-        $this->semester = $semester;
+        $this->semesterService = $semesterService;
     }
 
     /**
@@ -32,8 +34,8 @@ class SchoolYearController extends Controller
     public function index(Request $request)
     {
         $schoolYears = $this->schoolYear->search($request);
-        $semesters = $this->semester->get();
-        return view('school.pages.school-year.index', compact('schoolYears', 'semesters'));
+        $currentSemester = $this->semesterService->getCurrentSemester();
+        return view('school.pages.school-year.index', compact('schoolYears', 'currentSemester'));
     }
 
     /**
