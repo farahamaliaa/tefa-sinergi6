@@ -24,7 +24,13 @@ class LandingController extends Controller
 
             return view('welcome', compact('schools', 'newses', 'faqs'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan pada server');
+            // return redirect()->back()->with('error', 'Terjadi kesalahan pada server');  anomali njir kalo yg error di / loop
+            return view('welcome', [
+                'schools' => [],
+                'newses' => [],
+                'faqs' => [],
+                'error' => 'Server eksternal tidak merespon. Silakan coba lagi nanti.',
+            ]);
         }
     }
 
