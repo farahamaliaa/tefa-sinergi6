@@ -121,7 +121,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('school.students.index') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('parents.index') }}" aria-expanded="false">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="none" stroke="currentColor" stroke-linecap="round"

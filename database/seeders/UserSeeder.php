@@ -22,10 +22,12 @@ class UserSeeder extends Seeder
                     'email' => str_replace(' ', '', $role['name']) . "@gmail.com",
                     'email_verified_at' => now(),
                     'password' => bcrypt('password'),
+                    'role' => $role['name'],
                 ]);
 
             $user->assignRole($role);
             if ($role['name'] == 'staff') {
+                Permission::findOrCreate('view_violation', 'web');
                 $user->givePermissionTo('view_violation');
             }
 

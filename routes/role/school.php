@@ -40,6 +40,7 @@ use App\Http\Controllers\SchoolYearController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherSubjectController;
+use App\Http\Controllers\Schools\ParentController;
 use App\Models\Student;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
@@ -213,3 +214,9 @@ Route::get('list-attendance-teacher', [AttendanceTeacherController::class, 'inde
 Route::get('attendance-test', [AttendanceMasterController::class, 'index'])->name('attendance-test.index');
 Route::get('attendance-test-teacher', [AttendanceMasterController::class, 'index_teacher'])->name('attendance-test-teacher.index');
 Route::post('attendance-test-teacher', [AttendanceMasterController::class, 'check_teacher'])->name('attendance-test-teacher.check');
+
+// Manajemen orang tua
+Route::get('parent-management', [ParentController::class, 'index'])->name('parents.index');
+Route::get('parent-management/{id}', [ParentController::class, 'show'])->name('parents.show');
+Route::post('parent-management/{id}/students', [ParentController::class, 'attachStudent'])->name('parents.attachStudent');
+Route::delete('parent-management/{id}/students/{student_id}', [ParentController::class, 'detachStudent'])->name('parents.detachStudent');
