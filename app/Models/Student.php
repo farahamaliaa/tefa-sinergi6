@@ -28,4 +28,9 @@ class Student extends Model
     {
         return $this->hasMany(Feedback::class);
     }
+    
+    public function memberships()
+    {
+        return $this->hasMany(StudentMembership::class);
+    }
 }
