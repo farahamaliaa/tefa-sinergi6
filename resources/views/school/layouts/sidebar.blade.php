@@ -88,7 +88,7 @@
                                     d="M33.17 21.47H28v2h4.17v8.37H18v-8.37h6.3v.42a1 1 0 0 0 2 0V20a1 1 0 0 0-2 0v1.47H17a1 1 0 0 0-1 1v10.37a1 1 0 0 0 1 1h16.17a1 1 0 0 0 1-1V22.47a1 1 0 0 0-1-1" />
                             </svg>
                         </span>
-                        <span class="hide-menu">Pegawai</span>
+                        <span class="hide-menu">Staff</span>
                     </a>
                 </li>
 
@@ -334,7 +334,7 @@
                 </li>
                 <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">Managemen Ekstrakulikur</span>
+                    <span class="hide-menu">Managemen Ekstrakurikuler</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('school.extracurricular.index') || request()->routeIs('school.extracurricular.show') ? 'active' : '' }}"
