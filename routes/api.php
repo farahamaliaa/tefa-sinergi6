@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\StudentPermissionController;
 use App\Http\Controllers\Api\TeacherApiController;
 use App\Http\Controllers\ClassroomStudentController;
 use App\Http\Controllers\Schools\PermissionController;
+use App\Http\Controllers\StudentMembershipController;
 use App\Models\ModelHasRfid;
 use App\Models\User;
 
@@ -112,6 +113,7 @@ Route::post('teacher/store-journal/{lessonSchedule}', [LessonScheduleApiControll
 Route::get('teacher/detail-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'show']);
 Route::put('teacher/update-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'update']);
 
+#Parent
 Route::get('/parents', [ParentController::class, 'index']);
 Route::get('/parents/{id}', [ParentController::class, 'show']);
 Route::post('/parents/{id}/students', [ParentController::class, 'attachStudent']);
@@ -120,3 +122,7 @@ Route::get('/permissions', [StudentPermissionController::class, 'index']);
 Route::post('/students/{student_id}/permissions', [StudentPermissionController::class, 'store']);
 Route::post('/permissions/{id}/approve', [StudentPermissionController::class, 'approve']);
 Route::post('/permissions/{id}/reject', [StudentPermissionController::class, 'reject']);
+
+Route::post('/student-memberships', [StudentMembershipController::class, 'store']);
+Route::get('/student-memberships', [StudentMembershipController::class, 'index']);
+Route::get('/student-memberships/{id}', [StudentMembershipController::class, 'show']);
