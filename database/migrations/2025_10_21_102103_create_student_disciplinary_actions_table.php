@@ -1,14 +1,12 @@
 <?php
 
-use App\Enums\StudentDisciplinaryActionsEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Traits\Migrations\HasForeign;
+use App\Enums\StudentDisciplinaryActionsEnum;
 
 return new class extends Migration
 {
-    use HasForeign;
     /**
      * Run the migrations.
      */
