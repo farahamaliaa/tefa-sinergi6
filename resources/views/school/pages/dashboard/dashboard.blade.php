@@ -3,55 +3,59 @@
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin_assets/dist/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}">
     <style>
-        .nav-tabs .nav-link {
-            margin-bottom: calc(-1* var(--bs-nav-tabs-border-width));
-            border: var(--bs-nav-tabs-border-width) solid transparent;
-            border-top-left-radius: var(--bs-nav-tabs-border-radius);
-            border-top-right-radius: var(--bs-nav-tabs-border-radius);
-            color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity));
-            border-radius: 5px;
-            margin-right: 0.5px;
+        .nav-pills.card {
+          background-color: #fff;
+          border: 1px solid #e5e7eb;
+          border-radius: 4px;
+        }
+
+        .nav-pills .nav-link {
+          color: #000;
+          font-weight: 600;
+          border-radius: 3px;
+          transition: all 0.3s ease;
+        }
+
+        .nav-pills .nav-link.active {
+          background-color: #00AEEF; /* cyan biru seperti gambar */
+          color: #fff !important;
+        }
+
+        .nav-pills .nav-link:hover:not(.active) {
+          background-color: rgba(0, 174, 239, 0.1);
+          color: #00AEEF;
+        }
+
+        .btn-primary {
+          background-color: #00AEEF;
+          border: none;
+          border-radius: 3px;
+        }
+
+        .btn-primary:hover {
+          background-color: #0096cb;
+        }
+
+        input[type="date"] {
+          border: 1px solid #d1d5db;
+          color: #6b7280;
+        }
+
+        input[type="date"]:focus {
+          border-color: #00AEEF;
+          box-shadow: 0 0 0 2px rgba(0, 174, 239, 0.2);
         }
 
         @media (max-width: 767.98px) {
-            .card {
-                height: auto !important;
-            }
-
-            .position-absolute {
-                position: relative;
-                width: 100px;
-                margin-bottom: 0;
-                margin-right: 0;
-            }
-
-            .row.d-flex.align-items-stretch {
-                flex-direction: column;
-            }
-
-            .col-lg-3,
-            .col-lg-9 {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-        }
-
-        @media (min-width: 768px) and (max-width: 991.98px) {
-            .card {
-                height: auto;
-            }
-
-            .position-absolute {
-                width: 100px;
-                margin-bottom: -10px;
-                margin-right: -10px;
-            }
-
-            .col-lg-3,
-            .col-lg-9 {
-                width: 100%;
-                margin-bottom: 20px;
-            }
+          .nav-pills {
+            flex-direction: column;
+            gap: 10px;
+          }
+      
+          .form-group {
+            flex-direction: column;
+            width: 100%;
+          }
         }
     </style>
 
@@ -65,39 +69,38 @@
 
     <h4 class="mb-4"><b>Data Absensi Hari Ini</b></h4>
 
-    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between border shadow">
-        <div class="d-flex">
-            <li class="nav-item">
+    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between shadow-sm">
+        <div class="d-flex align-items-center">
+            <li class="nav-item me-2">
                 <a href="#student-content" data-bs-toggle="tab"
-                    class="nav-link note-link d-flex align-items-center justify-content-center active px-3 px-md-3 me-0 me-md-2 text-body-color"
-                    id="student">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="1.5"
-                            d="M17.928 19.634h2.138a1.165 1.165 0 0 0 1.116-1.555a6.851 6.851 0 0 0-6.117-3.95m0-2.759a3.664 3.664 0 0 0 3.665-3.664a3.664 3.664 0 0 0-3.665-3.674m-1.04 16.795a1.908 1.908 0 0 0 1.537-3.035a8.026 8.026 0 0 0-6.222-3.196a8.026 8.026 0 0 0-6.222 3.197a1.909 1.909 0 0 0 1.536 3.034zM9.34 11.485a4.16 4.16 0 0 0 4.15-4.161a4.151 4.151 0 0 0-8.302 0a4.16 4.16 0 0 0 4.151 4.16" />
+                class="nav-link note-link d-flex align-items-center justify-content-center active px-3 py-2"
+                id="student">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor"
+                        d="M16 11C17.66 11 19 9.66 19 8C19 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 11 9.66 11 8C11 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.33 13 0 14.34 0 17V19H16V17C16 14.34 10.67 13 8 13ZM16 13C15.65 13 15.28 13.02 14.89 13.05C15.86 13.76 16.5 14.77 16.5 16V19H24V17C24 14.34 18.67 13 16 13Z" />
                     </svg>
-                    <span class="d-none d-md-block ms-2 font-weight-medium">Siswa</span>
+                <span class="d-none d-md-block ms-2 fw-medium">Siswa</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="#employee-content" data-bs-toggle="tab"
-                    class="nav-link note-link d-flex align-items-center justify-content-center px-3 px-md-3 me-0 me-md-2 text-body-color"
-                    id="employee">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36">
-                        <path fill="currentColor"
-                            d="M16.43 16.69a7 7 0 1 1 7-7a7 7 0 0 1-7 7m0-11.92a5 5 0 1 0 5 5a5 5 0 0 0-5-5M22 17.9a25.4 25.4 0 0 0-16.12 1.67a4.06 4.06 0 0 0-2.31 3.68v5.95a1 1 0 1 0 2 0v-5.95a2 2 0 0 1 1.16-1.86a22.9 22.9 0 0 1 9.7-2.11a23.6 23.6 0 0 1 5.57.66Zm.14 9.51h6.14v1.4h-6.14z" />
-                        <path fill="currentColor"
-                            d="M33.17 21.47H28v2h4.17v8.37H18v-8.37h6.3v.42a1 1 0 0 0 2 0V20a1 1 0 0 0-2 0v1.47H17a1 1 0 0 0-1 1v10.37a1 1 0 0 0 1 1h16.17a1 1 0 0 0 1-1V22.47a1 1 0 0 0-1-1" />
+                class="nav-link note-link d-flex align-items-center justify-content-center px-3 py-2"
+                id="employee">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                    d="M4 4H20V6H4V4ZM4 8H20V10H4V8ZM4 12H14V14H4V12ZM4 16H14V18H4V16ZM16 12H20V18H16V12Z" />
                     </svg>
-                    <span class="d-none d-md-block ms-2 font-weight-medium">Guru</span>
+                    <span class="d-none d-md-block ms-2 fw-medium">Guru</span>
                 </a>
             </li>
         </div>
 
-        <form class="mt-4 mt-md-0">
-            <div class="form-group d-flex gap-2">
-                <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}">
-                <button class="btn btn-primary" type="submit">Cari</button>
+        <form class="mt-3 mt-md-0">
+            <div class="form-group d-flex gap-2 align-items-center">
+                <input type="date" name="date" class="form-control rounded-pill px-3 py-2"
+                value="{{ date('Y-m-d') }}">
+                <button class="btn btn-primary rounded-pill px-4" type="submit">Cari</button>
             </div>
         </form>
     </ul>
