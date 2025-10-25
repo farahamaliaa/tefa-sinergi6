@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserSeeder extends Seeder
 {
@@ -27,7 +28,10 @@ class UserSeeder extends Seeder
 
             $user->assignRole($role);
             if ($role['name'] == 'staff') {
-                Permission::findOrCreate('view_violation', 'web');
+              $permission = Permission::firstOrCreate([
+                'name' => 'view_violation',
+                'guard_name' => 'web',
+              ]);
                 $user->givePermissionTo('view_violation');
             }
 
