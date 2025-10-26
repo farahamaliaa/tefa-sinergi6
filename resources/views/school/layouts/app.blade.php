@@ -3,7 +3,7 @@
 
 <head>
     <!--  Title -->
-    <title>Sinergi6 | School</title>
+    <title>Sinergi6 School</title>
     {{-- <title>{{ env('APP_NAME') }} | School</title> --}}
     <!--  Required Meta Tag -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

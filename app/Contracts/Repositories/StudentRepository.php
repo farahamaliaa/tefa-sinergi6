@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Contracts\Interfaces\StudentInterface;
 use App\Models\Student;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
 
 class StudentRepository extends BaseRepository implements StudentInterface
@@ -69,12 +70,20 @@ class StudentRepository extends BaseRepository implements StudentInterface
             ->when($request->gender, function ($query) use ($request) {
                 $query->where('gender', $request->gender);
             })
-            ->whereDoesntHave('classroomStudents.classroom.levelClass', function($query) {
-                $query->where('name', 'Alumni');
+            ->whereDoesntHave('memberships', function ($mq) {
+                $mq->where('memberable_type', Classroom::class)
+                ->whereHasMorph('memberable', [Classroom::class], function ($cq) {
+                    $cq->whereHas('levelClass', fn($lq) =>
+                        $lq->where('name', 'Alumni')
+                    );
+                });
             })
-            ->when($request->class, function ($query) use ($request) {
-                $query->whereHas('classroomStudents.classroom', function ($query) use ($request) {
-                    $query->where('name', 'LIKE', '%' . $request->class . '%');
+            ->when($request->class, function ($q) use ($request) {
+                $q->whereHas('memberships', function ($mq) use ($request) {
+                    $mq->where('memberable_type', Classroom::class)
+                    ->whereHasMorph('memberable', [Classroom::class], function ($cq) use ($request) {
+                        $cq->where('name', 'LIKE', '%'.$request->class.'%');
+                    });
                 });
             })
             ->latest()
@@ -86,7 +95,9 @@ class StudentRepository extends BaseRepository implements StudentInterface
     {
         return $this->model->query()
         ->with('user')
-        ->whereDoesntHave('classroomStudents')
+        ->whereDoesntHave('memberships', function ($mq) {
+            $mq->where('memberable_type', Classroom::class);
+        })
         ->when($request->name, function ($query) use ($request) {
             $query->whereHas('user', function($q) use ($request){
                 $q->where('name', 'LIKE', '%' .  $request->name . '%');
@@ -98,7 +109,12 @@ class StudentRepository extends BaseRepository implements StudentInterface
     public function countStudentAlumni(): mixed
     {
         return $this->model->query()
-            ->whereRelation('classroomStudents.classroom.levelClass', 'name', 'Alumni')
+            ->whereHas('memberships', function ($mq) {
+                $mq->where('memberable_type', Classroom::class)
+                ->whereHasMorph('memberable', [Classroom::class], function ($sq) {
+                    $sq->whereHas('levelClass', fn($lq) => $lq->where('name', 'Alumni'));
+                });
+            })
             ->count();
     }
 
@@ -124,7 +140,10 @@ class StudentRepository extends BaseRepository implements StudentInterface
     public function whereClassroomStudent(mixed $id): mixed
     {
         return $this->model->query()
-            ->whereRelation('classroomStudents', 'id', $id)
+            ->whereHas('memberships', function ($q) use ($id) {
+                $q->where('memberable_type', Classroom::class)
+                ->where('memberable_id', $id);
+            })
             ->first();
     }
 

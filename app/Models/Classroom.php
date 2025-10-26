@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\Models\BelongsToEmployee;
 use App\Traits\Models\BelongsToLevelClass;
 use App\Traits\Models\BelongsToSchoolYear;
-use App\Traits\Models\HasManyClassroomStudent;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Classroom extends Model
 {
-    use HasFactory, BelongsToEmployee, BelongsToLevelClass, BelongsToSchoolYear, HasManyClassroomStudent;
+    use HasFactory, BelongsToEmployee, BelongsToLevelClass, BelongsToSchoolYear;
 
     protected $fillable = [
         'id',
@@ -36,4 +36,15 @@ class Classroom extends Model
     {
         return $this->hasMany(LessonSchedule::class, 'classroom_id');
     }
+
+    public function students()
+    {
+        return $this->morphToMany(Student::class, 'memberable', 'student_memberships');
+    }
+
+    public function memberships()
+    {
+        return $this->morphMany(StudentMembership::class, 'memberable');
+    }    
+
 }

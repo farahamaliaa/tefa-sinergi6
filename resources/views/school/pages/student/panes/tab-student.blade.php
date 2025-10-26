@@ -71,7 +71,13 @@
                                 <img src="{{ $student->image ? asset('storage/' . $student->image) : asset('assets/images/default-user.jpeg') }}" class="rounded-circle me-2 user-profile" style="object-fit: cover" width="40" height="40" alt="" />
                                 <div class="ms-3">
                                     <h6 class="fs-4 fw-semibold mb-0 text-start">{{ $student->user->name }}</h6>
-                                    <span class="fw-normal">{{ $student->classroomStudents->isNotEmpty() ? $student->classroomStudents->first()->classroom->name : 'Tidak dalam kelas' }}</span>
+                                    <span class="fw-normal">
+                                        {{
+                                            $student->memberships
+                                                    ->where('memberable_type', Classroom::class)
+                                                    ->first()?->memberable->name ?? 'Tidak dalam kelas'
+                                        }}
+                                    </span>
                                 </div>
                             </div>
                         </td>
