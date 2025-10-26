@@ -33,16 +33,16 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // LessonHour::observe(LessonHourObserver::class);
-        // Classroom::observe(ClassroomObserver::class);
-        // Extracurricular::observe(ExtracurricularObserver::class);
+        LessonHour::observe(LessonHourObserver::class);
+        Classroom::observe(ClassroomObserver::class);
+        Extracurricular::observe(ExtracurricularObserver::class);
 
-        // $school = School::first();
-        // $classrooms = Classroom::all();
-        // $permission_feedback = Permission::where('name', 'active_feedback')->first();
-        // view()->share('school', $school);
-        // view()->share('all_classrooms', $classrooms);
-        // view()->share('permission_feedback', $permission_feedback);
+        $school = School::first();
+        $classrooms = Classroom::all();
+        $permission_feedback = Permission::where('name', 'active_feedback')->first();
+        view()->share('school', $school);
+        view()->share('all_classrooms', $classrooms);
+        view()->share('permission_feedback', $permission_feedback);
     }
 
     /**
