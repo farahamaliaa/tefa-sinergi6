@@ -49,39 +49,70 @@
     justify-content: center;
     align-items: center;
     }
+    /* 🔑 Khusus untuk nav pills DALAM card (Telat, Izin, Alfa) */
+.card-body .nav-pills {
+    background-color: #fff !important;
+    border: 1px solid #dfe4ea !important;
+    border-radius: 50px !important;
+    padding: 4px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: max-content;
+    max-width: 100%;
+}
 
-    .nav-pills {
-      background-color: #fff;               /* putih bersih */
-      border: 1px solid #dfe4ea;            /* garis abu lembut di luar */
-      border-radius: 50px;                  /* bentuk pil */
-      padding: 4px;                         /* jarak dalam */
+/* Sembunyikan scrollbar */
+.card-body .nav-pills::-webkit-scrollbar {
+    display: none;
+}
+.card-body .nav-pills {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.card-body .nav-pills .nav-item {
+    flex: 0 0 auto;
+    display: inline-block;
+}
+
+.card-body .nav-pills .nav-link {
+    color: #000 !important;
+    font-weight: 600;
+    border-radius: 50px !important;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: inline-block;
+    background-color: transparent !important;
+}
+
+.card-body .nav-pills .nav-link.active {
+    background-color: #0896D1 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(8,150,209,0.3) !important;
+}
+
+.card-body .nav-pills .nav-link:not(.active):hover {
+    background-color: rgba(8,150,209,0.1) !important;
+    color: #0896D1 !important;
+}
+
+@media (max-width: 576px) {
+    .card-body .nav-pills .nav-link {
+        padding: 8px 16px;
+        font-size: 14px;
     }
-    
-    .nav-pills .nav-link {
-      color: #000;
-      font-weight: 600;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-    }
-    
-    .nav-pills .nav-link.active {
-      background-color: #0896D1;            /* 💙 biru cyan terang */
-      color: #fff !important;
-      box-shadow: 0 2px 6px rgba(8,150,209,0.3);  /* efek timbul lembut */
-    }
-    
-    .nav-pills .nav-link:hover {
-      background-color: rgba(8,150,209,0.1); /* hover lembut biru muda */
-      color: #0896D1;
-    }
-    
+}
 
 </style>
 
 <div class="row g-3">
     <!-- Siswa Telat -->
     <div class="col-md-6 col-lg-4">
-        <div class="stat-card">
+        <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Telat Absen</div>
                 <div class="stat-badge bg-primary-soft">{{ $lates->count() }} Siswa</div>
@@ -104,7 +135,7 @@
 
     <!-- Guru Izin -->
     <div class="col-md-6 col-lg-4">
-        <div class="stat-card">
+        <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Izin</div>
                 <div class="stat-badge bg-warning-soft">{{ $totalPermit }} Siswa</div>
@@ -120,7 +151,7 @@
 
     <!-- Guru Alfa -->
     <div class="col-md-6 col-lg-4">
-        <div class="stat-card">
+        <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Alfa</div>
                 <div class="stat-badge bg-danger-soft">{{ $alpha->count() }} Siswa</div>
@@ -194,7 +225,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4 d-flex">
+    <div class="col-lg-4 d-flex mb-4">
         <div class="card w-100 h-100 overflow-hidden border">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -206,3 +237,47 @@
         </div>
     </div>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // === Grup 1: Tombol Siswa & Guru ===
+    const navRoleLinks = document.querySelectorAll('.nav-role .nav-link');
+    
+    navRoleLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Reset semua tombol di grup role
+            navRoleLinks.forEach(l => {
+                l.classList.remove('active');
+                l.style.backgroundColor = '';
+                l.style.color = '';
+            });
+
+            // Aktifkan tombol yang diklik
+            this.classList.add('active');
+            this.style.backgroundColor = '#0896D1';
+            this.style.color = '#fff';
+        });
+    });
+
+
+    // === Grup 2: Tombol Telat, Izin, Alfa ===
+    const navStatusLinks = document.querySelectorAll('.nav-status .nav-link');
+    
+    navStatusLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Reset semua tombol di grup status
+            navStatusLinks.forEach(l => {
+                l.classList.remove('active');
+                l.style.backgroundColor = '';
+                l.style.color = '';
+            });
+
+            // Aktifkan tombol yang diklik
+            this.classList.add('active');
+            this.style.backgroundColor = '#0896D1';
+            this.style.color = '#fff';
+        });
+    });
+});
+</script>

@@ -72,3 +72,49 @@
         </div>
     </div>
 </div>
+
+<!-- CSS Owl Carousel -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+
+<!-- jQuery (diperlukan untuk Owl Carousel) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- JS Owl Carousel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $(".custom-carousel").owlCarousel({
+        loop: true,
+        margin: 20,
+        nav: true,
+        dots: true,
+        autoplay: true,              // Aktifkan autoplay
+        autoplayTimeout: 3000,       // Durasi 3 detik per slide
+        autoplayHoverPause: true,    // Pause saat hover
+        autoplaySpeed: 800,          // Kecepatan transisi (ms)
+        navText: [
+            '<i class="ti ti-chevron-left"></i>', 
+            '<i class="ti ti-chevron-right"></i>'
+        ],
+        responsive: {
+            0: {
+                items: 1
+            },
+            576: {
+                items: 2
+            },
+            768: {
+                items: 3
+            },
+            992: {
+                items: 4
+            },
+            1200: {
+                items: 5
+            }
+        }
+    });
+});
+</script>
