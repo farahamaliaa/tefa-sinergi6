@@ -56,7 +56,7 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #5D87FF;
+    background-color: #0F95CE;
     border-radius: 2px;
 }
 
@@ -68,7 +68,7 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #13DEB9;
+    background-color: #23B89B;
     border-radius: 2px;
 }
 
@@ -80,7 +80,23 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #FA896B;
+    background-color: #DD2224;
     border-radius: 2px;
+}
+
+/* opsional: biar keliatan lebih rapi */
+.card-body-with-line,
+.card-body-with-line2,
+.card-body-with-line3 {
+    border-radius: 1rem;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.card-body-with-line:hover,
+.card-body-with-line2:hover,
+.card-body-with-line3:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 </style>

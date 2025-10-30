@@ -16,6 +16,12 @@
                 </div>
                 <div class="col-3">
                     <div class="text-center mb-n5">
+                        <svg width="1118" height="123" viewBox="0 0 1118 123" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g clip-path="url(#clip0_6248_3338)">
+                        <rect width="1118" height="123" rx="12" fill="#0896D1"/>
+                        <rect x="825" y="-17" width="316" height="221" fill="url(#pattern0_6248_3338)"/>
+                        </g> 
+                        </svg>
                         <div class="img-fluid w-100 h-auto">    
                             <svg viewBox="0 0 293 123" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <rect y="-17" width="316" height="221" fill="url(#pattern0_6248_3339)"/>
