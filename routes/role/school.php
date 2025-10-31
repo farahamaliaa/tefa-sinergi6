@@ -108,6 +108,11 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
 
+    //dummy crud get parent
+    Route::get('school/parents', function () {
+        return view('school.pages.parent.index');
+    });
+
     // siswa ekstrakurikuler
     Route::post('extracurricular-students/{extracurricular}', [ExtracurricularStudentController::class, 'store'])->name('extracurricular-students.store');
     Route::delete('extracurricular-students/{extracurricularStudent}', [ExtracurricularStudentController::class, 'destroy'])->name('extracurricular-students.destroy');
