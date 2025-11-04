@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\JadwalPelajaranExportNew;
+use App\Http\Controllers\Api\ParentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceMasterController;
 use App\Http\Controllers\AttendanceRuleController;
@@ -108,10 +109,11 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
 
-    //dummy crud get parent
-    Route::get('school/parents', function () {
-        return view('school.pages.parent.index');
-    });
+    //parent
+    Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
+    Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
+    Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
+    Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
 
     // siswa ekstrakurikuler
     Route::post('extracurricular-students/{extracurricular}', [ExtracurricularStudentController::class, 'store'])->name('extracurricular-students.store');

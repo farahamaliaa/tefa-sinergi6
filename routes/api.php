@@ -112,10 +112,10 @@ Route::post('teacher/store-journal/{lessonSchedule}', [LessonScheduleApiControll
 Route::get('teacher/detail-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'show']);
 Route::put('teacher/update-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'update']);
 
-Route::get('/parents', [ParentController::class, 'index']);
-Route::get('/parents/{id}', [ParentController::class, 'show']);
-Route::post('/parents/{id}/students', [ParentController::class, 'attachStudent']);
-Route::delete('/parents/{id}/students/{student_id}', [ParentController::class, 'detachStudent']);
+// Route::get('/parents', [ParentController::class, 'index']);
+// Route::get('/parents/{id}', [ParentController::class, 'show']);
+// Route::post('/parents/{id}/students', [ParentController::class, 'attachStudent']);
+// Route::delete('/parents/{id}/students/{student_id}', [ParentController::class, 'detachStudent']);
 Route::get('/permissions', [StudentPermissionController::class, 'index']);
 Route::post('/students/{student_id}/permissions', [StudentPermissionController::class, 'store']);
 Route::post('/permissions/{id}/approve', [StudentPermissionController::class, 'approve']);

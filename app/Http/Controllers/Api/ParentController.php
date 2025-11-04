@@ -9,16 +9,25 @@ use Illuminate\Http\Request;
 class ParentController extends Controller
 {
     //Get /api/parents
-    public function index()
+    public function index(Request $request)
     {
+        if (!$request->expectsJson()) {
+            return view('school.pages.parent.index');
+        };
+
         return Parents::with('students')->get();
     }
 
     //Get /api/parents{id}
-    public function show($id)
+    public function show($id, Request $request)
     {
         $parent = Parents::with('students')->findOrFail($id);
-        return response()->json($parent);
+
+        if ($request->expectsJson()) {
+            return response()->json($parent);
+        };
+
+        return view('school.pages.parent.show', compact('parent'));
     }
 
     //post /api/parents{id}/students
@@ -30,7 +39,6 @@ class ParentController extends Controller
             'student_id' => 'required|exists:students,id',
         ]);
 
-        // Hubungkan student tanpa menghapus relasi lama
         $parent->students()->syncWithoutDetaching([$validated['student_id']]);
 
         return response()->json([
