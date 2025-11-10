@@ -6,6 +6,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\ToModel;
 use App\Models\ClassroomStudent;
+use App\Models\Classroom;
 use Illuminate\Support\Str;
 use App\Models\Religion;
 use App\Models\Student;
@@ -16,13 +17,6 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentImport implements ToModel
 {
-    private $classroom;
-
-    public function __construct($classroom)
-    {
-        $this->classroom = $classroom;
-    }
-
     public function model(array $row)
     {
         if (in_array($row[0], ['Nama', 'Contoh Format(Jangan Dihapus)']) || $row[0] == null) {
@@ -33,22 +27,29 @@ class StudentImport implements ToModel
 
         if ($user) {
             return null;
-        } else {
-            $user = User::create([
-                'name' => $row[0] ?? null,
-                'email' => $row[1],
-                'slug' => Str::slug($row[0]),
-                'password' => Hash::make($row[2])
-            ]);
         }
 
+        $user = User::create([
+            'name' => $row[0] ?? null,
+            'email' => $row[1],
+            'slug' => Str::slug($row[0]),
+            'password' => Hash::make($row[2])
+        ]);
+
         $user->assignRole(RoleEnum::STUDENT->value);
+
         $birthDate = $row[3] ? Carbon::instance(Date::excelToDateTimeObject($row[3])) : null;
+
+        $religion = Religion::where('name', $row[12])->first();
+        if (!$religion) {
+            $user->delete();
+            return null;
+        }
 
         $data = [
             'user_id' => $user->id,
-            'nisn'        => $row[2],
-            'religion_id' => Religion::where('name', $row[12])->first()->id,
+            'nisn' => $row[2],
+            'religion_id' => $religion->id,
             'gender' => $row[5] == 'Laki-laki' ? 'male' : 'female',
             'birth_date' => $birthDate,
             'birth_place' => $row[4],
@@ -65,11 +66,20 @@ class StudentImport implements ToModel
             return null;
         }
 
-        $student_id = Student::create($data)->id;
+        $student = Student::create($data);
+
+        $classroomName = $row[13] ?? null;
+        $classroom = Classroom::where('name', $classroomName)->first();
+
+        if (!$classroom) {
+            $user->delete();
+            $student->delete();
+            return null;
+        }
 
         ClassroomStudent::create([
-            'student_id' => $student_id,
-            'classroom_id' => $this->classroom,
+            'student_id' => $student->id,
+            'classroom_id' => $classroom->id,
         ]);
     }
 }

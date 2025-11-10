@@ -13,6 +13,16 @@
             margin-right: 0.5px;
         }
 
+        .nav-pills .nav-link {
+            color: #0896D1 !important;
+        }
+
+        .nav-pills .nav-link.active {
+            color: #fff !important;
+            background-color: #0896D1 !important;
+            border-color: #0896D1 !important;
+        }
+
         @media (max-width: 767.98px) {
             .card {
                 height: auto !important;
@@ -65,7 +75,7 @@
 
     <h4 class="mb-4"><b>Data Absensi Hari Ini</b></h4>
 
-    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between border shadow">
+    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between border">
         <div class="d-flex">
             <li class="nav-item">
                 <a href="#student-content" data-bs-toggle="tab"
@@ -97,7 +107,9 @@
         <form class="mt-4 mt-md-0">
             <div class="form-group d-flex gap-2">
                 <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}">
-                <button class="btn btn-primary" type="submit">Cari</button>
+                <button class="btn text-white" type="submit" style="background-color: #0896d1; border-color: #0896d1;">
+                    Cari
+                </button>
             </div>
         </form>
     </ul>
