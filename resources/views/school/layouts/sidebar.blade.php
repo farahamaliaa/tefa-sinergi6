@@ -1,3 +1,38 @@
+<style>
+    .sidebar-nav .sidebar-item .sidebar-link svg {
+        stroke: #1191C6 !important;
+        color: #1191C6 !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link .hide-menu {
+        color: #000000 !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link:hover {
+        background-color: rgba(13, 147, 202, 0.25) !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link:hover .hide-menu,
+    .sidebar-nav .sidebar-item .sidebar-link:hover svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+
+    .sidebar-nav .sidebar-item .active.sidebar-link,
+    .sidebar-nav .sidebar-item.selected > .sidebar-link {
+        background-color: #0D93CA !important;
+        border-radius: 8px;
+    }
+
+    .sidebar-nav .sidebar-item .active.sidebar-link .hide-menu,
+    .sidebar-nav .sidebar-item.selected > .sidebar-link .hide-menu,
+    .sidebar-nav .sidebar-item .active.sidebar-link svg,
+    .sidebar-nav .sidebar-item.selected > .sidebar-link svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+
+</style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
     <div>

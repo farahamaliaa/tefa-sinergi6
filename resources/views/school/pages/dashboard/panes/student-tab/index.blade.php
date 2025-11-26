@@ -36,7 +36,6 @@
         font-size: 16px;
     }
 
-    /* Warna lembut */
     .bg-primary-soft { background-color: #ECF2FF; color: #0896D1; }
     .bg-warning-soft { background-color: #FEF5E5; color: #FFAE1F; }
     .bg-danger-soft  { background-color: #FBF2EF; color: #F73131; }
@@ -98,6 +97,46 @@
         background-color: rgba(8,150,209,0.1) !important;
         color: #0896D1 !important;
     }
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #E0E6ED !important;
+        border-radius: 10px !important;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.25s ease-in-out;
+        box-shadow: none !important;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.06) !important;
+    }
+
+    .stat-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2A3547;
+        margin-bottom: 10px;
+    }
+
+    .stat-badge {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .icon-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 
     @media (max-width: 576px) {
         .card-body .nav-pills .nav-link {

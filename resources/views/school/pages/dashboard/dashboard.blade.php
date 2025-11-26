@@ -3,25 +3,36 @@
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin_assets/dist/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}">
     <style>
-        .nav-tabs .nav-link {
-            margin-bottom: calc(-1* var(--bs-nav-tabs-border-width));
-            border: var(--bs-nav-tabs-border-width) solid transparent;
-            border-top-left-radius: var(--bs-nav-tabs-border-radius);
-            border-top-right-radius: var(--bs-nav-tabs-border-radius);
-            color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity));
-            border-radius: 5px;
-            margin-right: 0.5px;
+        .card {
+            border: 1px solid #E0E6ED !important; 
+            box-shadow: none !important;
         }
 
-        .nav-pills .nav-link {
-            color: #0896D1 !important;
+        .card-hover:hover {
+            border-color: #00A9D9 !important;
+            transition: .2s ease-in-out;
         }
 
         .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
             color: #fff !important;
-            background-color: #0896D1 !important;
-            border-color: #0896D1 !important;
         }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+        
+        .card.card-body {
+            box-shadow: none !important;
+            border: 1px solid #E0E6ED !important;
+            border-radius: 10px !important;
+        }        
 
         @media (max-width: 767.98px) {
             .card {
@@ -75,7 +86,7 @@
 
     <h4 class="mb-4"><b>Data Absensi Hari Ini</b></h4>
 
-    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between border">
+    <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row justify-content-between">
         <div class="d-flex">
             <li class="nav-item">
                 <a href="#student-content" data-bs-toggle="tab"
