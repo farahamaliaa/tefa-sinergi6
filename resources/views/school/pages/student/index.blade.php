@@ -71,7 +71,6 @@
         </div>
     </div>
 
-
     <div class="row">
         <div class="col-md-6 col-lg-6">
             <div class="card rounded-3 card-hover position-relative">

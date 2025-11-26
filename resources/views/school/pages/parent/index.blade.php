@@ -46,7 +46,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                    Daftar - orang tua
+                                    Daftar - orang ua
                                 </a>
                             </li>
                         </ol>
