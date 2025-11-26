@@ -66,6 +66,21 @@
             background-size: cover;
             opacity: 0.6;
         }
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+
     </style>
     <style>
         .img-background {

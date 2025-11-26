@@ -160,7 +160,7 @@
     </div>
 </div>
 
-<div class="row d-flex">
+{{-- <div class="row d-flex">
     <div class="col-lg-8 col-md-12 d-flex mb-4">
         <div class="card w-100 h-100 border">
             <div class="card-body">
@@ -230,7 +230,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 
 <h4 class="mb-4"><b>Data Jurnal Guru Hari Ini / </b>

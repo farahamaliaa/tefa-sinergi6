@@ -9,6 +9,11 @@
         transition: .2s ease-in-out;
     }
 
+    .card.header-wave {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }    
+
     .nav-pills .nav-link.active {
         background-color: #098FC6 !important;
         color: #fff !important;
