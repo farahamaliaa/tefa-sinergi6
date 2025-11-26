@@ -48,8 +48,25 @@
             font-size: 1.5rem;
             font-weight: bold;
         }
-    </style>
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
 
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%23FFFFFF55' d='M0 32l48 10.7C96 53 192 75 288 69.3c96-5.3 192-42.7 288-48C672 16 768 48 864 58.7 960 69 1056 59 1152 53.3 1248 48 1344 48 1392 48h48v32H0z'/%3E%3C/svg%3E");
+            background-size: cover;
+            opacity: 0.6;
+        }
+    </style>
     <style>
         .img-background {
             width: 100%;
@@ -64,7 +81,7 @@
     </style>
 @endsection
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
@@ -77,9 +94,9 @@
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                            class="img-fluid mb-n4">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
                     </div>
                 </div>
             </div>

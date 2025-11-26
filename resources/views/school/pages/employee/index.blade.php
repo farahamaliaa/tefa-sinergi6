@@ -168,25 +168,6 @@
                 <span class="d-none d-md-block font-weight-medium">Staf</span>
             </a>
         </li>
-
-        <!-- Tombol Guru -->
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-md-auto mt-2 mt-md-0 guru-buttons">
-            <button type="button" class="btn btn-import px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#import-teacher">Import Guru</button>
-        </li>
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-0 ms-md-2 mt-2 mt-md-0 guru-buttons">
-            <button type="button" class="btn btn-primary px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#create-teacher">Tambah Guru</button>
-        </li>
-        <!-- Tombol Pegawai -->
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-md-auto mt-2 mt-md-0 pegawai-buttons d-none">
-            <button type="button" class="btn btn-import px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#import-employe">Import Staf</button>
-        </li>
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-0 ms-md-2 mt-2 mt-md-0 pegawai-buttons d-none">
-            <button type="button" class="btn btn-primary px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#modal-add-emplo">Tambah Staf</button>
-        </li>
     </ul>
 
 
