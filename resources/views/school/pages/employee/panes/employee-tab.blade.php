@@ -21,24 +21,35 @@
                     <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
                 </form>
             </div>
+            <div class="col-12 col-lg-7 mb-4 mt-3 d-flex flex-wrap justify-content-lg-end gap-2">
+                <a class="btn btn-import w-lg-auto" href="#" data-bs-toggle="modal" data-bs-target="#import-employe">
+                    <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>  Import Staf
+                </a>
+
+                <a class="btn btn-primary w-lg-auto" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-emplo">
+                    <i class="ti ti-plus me-1"></i>Tambah Staff
+                </a>
+            </div>
         </div>
 
-    </div>
+    </div>  
 
 
 
     <div class="">
-        <div class="table-responsive rounded-2 mb-4">
+        <div class="table-responsive rounded-3 mb-4">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="text-dark fs-4">
+                <thead class="text-dark fs-4 table-custom-header">
                     <tr>
-                        <th class="text-white" style="background-color: #5D87FF;">No</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Nama Staf</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Status</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Email</th>
-                        <th class="text-white" style="background-color: #5D87FF;">NIP</th>
-                        <th class="text-white" style="background-color: #5D87FF;">RFID</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Aksi</th>
+                        <th>No</th>
+                        <th>Nama Staf</th>
+                        <th>Status</th>
+                        <th>Email</th>
+                        <th>NIP</th>
+                        <th>RFID</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
