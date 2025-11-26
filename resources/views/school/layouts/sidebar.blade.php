@@ -14,8 +14,8 @@
 
     .sidebar-nav .sidebar-item .sidebar-link:hover .hide-menu,
     .sidebar-nav .sidebar-item .sidebar-link:hover svg {
-        color: #ffffff !important;
-        stroke: #ffffff !important;
+        color: #1191C6 !important;
+        stroke: #1191C6 !important;
     }
 
     .sidebar-nav .sidebar-item .active.sidebar-link,
