@@ -1,3 +1,68 @@
+<style>
+    .table-custom-header th {
+        background-color: #0896D1 !important;
+        color: #fff;
+    }
+    .btn-primary {
+        background-color: #0896D1 !important;
+        border-color: #0896D1 !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #067aa7 !important;
+        border-color: #067aa7 !important;
+    }
+
+    .btn-import {
+        background-color: #1EB196 !important;
+        border-color: #1EB196 !important;
+        color: #fff !important;
+    }
+
+    .btn-import:hover {
+        background-color: #1e9c87 !important;
+        border-color: #1e9c87 !important;
+    }
+
+    .card.card-body {
+        box-shadow: none !important;
+        border: 1px solid #E0E6ED !important;
+        border-radius: 10px !important;
+    }
+    .btn-action {
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 6px 8px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-detail-action {
+        background-color: #0dcaf0 !important;
+        color: #fff !important;
+    }
+    .btn-detail-action:hover {
+        background-color: #0bb5d8 !important;
+    }
+
+    .btn-edit-action {
+        background-color: #FFC107 !important;
+        color: #fff !important;
+    }
+    .btn-edit-action:hover {
+        background-color: #e6ae06 !important;
+    }
+
+    .btn-delete-action {
+        background-color: #DC3545 !important;
+        color: #fff !important;
+    }
+    .btn-delete-action:hover {
+        background-color: #bb2d3b !important;
+    }    
+</style>
+
 <div class="card card-body">
     <div class="">
         <h4>Daftar Guru</h4>
@@ -34,17 +99,17 @@
     @endif
 
     <div class="">
-        <div class="table-responsive rounded-2 ">
+        <div class="table-responsive rounded-3 mb-4">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="text-dark fs-4">
+                <thead class="text-dark fs-4 table-custom-header">
                     <tr>
-                        <th class="text-white" style="background-color: #5D87FF;">No</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Nama Guru</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Jumlah Mapel</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Email</th>
-                        <th class="text-white" style="background-color: #5D87FF;">NIP</th>
-                        <th class="text-white" style="background-color: #5D87FF;">RFID</th>
-                        <th class="text-white" style="background-color: #5D87FF;">Aksi</th>
+                        <th>No</th>
+                        <th>Nama Guru</th>
+                        <th>Jumlah Mapel</th>
+                        <th>Email</th>
+                        <th>NIP</th>
+                        <th>RFID</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

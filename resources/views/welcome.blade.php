@@ -567,7 +567,7 @@
 
     <!-- Story-Section-Start -->
     {{-- @if ($newses != null) --}}
-    @if (count($newses) > 0)
+    @if (count($newses ?? []) > 0)
         <section class="row_am latest_story" id="blog">
             <!-- container start -->
             <div class="container">
