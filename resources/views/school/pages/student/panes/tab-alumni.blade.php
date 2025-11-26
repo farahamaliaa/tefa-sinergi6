@@ -1,3 +1,10 @@
+<style>
+    .table-custom-header th {
+        background-color: #0896D1 !important;
+        color: #fff;
+    }
+</style>
+
 <div class="card card-body">
     <h4>Daftar Alumni</h4>
     <div class="row mb-3 mt-3">
@@ -20,22 +27,22 @@
                         <option value="{{ $classroom->name }}" {{ request('class') == $classroom->name ? 'selected' : '' }}>{{ $classroom->name }}</option>
                         @endforeach
                     </select>
-                    <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto">Filter</button>
+                    {{-- <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto">Filter</button> --}}
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="table-responsive rounded-2 mb-4">
+    <div class="table-responsive rounded-3 mb-4">
         <table class="table border text-nowrap customize-table mb-0 align-middle">
-            <thead class="text-dark fs-4">
+            <thead class="text-dark fs-4 table-custom-header">
                 <tr class="">
-                    <th class="text-white" style="background-color: #5D87FF;">No</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Nama</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Jenis Kelamin</th>
-                    <th class="text-white" style="background-color: #5D87FF;">NISN</th>
-                    <th class="text-white" style="background-color: #5D87FF;">RFID</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Aksi</th>
+                    <th class="text-white">No</th>
+                    <th class="text-white">Nama</th>
+                    <th class="text-white">Jenis Kelamin</th>
+                    <th class="text-white">NISN</th>
+                    <th class="text-white">RFID</th>
+                    <th class="text-white">Aksi</th>
                 </tr>
             </thead>
             <tbody>

@@ -89,7 +89,7 @@
     .card-body .nav-pills .nav-link.active {
         background-color: #0896D1 !important;
         color: #fff !important;
-        box-shadow: 0 2px 6px rgba(8,150,209,0.3) !important;
+        /* box-shadow: 0 2px 6px rgba(8,150,209,0.3) !important; */
     }
 
     .card-body .nav-pills .nav-link:not(.active):hover {
@@ -159,3 +159,122 @@
         </div>
     </div>
 </div>
+
+<div class="row d-flex">
+    <div class="col-lg-8 col-md-12 d-flex mb-4">
+        <div class="card w-100 h-100 border">
+            <div class="card-body">
+                <h5 class="mb-4"><b>Data Absensi Guru</b></h5>
+                <ul class="nav nav-pills mb-4 p-1 rounded-pill bg-light d-inline-flex">
+                    <li class="nav-item">
+                        <a href="#late-content" data-bs-toggle="tab"
+                            class="nav-link rounded-pill px-4 py-2 active"
+                            id="late">
+                            Telat
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#permission-content" data-bs-toggle="tab"
+                            class="nav-link rounded-pill px-4 py-2"
+                            id="permission">
+                            Izin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#alpha-content" data-bs-toggle="tab"
+                            class="nav-link rounded-pill px-4 py-2"
+                            id="alpha">
+                            Alfa
+                        </a>
+                    </li>
+                </ul>
+
+
+                <div class="tab-content">
+                    <div id="late-content" class="tab-pane fade show active">
+                        <div class="note-has-grid row">
+                            <div class="col-12">
+                                @include('school.pages.dashboard.panes.student-tab.late-tab')
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="permission-content" class="tab-pane fade">
+                        <div class="note-has-grid row">
+                            <div class="col-12">
+                                @include('school.pages.dashboard.panes.student-tab.permisson-tab')
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="alpha-content" class="tab-pane fade">
+                        <div class="note-has-grid row">
+                            <div class="col-12">
+                                @include('school.pages.dashboard.panes.student-tab.alpha-tab')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 d-flex mb-4">
+        <div class="card w-100 h-100 overflow-hidden border">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <h5 class="card-title fw-semibold">Statistik Absensi Guru</h5>
+                    <h6 class="mb-3">Hari ini</h6>
+                    <div id="chart-student" class="d-flex justify-content-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h4 class="mb-4"><b>Data Jurnal Guru Hari Ini / </b>
+    <span class="mb-1 badge font-medium bg-light-primary text-primary" style="font-size: ">
+        <b>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</b>
+    </span>
+</h4>
+
+@include('school.pages.dashboard.panes.teacher-journal')
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navRoleLinks = document.querySelectorAll('.nav-role .nav-link');
+    
+    navRoleLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navRoleLinks.forEach(l => {
+                l.classList.remove('active');
+                l.style.backgroundColor = '';
+                l.style.color = '';
+            });
+
+            this.classList.add('active');
+            this.style.backgroundColor = '#0896D1';
+            this.style.color = '#fff';
+        });
+    });
+
+
+    const navStatusLinks = document.querySelectorAll('.nav-status .nav-link');
+    
+    navStatusLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navStatusLinks.forEach(l => {
+                l.classList.remove('active');
+                l.style.backgroundColor = '';
+                l.style.color = '';
+            });
+
+            this.classList.add('active');
+            this.style.backgroundColor = '#0896D1';
+            this.style.color = '#fff';
+        });
+    });
+});
+</script>

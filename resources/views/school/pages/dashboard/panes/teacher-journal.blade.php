@@ -1,5 +1,5 @@
 <div class="row d-flex">
-    <div class="col-lg-9 col-md-12">
+    <div class="">
         <div class="card border">
             <div class="card-body">
                 <h5 class="mb-4"><b>Daftar Guru Tidak Mengisi Jurnal</b></h5>
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-12 mb-3">
+    {{-- <div class="col-lg-3 col-md-12 mb-3">
         <div class="statistik-container">
             <h4><b>Statistik</b></h4>
             <div class="line">
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         {{-- <a href="#" class="btn waves-effect waves-light btn-outline-primary w-100">Lihat Selengkapnya</a> --}}
     </div>

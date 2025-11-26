@@ -440,7 +440,7 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item">
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('school.feedback') }}" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
                             <path fill="currentColor"
@@ -448,9 +448,9 @@
                         </svg>
                         <span class="hide-menu">Tanggapan Siswa</span>
                     </a>
-                </li>
+                </li> --}}
 
-                <li class="nav-small-cap">
+                {{-- <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Pelanggaran</span>
                 </li>
@@ -463,7 +463,7 @@
                         </svg>
                         <span class="hide-menu">Akses Pelanggaran</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('school.violation.index') ? 'active' : '' }}"
                         href="{{ route('school.violation.index') }}" aria-expanded="false">
@@ -489,7 +489,7 @@
                     </a>
                 </li>
 
-                <li class="nav-small-cap">
+                {{-- <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Managemen Ekstrakurikuler</span>
                 </li>
@@ -504,7 +504,7 @@
                         </span>
                         <span class="hide-menu">Ekstrakurikuler</span>
                     </a>
-                </li>               
+                </li>                --}}
 
             </ul>
         </nav>

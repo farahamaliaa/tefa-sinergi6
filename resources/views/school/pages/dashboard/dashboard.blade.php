@@ -99,7 +99,7 @@
                         <path fill="currentColor"
                             d="M33.17 21.47H28v2h4.17v8.37H18v-8.37h6.3v.42a1 1 0 0 0 2 0V20a1 1 0 0 0-2 0v1.47H17a1 1 0 0 0-1 1v10.37a1 1 0 0 0 1 1h16.17a1 1 0 0 0 1-1V22.47a1 1 0 0 0-1-1" />
                     </svg>
-                    <span class="d-none d-md-block ms-2 font-weight-medium">Guru</span>
+                    <span class="d-none d-md-block ms-2 font-weight-medium">Guru/Staff</span>
                 </a>
             </li>
         </div>
@@ -133,16 +133,8 @@
         </div>
     </div>
 
-    <h4 class="mb-4"><b>Data Jurnal Guru Hari Ini / </b>
-        <span class="mb-1 badge font-medium bg-light-primary text-primary" style="font-size: ">
-            <b>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</b>
-        </span>
-    </h4>
-
-    @include('school.pages.dashboard.panes.teacher-journal')
-
-    <h4 class="mb-4"><b>Data Pelanggaran</b></h4>
-    @include('school.pages.dashboard.panes.violations-list')
+    {{-- <h4 class="mb-4"><b>Data Pelanggaran</b></h4>
+    @include('school.pages.dashboard.panes.violations-list') --}}
 
     {{-- <div class="row">
         <div class="col-lg-8">
