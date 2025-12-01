@@ -1,95 +1,55 @@
 @extends('school.layouts.app')
 
 @section('style')
-    <style>
-        .form-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+<style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
 
-        .select-start-container,
-        .select-end-container {
-            width: 100% !important;
-        }
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
 
-        .select2-container {
-            z-index: 1050;
-            /* Higher than modal */
-        }
+    .card.header-wave {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }    
 
-        .select2-container .select2-selection--single {
-            height: 36px !important;
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            line-height: 1.42857143 !important;
-            color: #555 !important;
-            background-color: #fff !important;
-            background-image: none !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
-            width: 200px;
-        }
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #555 !important;
-            line-height: 1.42857143 !important;
-        }
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            top: 5px !important;
-        }
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .slash {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .header-wave {
-            background-color: #1A94C8 !important;
-            border-radius: 14px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-wave::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 256px;
-            background: url("{{ asset('assets/images/wave-header.png') }}");
-            background-size: cover;
-            opacity: 1;
-        }
-        .nav-pills .nav-link.active {
-            background-color: #098FC6 !important;
-            color: #fff !important;
-        }
-
-        .nav-pills .nav-link {
-            color: #098FC6;
-            border-radius: 8px;
-        }
-
-        .nav-pills .nav-link:hover {
-            background-color: #0A8ABF20;
-            color: #098FC6;
-        }
-
-    </style>
-    <style>
-        .img-background {
-            width: 100%;
-            height: auto;
-        }
-
-        @media (max-width: 768px) {
-            .img-background {
-                height: 100px;
-            }
-        }
-    </style>
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -101,8 +61,11 @@
                     <h4 class="fw-semibold text-white mb-8">Kelas</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
-                                    href="javascript:void(0)">Atur kelas dan tingkatan kelas di sini</a></li>
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Atur kelas dan tingkatan kelas di sini
+                                </a>
+                            </li>
                         </ol>
                     </nav>
                 </div>
@@ -115,10 +78,7 @@
             </div>
         </div>
     </div>
-
-    <div class="container-fluid note-has-grid">
-        <!-- Navigation Tabs -->
-        <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row flex-wrap" id="nav-tab" role="tablist">
+        <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link note-link d-flex align-items-center justify-content-center px-3 text-body-color"
                     id="teacher-tab" data-bs-toggle="pill" href="#teacher-content" role="tab"
@@ -147,17 +107,6 @@
                     <span class="d-none d-md-block font-weight-medium">Tingkatan Kelas</span>
                 </a>
             </li>
-            <!-- <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0" id="guru-buttons">
-                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-class">
-                    Tambah Kelas
-                </button>
-            </li>
-
-            <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0 d-none" id="pegawai-buttons">
-                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-level">
-                    Tambah Tingkatan Kelas
-                </button>
-            </li> -->
         </ul>
 
         <!-- Tab Content -->

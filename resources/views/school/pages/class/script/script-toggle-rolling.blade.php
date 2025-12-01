@@ -4,6 +4,11 @@
     @endif
     $('.toggle-rolling').click(function() {
         $('#minimize').removeClass('minimize')
+        $('#minimize-button').addClass('minimize')
+    });
+    $('#back-button').click(function() {
+        $('#minimize').addClass('minimize')
+        $('#minimize-button').removeClass('minimize')
     });
 
 
@@ -23,18 +28,19 @@
                 console.log(response.data);
                 $('#left-table tbody').empty();
 
-                response.data.forEach(student => {
+                response.data.forEach((student, index) => {
                     $('#left-table tbody').append(`
                     <tr data-id="${student.id}">
+                        <td>${index + 1}</td>
                         <td>${student.user.name}</td>
                         <td>${student.nisn}</td>
                         <td class="d-flex justify-content-center">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox">
-                                </div>
-                                </td>
-                                </tr>
-                                `);
+                            </div>
+                        </td>
+                    </tr>
+                    `);
                 });
             }
         });
