@@ -1,90 +1,116 @@
 @extends('school.layouts.app')
 
 @section('style')
-<style>
-    .category-selector .dropdown-menu {
-        position: absolute;
-        z-index: 1050;
-        transform: translate3d(0, 0, 0);
-    }
+    <style>
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .select2 {
-        width: 100% !important;
-    }
+        .select-start-container,
+        .select-end-container {
+            width: 100% !important;
+        }
 
-    .select2-selection__rendered {
-        width: 100%;
-        height: 36px;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+        .select2-container {
+            z-index: 1050;
+            /* Higher than modal */
+        }
 
-    .select2-selection {
-        height: fit-content !important;
-        color: #555 !important;
-        background-color: #fff !important;
-        background-image: none !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
-    }
-</style>
+        .select2-container .select2-selection--single {
+            height: 36px !important;
+            padding: 6px 12px !important;
+            font-size: 14px !important;
+            line-height: 1.42857143 !important;
+            color: #555 !important;
+            background-color: #fff !important;
+            background-image: none !important;
+            border: 1px solid #ccc !important;
+            border-radius: 4px !important;
+            width: 200px;
+        }
 
-<style>
-    .category-selector .dropdown-menu {
-        position: absolute;
-        z-index: 1050;
-        transform: translate3d(0, 0, 0);
-    }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #555 !important;
+            line-height: 1.42857143 !important;
+        }
 
-    .select2-create-walikelas {
-        width: 100% !important;
-    }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 5px !important;
+        }
 
-    .select2-create-walikelas-selection__rendered {
-        width: 100%;
-        height: 36px;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+        .slash {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .select2-create-walikelas-selection {
-        height: fit-content !important;
-        color: #555 !important;
-        background-color: #fff !important;
-        background-image: none !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
-    }
-</style>
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+
+    </style>
+    <style>
+        .img-background {
+            width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .img-background {
+                height: 100px;
+            }
+        }
+    </style>
 @endsection
 
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden text-light">
+
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
-                <div class="col-8 col-md-9">
-                    <h4 class="fw-semibold mb-2 text-light">Kelas</h4>
+                <div class="col-9">
+                    <h4 class="fw-semibold text-white mb-8">Kelas</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" aria-current="page">Atur kelas dan tingkatan kelas di sini</li>
+                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
+                                    href="javascript:void(0)">Atur kelas dan tingkatan kelas di sini</a></li>
                         </ol>
                     </nav>
                 </div>
-                <div class="col-4 col-md-3 text-center mb-n5">
-                    <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                        class="img-fluid mb-n4">
+                <div class="col-3">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +147,7 @@
                     <span class="d-none d-md-block font-weight-medium">Tingkatan Kelas</span>
                 </a>
             </li>
-            <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0" id="guru-buttons">
+            <!-- <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0" id="guru-buttons">
                 <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-class">
                     Tambah Kelas
                 </button>
@@ -131,7 +157,7 @@
                 <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-level">
                     Tambah Tingkatan Kelas
                 </button>
-            </li>
+            </li> -->
         </ul>
 
         <!-- Tab Content -->

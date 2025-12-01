@@ -41,10 +41,10 @@
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 90px;
-        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%23FFFFFF55' d='M0 32l48 10.7C96 53 192 75 288 69.3c96-5.3 192-42.7 288-48C672 16 768 48 864 58.7 960 69 1056 59 1152 53.3 1248 48 1344 48 1392 48h48v32H0z'/%3E%3C/svg%3E");
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
         background-size: cover;
-        opacity: 0.6;
+        opacity: 1;
     }
 </style>
 
