@@ -16,7 +16,7 @@
         <!-- Pagination Elements -->
         @if ($paginator->lastPage() > 5 && $paginator->currentPage() > 3)
             <li class="page-item"><a class="page-link" href="{{ $paginator->url(1) }}">1</a></li>
-            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item disabled"><span class="page-link pagination-dots">...</span></li>
         @endif
 
         @for ($i = max(1, $paginator->currentPage() - 2); $i <= min($paginator->lastPage(), $paginator->currentPage() + 2); $i++)
@@ -26,7 +26,7 @@
         @endfor
 
         @if ($paginator->lastPage() > 5 && $paginator->currentPage() < $paginator->lastPage() - 2)
-            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item disabled"><span class="page-link pagination-dots">...</span></li>
             <li class="page-item"><a class="page-link" href="{{ $paginator->url($paginator->lastPage()) }}">{{ $paginator->lastPage() }}</a></li>
         @endif
 

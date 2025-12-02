@@ -85,21 +85,24 @@
                         <option value="{{ $classroom->name }}" {{ request('class') == $classroom->name ? 'selected' : '' }}>{{ $classroom->name }}</option>
                         @endforeach
                     </select>
-                    {{-- <div>
+                    <div>
                         <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto">Filter</button>
-                    </div> --}}
+                    </div>
                 </div>
             </form>
         </div>
-        <div class="col-lg-6 col-md-12 mb-3 d-flex justify-content-md-end align-items-md-center d-none d-lg-flex">
+        <div class="col-lg-6 col-md-12 mb-3 d-flex justify-content-md-end align-items-md-center d-none d-lg-flex gap-1">
             <a class="btn btn-import w-lg-auto" href="#" data-bs-toggle="modal" data-bs-target="#import-student">
                 <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>  Import
             </a>
+            <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#create-student">
+                <i class="ti ti-plus"></i> Tambah Siswa
+            </a>
         </div>
 
-        <!-- untuk tampilan mobile -->
+        <!-- untuk tampilan mobile -->  
         <div class="col-lg-6 col-md-12 mb-3 d-flex justify-content-md-end align-items-md-center d-lg-none">
             <a class="btn btn-success w-100" href="#" data-bs-toggle="modal" data-bs-target="#import-student">
                 <svg width="28" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -234,3 +237,4 @@
         <x-paginate-component :paginator="$students->appends(request()->input())" />
     </div>
 </div>
+@include('school.pages.student.widgets.student.create-student')

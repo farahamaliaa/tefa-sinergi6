@@ -1,18 +1,27 @@
 @section('style')
-    <style>
-        .bg-semester {
-            /* background-image: url('{{ asset('assets/images/bg-ekstra.png') }}');
-        background-size: cover;
-        background-clip: padding-box;
-        width: 100%; */
-        }
-    </style>
+<style>
+    .card-custom {
+        border: 1.5px solid #bdbdbd !important;
+        box-shadow: none !important;
+        border-radius: 12px !important;
+        background: #fff !important;
+        overflow: hidden;
+    }
+
+    .card-custom .card-body {
+        box-shadow: none !important;
+    }
+
+    .card-custom * {
+        box-shadow: none !important;
+    }
+</style>
 @endsection
 
 <div class="row">
     @forelse ($schoolYears as $schoolYear)
         <div class="col-lg-4 col-md-12">
-            <div class="card position-relative">
+            <div class="card position-relative shadow-none border border-1 card-custom" style="box-shadow:none;border:1.5px solid #bdbdbd;border-radius:12px;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <h5>Tahun Ajaran</h5>
@@ -58,7 +67,7 @@
                     </div>
                 </div>
                 <div class="position-absolute bottom-0 end-0" style="padding: 0px;">
-                    <img src="{{ asset('assets/images/background/buble.png') }}" alt="Description" class="img-fluid"
+                    <img src="{{ asset('assets/images/background/bub3.png') }}" alt="Description" class="img-fluid"
                         style="max-width: 100px; height: auto;">
                 </div>
             </div>
