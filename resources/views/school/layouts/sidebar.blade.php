@@ -499,7 +499,7 @@
                         <span class="hide-menu">Akses Pelanggaran</span>
                     </a>
                 </li> --}}
-                <li class="sidebar-item">
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('school.violation.index') ? 'active' : '' }}"
                         href="{{ route('school.violation.index') }}" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256">
@@ -522,7 +522,7 @@
                         </svg>
                         <span class="hide-menu">Buku Tamu</span>
                     </a>
-                </li>
+                </li> --}}
 
                 {{-- <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
