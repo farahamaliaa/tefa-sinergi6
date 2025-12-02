@@ -2,6 +2,49 @@
 
 @section('style')
 <style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+
     .apexcharts-toolbar {
         display: none !important;
     }
@@ -36,16 +79,26 @@
 @endsection
 
 @section('content')
-<div class="card bg-primary shadow-none position-relative overflow-hidden">
+<div class="card header-wave shadow-none position-relative overflow-hidden">
     <div class="card-body px-4 py-3">
         <div class="row align-items-center">
-            <div class="col-12">
+            <div class="col-9">
                 <h4 class="fw-semibold text-white mb-8">Statistik Absensi</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a class="text-white text-decoration-none" href="javascript:void(0)">Statistik absensi siswa</a></li>
+                        <li class="breadcrumb-item">
+                            <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                Statistik Absensi Siswa
+                            </a>
+                        </li>
                     </ol>
                 </nav>
+            </div>
+            <div class="col-3">
+                <div class="text-center mb-n3">
+                    <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                        class="img-fluid img-header-floating">
+                </div>
             </div>
         </div>
     </div>
@@ -59,16 +112,8 @@
     </li>
     <li class="nav-item">
         <a class="nav-link" id="pills-detail-tab" data-bs-toggle="pill" href="#pills-detail" role="tab" aria-controls="pills-detail" aria-selected="false">
-            Detail
+            Kelas
         </a>
-    </li>
-    <li class="nav-item d-flex align-items-center ms-md-auto mt-2 gap-2 mt-md-0 guru-buttons">
-        <form action="" class="d-flex gap-2">
-            <input type="date" name="date" class="form-control" id="date" value="{{ $date }}">
-            <button type="submit" class="btn btn-primary">
-                Cari
-            </button>
-        </form>
     </li>
 </ul>
 
