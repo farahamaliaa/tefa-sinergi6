@@ -4,7 +4,7 @@
             @csrf
             @method('DELETE')
             <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="myModalLabel">
+                <h4 class="modal-title text-white" id="myModalLabel">
                     Hapus data
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -13,9 +13,9 @@
                 <p>Apakah anda yakin akan menghapus data ini? </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light-danger text-danger font-medium" data-bs-dismiss="modal">
+                <!-- <button type="button" class="btn btn-light-danger text-danger font-medium" data-bs-dismiss="modal">
                     Batal
-                </button>
+                </button> -->
                 <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">
                     Hapus
                 </button>

@@ -135,13 +135,14 @@
  </style>
 
 <div class="card card-body">
-    <h4>Daftar Kelas</h4>
+    <h4>Daftar Tingkatan Kelas</h4>
     <div class="row mb-3 mt-3 align-items-center">
         <div class="col-12 col-md-8 col-lg-4">
-            <form class="position-relative">
-                <input type="text" class="form-control product-search ps-5" name="name"
+            <form class="position-relative d-flex">
+                <input type="text" class="form-control product-searc ps-5 me-2" name="name"
                     value="{{ old('name', request()->name) }}" id="input-search" placeholder="Cari...">
                 <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                <button type="submit" class="btn btn-primary">Filter</button>
             </form>
         </div>
         <div class="col-12 col-md-4 col-lg-2 ms-auto d-flex justify-content-end">

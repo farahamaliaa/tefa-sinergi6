@@ -138,10 +138,11 @@
     <h4>Daftar Kelas</h4>
     <div class="row mb-3 mt-3 align-items-center">
         <div class="col-12 col-md-8 col-lg-4">
-            <form class="position-relative">
-                <input type="text" class="form-control product-search ps-5" name="name"
+            <form class="position-relative d-flex">
+                <input type="text" class="form-control product-searc ps-5 me-2" name="name"
                     value="{{ old('name', request()->name) }}" id="input-search" placeholder="Cari...">
                 <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                <button type="submit" class="btn btn-primary">Filter</button>
             </form>
         </div>
         <div class="col-12 col-md-4 col-lg-2 ms-auto d-flex justify-content-end">
@@ -159,13 +160,13 @@
                         <h4 class="mb-0"><b>{{ $classroom->name }}</b></h4>
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge font-medium bg-year text-secondary">{{ $classroom->schoolYear->school_year }}</span>
-                            <label class="custom-switch">
+                            <!-- <label class="custom-switch">
                                 <input type="checkbox" id="status-{{ $classroom->id }}" {{ $classroom->is_active ? 'checked' : '' }}>
                                 <span class="slider">
                                     <span class="slider-text text-on">Aktif</span>
                                     <span class="slider-text text-off">Non</span>
                                 </span>
-                            </label>
+                            </label> -->
                             <div class="category-selector btn-group">
                                 <a class="nav-link category-dropdown label-group p-0" data-bs-toggle="dropdown"
                                     href="#" role="button" aria-haspopup="true" aria-expanded="false">

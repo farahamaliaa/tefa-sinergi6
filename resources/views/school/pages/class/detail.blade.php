@@ -127,6 +127,30 @@
     }
     .btn-delete-action:hover {
         background-color: #bb2d3b !important;
+    }
+
+    .btn-detail-action {
+        background-color: #EAF9FF !important;
+        color: #00A9D9 !important;
+    }
+    .btn-detail-action:hover {
+        background-color: #d2f2ff !important;
+    }
+
+    .btn-edit-action {
+        background-color: #FFF8E1 !important;
+        color: #FFC107 !important;
+    }
+    .btn-edit-action:hover {
+        background-color: #fff2cc !important;
+    }
+
+    .btn-delete-action {
+        background-color: #FFE1E1 !important;
+        color: #DC3545 !important;
+    }
+    .btn-delete-action:hover {
+        background-color: #ffd1d1 !important;
     }   
     .bg-year {
         background-color: #ECF2FF !important;
@@ -225,8 +249,82 @@
             display: none;
         }
 
-        .form-red {
-            
+        .form-check-input.form-red {
+            border-color: #FA896B;
+        }
+
+        .form-check-input.form-red:checked {
+            background-color: #FA896B;
+            border-color: #FA896B;
+        }
+
+        .form-check-input.form-red:focus {
+            border-color: #FA896B;
+            box-shadow: 0 0 0 0.25rem rgba(250, 137, 107, 0.25);
+        }
+
+        .form-check-input.form-green {
+            border-color: #1EB196;
+        }
+
+        .form-check-input.form-green:checked {
+            background-color: #1EB196;
+            border-color: #1EB196;
+        }
+
+        .form-check-input.form-green:focus {
+            border-color: #1EB196;
+            box-shadow: 0 0 0 0.25rem rgba(250, 137, 107, 0.25);
+        }
+
+        /* Custom Pagination Style */
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            border: 1px solid #EAEFF4;
+            color: #0896D1;
+            margin: 0 4px;
+            font-weight: 600;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            min-width: 35px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0896D1;
+            border-color: #0896D1;
+            color: #fff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #A5A5A5;
+            background-color: transparent;
+            border-color: #EAEFF4;
+        }
+        
+        .pagination .page-item:first-child .page-link, 
+        .pagination .page-item:last-child .page-link {
+            border-radius: 8px;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #EAEFF4;
+            color: #0896D1;
+        }
+
+        .pagination .page-item.active .page-link:hover {
+            background-color: #0896D1;
+            color: #fff;
+        }
+
+        .pagination .page-item .page-link.pagination-dots {
+            border: none;
+            padding-bottom: 12px;
+            background-color: transparent;
+            color: #000;
+            font-weight: 900;
         }
     </style>
 @endsection
@@ -282,13 +380,59 @@
                 </div>
             </div>
             <div class="row">
+                @php
+                    // Filter and Pagination for Left Table (Available Students)
+                    $searchLeft = request()->input('search_left');
+                    $filteredStudents = $students;
+                    if ($searchLeft) {
+                        $filteredStudents = $students->filter(function($student) use ($searchLeft) {
+                            return stripos($student->user->name, $searchLeft) !== false || stripos($student->nisn, $searchLeft) !== false;
+                        });
+                    }
+
+                    $perPageLeft = 5;
+                    $pageLeft = request()->input('page_left', 1);
+                    $offsetLeft = ($pageLeft - 1) * $perPageLeft;
+                    $itemsLeft = $filteredStudents->slice($offsetLeft, $perPageLeft);
+                    $studentsPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                        $itemsLeft,
+                        $filteredStudents->count(),
+                        $perPageLeft,
+                        $pageLeft,
+                        ['path' => request()->url(), 'query' => request()->query(), 'pageName' => 'page_left']
+                    );
+
+                    // Filter and Pagination for Right Table (Classroom Students)
+                    $searchRight = request()->input('search_right');
+                    $filteredClassroomStudents = $classroomStudents;
+                    if ($searchRight) {
+                        $filteredClassroomStudents = $classroomStudents->filter(function($item) use ($searchRight) {
+                             return stripos($item->student->user->name, $searchRight) !== false || stripos($item->student->nisn, $searchRight) !== false;
+                        });
+                    }
+
+                    $perPageRight = 5;
+                    $pageRight = request()->input('page_right', 1);
+                    $offsetRight = ($pageRight - 1) * $perPageRight;
+                    $itemsRight = $filteredClassroomStudents->slice($offsetRight, $perPageRight);
+                    $classroomRollingPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                        $itemsRight,
+                        $filteredClassroomStudents->count(),
+                        $perPageRight,
+                        $pageRight,
+                        ['path' => request()->url(), 'query' => request()->query(), 'pageName' => 'page_right']
+                    );
+                @endphp
                 <div class="col-md-6">
                     <div class="d-flex flex-wrap mb-3">
-                        <form class="position-relative" id="unrolling-student">
-                            <input type="text" name="name" class="form-control product-search ps-5"
-                                id="input-search-left" placeholder="Cari...">
-                            <i
-                                class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                        <form class="d-flex gap-2" id="form-search-left">
+                            <div class="position-relative flex-grow-1">
+                                <input type="text" name="search_left" class="form-control product-search ps-5"
+                                    id="input-search-left" placeholder="Cari..." value="{{ request('search_left') }}">
+                                <i
+                                    class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
                         </form>
                     </div>
 
@@ -304,14 +448,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($students as $student)
+                                @forelse ($studentsPaginator as $student)
                                     <tr data-id="{{ $student->id }}">
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ ($studentsPaginator->currentPage() - 1) * $studentsPaginator->perPage() + $loop->iteration }}</td>
                                         <td>{{ $student->user->name }}</td>
                                         <td>{{ $student->nisn }}</td>
                                         <td class="d-flex justify-content-center">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox">
+                                                <input class="form-check-input form-green" type="checkbox">
                                             </div>
                                         </td>
                                     </tr>
@@ -331,6 +475,14 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Menampilkan {{ $studentsPaginator->currentPage() }} dari {{ $studentsPaginator->lastPage() }} halaman
+                        </div>
+                        <div>
+                            <x-paginate-component :paginator="$studentsPaginator" />
+                        </div>
+                    </div>
                     <div class="text-end mt-3 mb-3">
                         <button id="move-to-right" class="btn btn-import">
                             Masukan
@@ -339,11 +491,14 @@
                 </div>
                 <div class="col-md-6">
                     <div class="d-flex flex-wrap mb-3">
-                        <form class="position-relative" id="rolling-student">
-                            <input type="text" name="search" class="form-control product-search ps-5"
-                                id="input-search-right" placeholder="Cari...">
-                            <i
-                                class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                        <form class="d-flex gap-2" id="form-search-right">
+                            <div class="position-relative flex-grow-1">
+                                <input type="text" name="search_right" class="form-control product-search ps-5"
+                                    id="input-search-right" placeholder="Cari..." value="{{ request('search_right') }}">
+                                <i
+                                    class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
                         </form>
                     </div>
 
@@ -359,9 +514,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($classroomStudents as $classroomStudent)
+                                @forelse ($classroomRollingPaginator as $classroomStudent)
                                     <tr data-id="{{ $classroomStudent->student->id }}">
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ ($classroomRollingPaginator->currentPage() - 1) * $classroomRollingPaginator->perPage() + $loop->iteration }}</td>
                                         <td>{{ $classroomStudent->student->user->name }}</td>
                                         <td>{{ $classroomStudent->student->nisn }}</td>
                                         <td class="d-flex justify-content-center">
@@ -386,6 +541,14 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Menampilkan {{ $classroomRollingPaginator->currentPage() }} dari {{ $classroomRollingPaginator->lastPage() }} halaman
+                        </div>
+                        <div>
+                            <x-paginate-component :paginator="$classroomRollingPaginator" />
+                        </div>
+                    </div>
                     <div class="text-end mt-3 mb-3">
                         <button id="move-to-left" class="btn btn-danger">
                             Keluarkan
@@ -407,6 +570,19 @@
 
     <div class="card card-body mt-4 ">
         <h4>Daftar Siswa</h4>
+    @php
+        $perPage = 10;
+        $page = request()->input('page', 1);
+        $offset = ($page - 1) * $perPage;
+        $items = $classroomStudents->slice($offset, $perPage);
+        $classroomStudentsPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $classroomStudents->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+    @endphp
         
     <div class="row">
         <div class="col-12 col-lg-5 mt-3 mb-4">
@@ -423,6 +599,7 @@
                         <option value="female" {{ old('gender', request('gender')) == 'female' ? 'selected' : '' }}>Perempuan</option>
                     </select>
                 </div>
+                <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
             </form>
         </div>
             <div class="col-12 col-lg-7 mt-3 mb-4 d-flex flex-wrap justify-content-lg-end gap-2">
@@ -433,7 +610,7 @@
                 </a>
 
                 <a class="btn btn-primary w-lg-auto" href="#" data-bs-toggle="modal" data-bs-target="#create-student">
-                    <i class="ti ti-plus me-1"></i>Tambah Kelas
+                    <i class="ti ti-plus me-1"></i>Tambah Siswa
                 </a>
             </div>
         </div>
@@ -441,18 +618,18 @@
             <table class="table border text-nowrap customize-table mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Jenis Kelamin</th>
-                        <th>NISN</th>
-                        <th>RFID</th>
-                        <th>Aksi</th>
+                        <th class="text-white" style="background-color: #0896D1;">No</th>
+                        <th class="text-white" style="background-color: #0896D1;">Nama</th>
+                        <th class="text-white" style="background-color: #0896D1;">Jenis Kelamin</th>
+                        <th class="text-white" style="background-color: #0896D1;">NISN</th>
+                        <th class="text-white" style="background-color: #0896D1;">RFID</th>
+                        <th class="text-white" style="background-color: #0896D1;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($classroomStudents as $student)
+                    @forelse ($classroomStudentsPaginator as $student)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ ($classroomStudentsPaginator->currentPage() - 1) * $classroomStudentsPaginator->perPage() + $loop->iteration }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <img src="{{ $student->student->image ? asset('storage/' . $student->student->image) : asset('assets/images/default-user.jpeg') }}"
@@ -479,46 +656,42 @@
                                 </button>
                             </td>
                             <td>
-                                <div class="dropdown dropstart">
-                                    <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <div class="category">
-                                            <div class="category-business"></div>
-                                            <div class="category-social"></div>
-                                            <span class="more-options text-dark">
-                                                <i class="ti ti-dots-vertical fs-5"></i>
-                                            </span>
-                                        </div>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="">
-                                        <li>
-                                            <button type="button"
-                                                class="dropdown-item d-flex align-items-center gap-3 btn-edit"
-                                                data-id="{{ $student->student->id }}"
-                                                data-name="{{ $student->student->user->name }}"
-                                                data-email="{{ $student->student->user->email }}"
-                                                data-nisn="{{ $student->student->nisn }}"
-                                                data-religion_id="{{ $student->student->religion_id }}"
-                                                data-gender="{{ $student->student->gender }}"
-                                                data-birth_place="{{ $student->student->birth_place }}"
-                                                data-birth_date="{{ $student->student->birth_date }}"
-                                                data-nik="{{ $student->student->nik }}"
-                                                data-number_kk="{{ $student->student->number_kk }}"
-                                                data-number_akta="{{ $student->student->number_akta }}"
-                                                data-order_child="{{ $student->student->order_child }}"
-                                                data-count_siblings="{{ $student->student->count_siblings }}"
-                                                data-address="{{ $student->student->address }}"><i
-                                                    class="fs-4 ti ti-edit"></i>Edit
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button
-                                                class="btn-delete dropdown-item d-flex align-items-center gap-3 text-danger btn-delete-teacher"
-                                                data-id="{{ $student->student->id }}">
-                                                <i class="fs-4 ti ti-trash"></i>Delete
-                                            </button>
-                                        </li>
-                                    </ul>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-action btn-detail-action btn-detail"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#student-detail"
+                                        data-name="{{ $student->student->user->name }}"
+                                        data-email="{{ $student->student->user->email }}"
+                                        data-image="{{ $student->student->image ? asset('storage/' . $student->student->image) : asset('assets/images/default-user.jpeg') }}"
+                                        data-gender="{{ $student->student->gender->label() }}"
+                                        data-nik="{{ $student->student->nik }}"
+                                        data-rfid="{{ $student->student->modelHasRfid ? $student->student->modelHasRfid->rfid : '-' }}"
+                                        data-address="{{ $student->student->address }}">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-action btn-edit-action btn-edit"
+                                        data-id="{{ $student->student->id }}"
+                                        data-name="{{ $student->student->user->name }}"
+                                        data-email="{{ $student->student->user->email }}"
+                                        data-nisn="{{ $student->student->nisn }}"
+                                        data-religion_id="{{ $student->student->religion_id }}"
+                                        data-gender="{{ $student->student->gender }}"
+                                        data-birth_place="{{ $student->student->birth_place }}"
+                                        data-birth_date="{{ $student->student->birth_date }}"
+                                        data-nik="{{ $student->student->nik }}"
+                                        data-number_kk="{{ $student->student->number_kk }}"
+                                        data-number_akta="{{ $student->student->number_akta }}"
+                                        data-order_child="{{ $student->student->order_child }}"
+                                        data-count_siblings="{{ $student->student->count_siblings }}"
+                                        data-address="{{ $student->student->address }}">
+                                        <i class="ti ti-edit"></i>
+                                    </button>
+                                    <button
+                                        class="btn btn-action btn-delete-action btn-delete"
+                                        data-id="{{ $student->student->id }}">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -538,10 +711,14 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <div class="pagination justify-content-end mb-0">
-        {{-- <x-paginate-component :paginator="$classroomStudents" /> --}}
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Menampilkan {{ $classroomStudentsPaginator->currentPage() }} dari {{ $classroomStudentsPaginator->lastPage() }} halaman
+            </div>
+            <div>
+                <x-paginate-component :paginator="$classroomStudentsPaginator" />
+            </div>
+        </div>  
     </div>
 
     @include('school.pages.class.widgets.class.create-student')
@@ -561,4 +738,62 @@
     @include('school.pages.class.script.script-rolling-student')
     @include('school.pages.class.script.script-update-student')
     @include('school.pages.class.script.script-delete-student')
+
+    <script>
+        $(document).ready(function() {
+            // Event delegation for the 'Next' button
+            $(document).on('click', '#btn-next-step', function() {
+                $('#form-step-1').addClass('hidden');
+                $('#footer-step-1').addClass('hidden');
+                $('#form-step-2').removeClass('hidden');
+                $('#footer-step-2').removeClass('hidden');
+            });
+
+            // Event delegation for the 'Previous' button
+            $(document).on('click', '#btn-prev-step', function() {
+                $('#form-step-2').addClass('hidden');
+                $('#footer-step-2').addClass('hidden');
+                $('#form-step-1').removeClass('hidden');
+                $('#footer-step-1').removeClass('hidden');
+            });
+
+            // Event delegation for the 'Next' button in edit modal
+            $(document).on('click', '#btn-next-step-edit', function() {
+                $('#form-step-1-edit').addClass('hidden');
+                $('#footer-step-1-edit').addClass('hidden');
+                $('#form-step-2-edit').removeClass('hidden');
+                $('#footer-step-2-edit').removeClass('hidden');
+            });
+
+            // Event delegation for the 'Previous' button in edit modal
+            $(document).on('click', '#btn-prev-step-edit', function() {
+                $('#form-step-2-edit').addClass('hidden');
+                $('#footer-step-2-edit').addClass('hidden');
+                $('#form-step-1-edit').removeClass('hidden');
+                $('#footer-step-1-edit').removeClass('hidden');
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.btn-detail').click(function() {
+                var name = $(this).data('name');
+                var email = $(this).data('email');
+                var image = $(this).data('image');
+                var gender = $(this).data('gender');
+                var nik = $(this).data('nik');
+                var rfid = $(this).data('rfid');
+                var address = $(this).data('address');
+
+                $('#name-detail').text(name);
+                $('#email-detail').text(email);
+                $('#image-detail').attr('src', image);
+                $('#gender-detail').text(gender);
+                $('#nik-detail').text(nik);
+                $('#rfid-detail').text(rfid);
+                $('#address-detail').text(address);
+            });
+        });
+    </script>
 @endsection

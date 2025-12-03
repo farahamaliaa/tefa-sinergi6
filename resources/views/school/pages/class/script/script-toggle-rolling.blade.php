@@ -1,6 +1,7 @@
 <script>
-    @if (request()->has('search') || request()->has('name'))
+    @if (request()->has('search') || request()->has('name') || request()->has('page_left') || request()->has('page_right') || request()->has('search_left') || request()->has('search_right'))
         $('#minimize').removeClass('minimize')
+        $('#minimize-button').addClass('minimize')
     @endif
     $('.toggle-rolling').click(function() {
         $('#minimize').removeClass('minimize')
@@ -9,6 +10,11 @@
     $('#back-button').click(function() {
         $('#minimize').addClass('minimize')
         $('#minimize-button').removeClass('minimize')
+        
+        const url = new URL(window.location.href);
+        url.searchParams.delete('page_left');
+        url.searchParams.delete('page_right');
+        window.history.pushState({}, '', url);
     });
 
 
