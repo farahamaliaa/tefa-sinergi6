@@ -209,7 +209,7 @@
                         <h4 class="fw-semibold mb-3 text-warning">Keterlambatan</h4>
                         <ul class="mb-0">
                             <li class="text-warning">
-                                Siswa & Guru akan terhitung <b>terlambat</b> jika absen pada waktu 
+                                Siswa akan terhitung <b>terlambat</b> jika absen pada waktu 
                                 <b>masuk selesai</b> yang sudah <b>dikurangi</b> dengan 
                                 <b>durasi maksimal terlambat</b>.
                             </li>
@@ -295,11 +295,11 @@
                                     <span>Siswa</span>
                                 </button>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <button class="nav-link btn-role ${role === 'teacher' ? 'active success' : 'success'}" data-bs-toggle="tab" data-role="teacher" role="tab">
                                     <span>Guru</span>
                                 </button>
-                            </li>
+                            </li> --->
                         </ul>
                     </div>
                     <div class="tab-content mt-3">

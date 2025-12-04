@@ -15,14 +15,14 @@
                         <li><a class="dropdown-item" href="#">Download PNG</a></li>
                         <li><a class="dropdown-item" href="#">Download CSV</a></li>
                     </ul>
-                    <li class="nav-item d-flex align-items-center ms-md-auto mt-2 gap-2 mt-md-0 guru-buttons">
+                    {{-- <li class="nav-item d-flex align-items-center ms-md-auto mt-2 gap-2 mt-md-0 guru-buttons">
                         <form action="" class="d-flex gap-2">
                             <input type="date" name="date" class="form-control" id="date" value="{{ $date }}">
                             <button type="submit" class="btn btn-primary">
                                 Cari
                             </button>
                         </form>
-                    </li>
+                    </li> --}}
                 </div>
                 {{-- <button type="button" class="btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M20 7H4m16 5H4m16 5H4"/></svg>
