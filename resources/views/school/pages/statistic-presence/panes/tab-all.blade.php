@@ -15,6 +15,14 @@
                         <li><a class="dropdown-item" href="#">Download PNG</a></li>
                         <li><a class="dropdown-item" href="#">Download CSV</a></li>
                     </ul>
+                    <li class="nav-item d-flex align-items-center ms-md-auto mt-2 gap-2 mt-md-0 guru-buttons">
+                        <form action="" class="d-flex gap-2">
+                            <input type="date" name="date" class="form-control" id="date" value="{{ $date }}">
+                            <button type="submit" class="btn btn-primary">
+                                Cari
+                            </button>
+                        </form>
+                    </li>
                 </div>
                 {{-- <button type="button" class="btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M20 7H4m16 5H4m16 5H4"/></svg>
@@ -24,41 +32,44 @@
     </div>
     <div class="d-flex">
         <div id="custom-legend">
-            <div><span class="legend-text me-3">Petunjuk</span></div>
             <div class="legend-item">
-                <span class="legend-marker" style="background-color: rgb(19, 222, 185);"></span>
-                <span class="legend-text">Masuk</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker" style="background-color: rgb(93, 135, 255);"></span>
-                <span class="legend-text">Izin</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker" style="background-color: rgb(255, 174, 31);"></span>
-                <span class="legend-text">Sakit</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker" style="background-color: rgb(250, 137, 107);"></span>
+                <span class="legend-marker" style="background-color: #E02123;"></span>
                 <span class="legend-text">Alfa</span>
             </div>
+            <div class="legend-item">
+                <span class="legend-marker" style="background-color: #0896D1;"></span>
+                <span class="legend-text">Izin/Sakit</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker" style="background-color: #FFAE1F;"></span>
+                <span class="legend-text">Telat</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker" style="background-color: #1EBB9E;"></span>
+                <span class="legend-text">Masuk</span>
+            </div>
+            
+            
+            
+            
         </div>
     </div>
     <div id="chart-student"></div>
 </div>
 
 <div class="card card-body mt-3">
-    <h5 class="mb-4">Data Absensi</h5>
+    <h4 class="mb-4 fw-semibold">Data Absensi</h4>
 
-    <div class="table-responsive rounded-2 mb-4">
+    <div class="table-responsive rounded-3 mb-4">
         <table class="table border text-nowrap customize-table mb-0 align-middle">
             <thead class="text-dark fs-4">
                 <tr class="">
-                    <th class="text-white" style="background-color: #5D87FF;">No</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Nama Pengguna</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Masuk</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Pulang</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Point</th>
-                    <th class="text-white" style="background-color: #5D87FF;">Status</th>
+                    <th class="text-white" style="background-color: #0896D1;">No</th>
+                    <th class="text-white" style="background-color: #0896D1;">Nama Siswa</th>
+                    <th class="text-white" style="background-color: #0896D1;">Masuk</th>
+                    <th class="text-white" style="background-color: #0896D1;">Pulang</th>
+                    <th class="text-white" style="background-color: #0896D1;">Point</th>
+                    <th class="text-white" style="background-color: #0896D1;">Status</th>
                 </tr>
             </thead>
             <tbody>

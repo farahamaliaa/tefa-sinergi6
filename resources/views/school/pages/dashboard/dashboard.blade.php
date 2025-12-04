@@ -100,7 +100,7 @@
                     <span class="d-none d-md-block ms-2 font-weight-medium">Siswa</span>
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="#employee-content" data-bs-toggle="tab"
                     class="nav-link note-link d-flex align-items-center justify-content-center px-3 px-md-3 me-0 me-md-2 text-body-color"
                     id="employee">
@@ -112,7 +112,7 @@
                     </svg>
                     <span class="d-none d-md-block ms-2 font-weight-medium">Guru</span>
                 </a>
-            </li>
+            </li> --}}
         </div>
 
         <form class="mt-4 mt-md-0">

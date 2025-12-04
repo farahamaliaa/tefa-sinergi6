@@ -31,19 +31,18 @@
         border-radius: 14px;
         position: relative;
         overflow: hidden;
-        min-height: 120px;
     }
 
     .header-wave::after {
         content: "";
         position: absolute;
         bottom: 0;
-        right: 0;
-        width: 200px;
+        left: 0;
+        width: 100%;
         height: 256px;
         background: url("{{ asset('assets/images/wave-header.png') }}");
         background-size: cover;
-        opacity: 0.8;
+        opacity: 1;
     }
 
     .day-tabs-wrapper {

@@ -60,12 +60,16 @@
         display: flex;
         align-items: center;
         margin-right: 15px;
+        border-color: #8695c2 !important;
+        padding: 5px 10px;
+        border-radius: 7px;
+        background: #F3F6FF;
     }
 
     .legend-marker {
         width: 12px;
         height: 12px;
-        border-radius: 50%;
+        border-radius: 20%;
         margin-right: 5px;
     }
 
@@ -104,8 +108,8 @@
     </div>
 </div>
 
-<ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
-    <li class="nav-item">
+<ul class="nav nav-pills d-flex gap-4 p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
+    <li class="nav-item ">
         <a class="nav-link active" id="pills-keseluruhan-tab" data-bs-toggle="pill" href="#pills-keseluruhan" role="tab" aria-controls="pills-keseluruhan" aria-selected="true">
             Keseluruhan
         </a>
