@@ -176,6 +176,14 @@
                                     <label for="number_akta-edit" class="mb-2">Nomor Akta<span class="text-danger">*</span></label>
                                     <input type="text" name="number_akta" id="number_akta-edit" placeholder="Masukkan Nomor Akta" class="form-control">
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="order_child-edit" class="mb-2">Anak Ke<span class="text-danger">*</span></label>
+                                    <input type="number" name="order_child" id="order_child-edit" placeholder="Masukkan Anak Ke" class="form-control">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="count_siblings-edit" class="mb-2">Jumlah Saudara<span class="text-muted">(Opsional)</span></label>
+                                    <input type="number" name="count_siblings" id="count_siblings-edit" placeholder="Masukkan Jumlah Saudara" class="form-control">
+                                </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="address-edit" class="mb-2">Alamat<span class="text-danger">*</span></label>
                                     <textarea name="address" id="address-edit" class="form-control" placeholder="Masukkan alamat"></textarea>

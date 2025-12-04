@@ -186,6 +186,20 @@
                                         <strong class="text-danger error-create">{{ $message }}</strong>
                                     @enderror
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="order_child" class="mb-1">Anak Ke <span class="text-danger">*</span></label>
+                                    <input type="number" name="order_child" class="form-control" placeholder="Masukkan Anak Ke" value="{{ old('order_child') }}">
+                                    @error('order_child', 'create')
+                                        <strong class="text-danger error-create">{{ $message }}</strong>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="count_siblings" class="mb-1">Jumlah Saudara <span class="text-muted">(Opsional)</span></label>
+                                    <input type="number" name="count_siblings" class="form-control" placeholder="Masukkan Jumlah Saudara" value="{{ old('count_siblings') }}">
+                                    @error('count_siblings', 'create')
+                                        <strong class="text-danger error-create">{{ $message }}</strong>
+                                    @enderror
+                                </div>
 
                                 <div class="col-md-12 mb-3">
                                     <label for="address" class="mb-1">Alamat <span class="text-danger">*</span></label>

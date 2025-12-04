@@ -6,7 +6,7 @@
                     <h5 class="modal-title" id="importPegawai">Tambah Siswa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('school.students.store', ['classroom' => $classroom]) }}" method="POST" enctype="multipart/form-data">
+                <form id="form-create-student" action="#" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body mx-3" style="max-height: 70vh; overflow-y: auto;">
                         <div class="row">
@@ -24,6 +24,19 @@
                                         @error('image', 'create')
                                             <strong class="text-danger error-create">{{ $message }}</strong>
                                         @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <div class="form-group">
+                                        <label for="classroom_id" class="mb-1">Kelas <span class="text-danger" style="font-size: larger;">*</span></label>
+                                        <select id="classroom_id" name="classroom_id" class="form-select">
+                                            <option value="" selected>Pilih Kelas...</option>
+                                            @foreach ($classrooms as $classroom)
+                                                <option value="{{ $classroom->id }}">{{ $classroom->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <div class="form-group">
                                         <label for="number_akta" class="mb-2">Nomor Akta <span class="text-danger" style="font-size: larger;">*</span></label>
@@ -148,7 +161,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <div class="form-group">
                                         <label for="order_child" class="mb-2">Anak Ke- <span class="text-danger" style="font-size: larger;">*</span></label>
@@ -159,7 +172,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <div class="form-group">
                                         <label for="count_siblings" class="mb-2">Jumlah Saudara <span class="text-danger" style="font-size: larger;">*</span></label>
@@ -190,3 +203,16 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('classroom_id').addEventListener('change', function() {
+            var classroomId = this.value;
+            var form = document.getElementById('form-create-student');
+            if (classroomId) {
+                var url = '{{ route("school.students.store", ":classroom") }}';
+                url = url.replace(':classroom', classroomId);
+                form.action = url;
+            } else {
+                form.action = '#';
+            }
+        });
+    </script>
