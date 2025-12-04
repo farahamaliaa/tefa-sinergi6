@@ -96,7 +96,7 @@ class ModelHasRfidController extends Controller
 
             $this->modelHasRfid->store(['rfid' => $request->rfid, 'model_type' => null, 'model_id' => null]);
             return redirect()->back();
-        } catch (\Exception $e) {
+        } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }
     }
