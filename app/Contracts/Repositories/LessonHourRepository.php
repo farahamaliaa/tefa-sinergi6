@@ -36,6 +36,9 @@ class LessonHourRepository extends BaseRepository implements LessonHourInterface
 
     public function delete(mixed $id): mixed
     {
+        if (is_array($id)) {
+            return $this->model->query()->whereIn('id', $id)->delete();
+        }
         return $this->model->query()->findOrFail($id)->delete();
     }
 

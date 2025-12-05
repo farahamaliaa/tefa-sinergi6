@@ -1,32 +1,63 @@
     <h4 class="mb-3">Jam Pelajaran</h4>
     <div class="table-responsive rounded-2">
-        <table class="table border text-nowrap customize-table mb-0 align-middle">
+        <form action="{{ route('school.lesson-hours.bulk-destroy') }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <table class="table border text-nowrap customize-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th class="text-white" style="background-color: #3DBCEC;">No</th>
-                    <th class="text-white" style="background-color: #3DBCEC;">Jam</th>
-                    <th class="text-white" style="background-color: #3DBCEC;">Penempatan</th>
-                    {{-- <th class="text-white" style="background-color: #3DBCEC;">Aksi</th> --}}
+                    <th class="text-white" style="background-color: #0896D1;">No</th>
+                    <th class="text-white" style="background-color: #0896D1;">Jam</th>
+                    <th class="text-white" style="background-color: #0896D1;">Penempatan</th>
+                    <th class="text-white" style="background-color: #0896D1;">Keterangan</th>
+                    <th class="text-white" style="background-color: #0896D1;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($lessonHours['monday'] ?? [] as $index => $lessonHour)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td> <span class="badge {{ $lessonHour->name == 'Istirahat' ? 'bg-light-warning text-warning' : 'bg-light-primary text-primary' }}">
+                    <td>
+                        @php
+                            $badgeClass = 'bg-light-secondary text-secondary';
+                            if ($lessonHour->name == 'Istirahat') {
+                                $badgeClass = 'bg-light-danger text-danger';
+                            } elseif ($lessonHour->name == 'Upacara') {
+                                $badgeClass = 'bg-light-warning text-warning';
+                            } elseif ($lessonHour->name == 'Literasi') {
+                                $badgeClass = 'bg-light-success text-success';
+                            }
+                        @endphp
+                        <span class="badge {{ $badgeClass }}">
                             {{ date('H:i', strtotime($lessonHour->start)) }} - {{ date('H:i', strtotime($lessonHour->end)) }}
-                        </span></td>
+                        </span>
+                    </td>
                     <td>{{ $lessonHour->name }}</td>
-                    {{-- <td>
-                        <div class="gap-3">
-                            <button class="btn btn-light-primary text-primary me-2 btn-edit" data-bs-toggle="modal" data-bs-target="#modal-update">Edit</button>
-                            <button class="btn btn-light-danger text-danger btn-delete">Hapus</button>
+                    <td>
+                        @if($lessonHour->name == 'Upacara')
+                            <span class="badge bg-light-warning text-warning">Upacara Bendera</span>
+                        @elseif($lessonHour->name == 'Literasi')
+                            <span class="badge bg-light-success text-success">Literasi Religi</span>
+                        @elseif($lessonHour->name == 'Istirahat')
+                            <span class="badge bg-light-danger text-danger">Istirahat</span>
+                        @else
+                            <span class="text-dark">Pembelajaran</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input form-secondary" type="checkbox" name="ids[]" value="{{ $lessonHour->id }}" id="check-{{ $lessonHour->id }}">
+                            </div>
+                            <button class="btn btn-sm btn-light-warning text-warning btn-edit" data-bs-toggle="modal" data-bs-target="#modal-update" data-id="{{ $lessonHour->id }}" data-name="{{ $lessonHour->name }}" data-start="{{ $lessonHour->start }}" data-end="{{ $lessonHour->end }}">
+                                <i class="ti ti-pencil fs-4"></i>
+                            </button>
                         </div>
-                    </td> --}}
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center align-middle">
+                    <td colspan="5" class="text-center align-middle">
                         <div class="d-flex flex-column justify-content-center align-items-center">
                             <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
                             <p class="fs-5 text-dark text-center mt-2">
@@ -38,30 +69,18 @@
                 @endforelse
             </tbody>
             <tfoot>
-                <tr>
-                    <td>
-                        <div>
-                            <button type="button" data-id="{{ $latestHour[0][0] ? $latestHour[0][0]->id : '' }}" data-day="{{ $latestHour[0][0] ? $latestHour[0][0]->day : 'monday' }}" data-name="{{ $latestHour[0][0] ? $latestHour[0][0]->name : '' }}" data-start="{{ $latestHour[0][0] ? $latestHour[0][0]->end : '' }}" class="btn-create btn btn-info btn-rounded m-t-10 mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"></path>
-                            </svg>
-                            Tambah Jam
-                        </button>
-                        </div>
-                    </td>
-                    <td colspan="1"></td>
-                    @if (isset($lessonHours['monday']))
-                        <td>
-                            <div class="mb-3">
-                                <button data-id="{{ $latestHour[0][0] ? $latestHour[0][0]->id : '' }}" class="btn-delete btn btn-danger btn-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24">
-                                    <path fill="#FFFFFF" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                                </svg>
-                            </button>
+                @if (isset($lessonHours['monday']) && count($lessonHours['monday']) > 0)
+                    <tr>
+                        <td colspan="5">
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="ti ti-trash me-2"></i>Hapus
+                                </button>
                             </div>
                         </td>
-                    @endif
-                </tr>
+                    </tr>
+                @endif
             </tfoot>
         </table>
+        </form>
     </div>

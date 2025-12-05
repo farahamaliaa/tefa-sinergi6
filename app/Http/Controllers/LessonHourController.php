@@ -97,4 +97,14 @@ class LessonHourController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        try {
+            $this->lessonHour->delete($request->ids);
+            return redirect()->back()->with('success', 'Berhasil menghapus jam pelajaran yang dipilih');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
+        }
+    }
 }

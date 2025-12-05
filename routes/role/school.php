@@ -105,6 +105,7 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
 
     Route::resource('subject', SubjectController::class);
     Route::resource('school-years', SchoolYearController::class);
+    Route::delete('lesson-hours/bulk-delete', [LessonHourController::class, 'bulkDestroy'])->name('lesson-hours.bulk-destroy');
     Route::resource('lesson-hours', LessonHourController::class)->except(['store']);
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
