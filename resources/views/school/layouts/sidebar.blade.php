@@ -18,18 +18,34 @@
         stroke: #1191C6 !important;
     }
 
-    .sidebar-nav .sidebar-item .active.sidebar-link,
-    .sidebar-nav .sidebar-item.selected > .sidebar-link {
+    /* Top */
+    #sidebarnav > .sidebar-item > .active.sidebar-link,
+    #sidebarnav > .sidebar-item.selected > .sidebar-link {
         background-color: #0D93CA !important;
         border-radius: 8px;
     }
 
-    .sidebar-nav .sidebar-item .active.sidebar-link .hide-menu,
-    .sidebar-nav .sidebar-item.selected > .sidebar-link .hide-menu,
-    .sidebar-nav .sidebar-item .active.sidebar-link svg,
-    .sidebar-nav .sidebar-item.selected > .sidebar-link svg {
+    #sidebarnav > .sidebar-item > .active.sidebar-link .hide-menu,
+    #sidebarnav > .sidebar-item.selected > .sidebar-link .hide-menu,
+    #sidebarnav > .sidebar-item > .active.sidebar-link svg,
+    #sidebarnav > .sidebar-item.selected > .sidebar-link svg {
         color: #ffffff !important;
         stroke: #ffffff !important;
+    }
+
+    /* Submenu */
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link,
+    .sidebar-nav .collapse .sidebar-item.selected > .sidebar-link {
+        background-color: transparent !important;
+        border-radius: 8px;
+    }
+
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link .hide-menu,
+    .sidebar-nav .collapse .sidebar-item.selected > .sidebar-link .hide-menu,
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link svg,
+    .sidebar-nav .collapse .sidebar-item.selected > .sidebar-link svg {
+        color: #1191C6 !important;
+        stroke: #1191C6 !important;
     }
 
 </style>
