@@ -1,6 +1,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var tabs = document.querySelectorAll('#pills-tab .nav-link');
+        var tabs = document.querySelectorAll('#day-tabs .nav-link');
 
         tabs.forEach(function(tab) {
             tab.addEventListener('shown.bs.tab', function(event) {
