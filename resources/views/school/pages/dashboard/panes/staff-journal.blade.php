@@ -2,7 +2,7 @@
     <div class="col-lg-9 col-md-12">
         <div class="card border">
             <div class="card-body">
-                <h5 class="mb-4"><b>Daftar Guru Tidak Mengisi Jurnal</b></h5>
+                <h5 class="mb-4"><b>Daftar Staff Tidak Mengisi Jurnal</b></h5>
                 <div class="table-responsive rounded-3 mb-4">
                     <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
                         <thead class="text-dark fs-4">
@@ -52,19 +52,19 @@
         </div>
 
         <div class="row">
-            {{-- <div class="col-12">
+            <div class="col-12">
                 <div class="card border rounded-4 p-0 card-body-with-line">
                     <div class="card-body">
                         <h5><b>Jumlah Guru</b></h5>
-                        <h3 class="text-primary">{{ $teachers }} Guru</h3>
+                        <h3 class="text-primary">{{ $teachers }} Staff</h3>
                     </div>
                 </div>
-            </div> --}}
+            </div>
             <div class="col-12">
                 <div class="card border rounded-4 p-0 card-body-with-line2">
                     <div class="card-body">
                         <h5><b>Journal Diisi</b></h5>
-                        <h3 class="text-success">{{ $fill->count() }} Guru</h3>
+                        <h3 class="text-success">{{ $fill->count() }} Staff</h3>
                     </div>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                 <div class="card border rounded-4 p-0 card-body-with-line3">
                     <div class="card-body">
                         <h5><b>Journal Tidak Diisi</b></h5>
-                        <h3 class="text-danger">{{ $notfill->count() }} Guru</h3>
+                        <h3 class="text-danger">{{ $notfill->count() }} Staff</h3>
                     </div>
                 </div>
             </div>
