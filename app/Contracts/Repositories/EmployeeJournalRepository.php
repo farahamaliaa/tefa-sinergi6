@@ -59,6 +59,12 @@ class EmployeeJournalRepository extends BaseRepository implements EmployeeJourna
             ->when($request->name, function ($query) use ($request) {
                 $query->whereRelation('employee.user', 'name', 'like', '%' . $request->name . '%');
             })
+            ->when($request->status == 'filled', function ($query) {
+                $query->where('status', 'completed');
+            })
+            ->when($request->status == 'not_filled', function ($query) {
+                $query->where('status', 'not_completed');
+            })
             ->latest()->paginate(10);
     }
 

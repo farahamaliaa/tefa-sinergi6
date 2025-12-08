@@ -117,6 +117,12 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
             ->when($request->search, function ($i) use ($request) {
                 $i->whereRelation('teacherSubject.employee.user', 'name', 'like', '%' . $request->search . '%');
             })
+            ->when($request->status == 'filled', function ($q) {
+                $q->whereHas('teacherJournals');
+            })
+            ->when($request->status == 'not_filled', function ($q) {
+                $q->doesntHave('teacherJournals');
+            })
             ->latest()
             ->paginate(10);
     }
