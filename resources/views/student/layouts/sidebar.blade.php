@@ -63,7 +63,7 @@
                     </a>
                 </li>
 
-                @if ($permission_feedback)
+                {{-- @if ($permission_feedback)
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/student/class" aria-expanded="false">
                             <span>
@@ -76,9 +76,9 @@
                             <span class="hide-menu">Kelas & Tanggapan</span>
                         </a>
                     </li>
-                @endif
+                @endif --}}
 
-                <li class="sidebar-item">
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('student.violations') }}" aria-expanded="false">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
                         </span>
                         <span class="hide-menu">Daftar Perbaikan</span>
                     </a>
-                </li>
+                </li> --}}
                 {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="index3.html" aria-expanded="false">
                         <span>

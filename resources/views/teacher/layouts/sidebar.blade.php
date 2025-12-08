@@ -81,7 +81,7 @@
                         </a>
                     </li>
 
-                    @if ($permission_feedback)
+                    {{-- @if ($permission_feedback)
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="/teacher/student-feedback" aria-expanded="false">
                                 <span>
@@ -94,7 +94,7 @@
                                 <span class="hide-menu">Tanggapan Siswa</span>
                             </a>
                         </li>
-                    @endif
+                    @endif --}}
 
                     @if (App\Models\Classroom::where('employee_id', auth()->user()->employee->id)->exists())
                         <li class="sidebar-item">
