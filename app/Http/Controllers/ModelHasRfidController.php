@@ -48,8 +48,20 @@ class ModelHasRfidController extends Controller
     public function showActive(Request $request)
     {
         $rfids = $this->modelHasRfid->activeRfid($request);
-        // dd($this->modelHasRfid->get());
-        return view('school.pages.rfid.rfid-active', compact('rfids'));
+         
+        $totalRfid = $this->modelHasRfid->count();
+        
+        $activeCount = \App\Models\ModelHasRfid::whereNotNull('model_type')
+            ->whereNotNull('model_id')
+            ->count();
+            
+        $inactiveCount = \App\Models\ModelHasRfid::where(function($query) {
+                $query->whereNull('model_type')
+                    ->orWhereNull('model_id');
+            })
+            ->count();
+        
+        return view('school.pages.rfid.rfid-active', compact('rfids', 'totalRfid', 'activeCount', 'inactiveCount'));
     }
 
     /**
