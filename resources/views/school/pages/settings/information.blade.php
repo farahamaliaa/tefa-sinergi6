@@ -42,9 +42,9 @@
                             alt="{{ $school->user->name }}">
                     </div>
                     <div class="col-12 col-lg-7">
-                        <div class="mb-2">
+                        <div class="mb-2 d-flex">
                             <h3 class="mb-1">{{ $school->user->name }}</h3>
-                            <span class="badge font-medium bg-light-primary text-primary">{{ $school->type }}</span>
+                            <span class="badge font-medium bg-light-primary text-secondary align-self-center ms-2">{{ $school->type }}</span>
                         </div>
                         <p>{{ $school->description != null ? Str::limit($school->description, 100) : '' }}</p>
                     </div>
@@ -132,7 +132,7 @@
             {{-- </div> --}}
 
             <div class="mt-3">
-                <div class="table-responsive rounded-3">
+                <div class="table-responsive rounded-2 mb-3">
                     <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
                         <thead>
                             <tr>
@@ -163,6 +163,14 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        Menampilkan {{ $rfids->currentPage() }} dari {{ $rfids->lastPage() }} halaman
+                    </div>
+                    <div>
+                        <x-paginate-component :paginator="$rfids" />
+                    </div>
+                </div>  
             </div>
 
         </div>
