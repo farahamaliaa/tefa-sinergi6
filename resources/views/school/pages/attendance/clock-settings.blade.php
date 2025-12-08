@@ -150,6 +150,7 @@
         outline: none;
         box-shadow: none;
     }
+
 </style>
 @endsection
 
@@ -288,57 +289,19 @@
         function renderContent(day, data, role) {
             var content = `
                 <div class="card p-3 mt-2">
-                    <div class="custom-role-tabs-wrapper">
-                        <ul class="nav nav-tabs custom-role-tabs" role="tablist">
-                            <li class="nav-item">
-                                <button class="nav-link btn-role ${role === 'student' ? 'active success' : 'success'}" data-bs-toggle="tab" data-role="student" role="tab">
-                                    <span>Siswa</span>
-                                </button>
-                            </li>
-                            <!-- <li class="nav-item">
-                                <button class="nav-link btn-role ${role === 'teacher' ? 'active success' : 'success'}" data-bs-toggle="tab" data-role="teacher" role="tab">
-                                    <span>Guru</span>
-                                </button>
-                            </li> --->
-                        </ul>
-                    </div>
-                    <div class="tab-content mt-3">
+                    <div class="tab-content mt-2">
                         <div class="tab-pane active" id="form-content-${day}-${role}" role="tabpanel">
                             <form id="form-store-${day}-${role}" enctype="multipart/form-data" method="POST">
                                 @method('post')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-lg-6 mb-3">
+                                    <div class="col-lg-12 mb-3">
                                         <label for="waktu-masuk-${day}-${role}" class="mb-2">Jam Masuk Dimulai<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-masuk-${day}-${role}" name="checkin_start" value="${data.start_time || ''}">
                                     </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Masuk Selesai<span class="text-danger">*</span></label>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-selesai-${day}-${role}" name="checkin_end" value="${data.end_time || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-${day}-${role}" class="mb-2">Jam Istirahat 1 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-${day}-${role}" name="checkout_start" value="${data.leave_start || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 1 Selesai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 2 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 2 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Kegiatan Pagi<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
                                     </div>
                                     <div class="d-flex justify-content-end mt-4 mb-3">
                                         <button class="btn btn-primary custom-btn">Simpan</button>
@@ -355,59 +318,23 @@
 
         function renderDefaultContent(day, role) {
             var defaultContent = `
-                <div class="card p-3 mt-2">
-                    <ul class="nav nav-tabs gap-2" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link btn-role ${role === 'student' ? 'active success' : 'success'}" data-bs-toggle="tab" data-role="student" role="tab">
-                                <span>Siswa</span>
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link btn-role ${role === 'teacher' ? 'active success' : 'success'}" data-bs-toggle="tab" data-role="teacher" role="tab">
-                                <span>Guru</span>
-                            </button>
-                        </li>
-                    </ul>
+                <div class="card p-3 mt-2 py-4">
                     <div class="tab-content mt-3">
                         <div class="tab-pane active" id="form-content-${day}-${role}" role="tabpanel">
                             <form id="form-store-${day}-${role}" enctype="multipart/form-data" method="POST">
                                 @method('post')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-lg-6 mb-3">
+                                    <div class="col-lg-12 mb-3">
                                         <label for="waktu-masuk-${day}-${role}" class="mb-2">Jam Masuk Dimulai<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-masuk-${day}-${role}" name="checkin_start" value="${data.start_time || ''}">
                                     </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Masuk Selesai<span class="text-danger">*</span></label>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-selesai-${day}-${role}" name="checkin_end" value="${data.end_time || ''}">
                                     </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-${day}-${role}" class="mb-2">Jam Istirahat 1 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-${day}-${role}" name="checkout_start" value="${data.leave_start || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 1 Selesai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 2 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Istirahat 2 Dimulai<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
-                                    <div class="col-lg-6 mb-3">
-                                        <label for="waktu-pulang-selesai-${day}-${role}" class="mb-2">Jam Kegiatan Pagi<span class="text-danger">*</span></label>
-                                        <input type="time" class="form-control" id="waktu-pulang-selesai-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
-                                    </div>
                                     <div class="d-flex justify-content-end mt-4 mb-3">
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                        <button class="btn btn-primary custom-btn">Simpan</button>
                                     </div>
                                 </div>
                             </form>

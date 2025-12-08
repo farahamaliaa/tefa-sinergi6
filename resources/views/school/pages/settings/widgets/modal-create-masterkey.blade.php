@@ -1,11 +1,19 @@
+<style>
+    .modal-header {
+        background-color: #0896D1;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+    }
+</style>
+
 <div class="modal fade" id="modal-create-masterKey" tabindex="-1" aria-labelledby="tambahRfid" aria-hidden="true">
     <div class="modal-dialog">
         <form action="{{ route('school.master-key.store') }}" method="post">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahRfid">Tambah Master Key</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="tambahRfid" style="color: white;">Tambah Master Key</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">

@@ -1,54 +1,102 @@
 @extends('school.layouts.app')
 
+<style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+</style>
+
 @section('content')
-    <div class="card bg-info shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
                     <h4 class="fw-semibold text-white mb-8">Kartu RFID</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
-                                    href="javascript:void(0)">Daftar - daftar RFID di sekolah</a></li>
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Daftar kartu RFID di sekolah
+                                </a>
+                            </li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                            class="img-fluid mb-n4">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     {{-- <div class="">
     <span class="mb-1 badge font-medium bg-light-success text-success me-2">Digunakan: {{ $usedRfids->count() }}</span>
 <span class="mb-1 badge font-medium bg-light-danger text-danger">Belum Digunakan: {{ $notUsedRfids->count() }}</span>
 </div> --}}
 
-
-    <div class="row mt-5 mb-4">
-        <div class="col-lg-4 mb-3">
+<div class="border py-2 px-2 rounded-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-2 px-3">
+        <h4 class="fw-semibold m-0 mb-2 mb-md-0">Daftar Kartu RFID</h4>
+    </div>
+    <div class="row mt-2 mb-4 py-2 px-3">
+        <div class="col-lg-5">
             <form class="d-flex gap-2">
-                <div class="position-relative">
-                    <div class="">
-                        <input type="text" name="name" class="form-control search-chat py-2 px-5 ps-5"
-                            id="search-name" placeholder="Cari" value="{{ old('name', request()->name) }}">
-                        <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
-                    </div>
+                <div class="position-relative" style="width: 250px;">
+                    <input type="text" name="name" class="form-control py-2 ps-5"
+                        id="search-name" placeholder="Cari" value="{{ old('name', request()->name) }}">
+                    <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <select name="filter" class="form-select" id="">
-                        <option value="">Tampilkan semua</option>
+                <div class="position-relative dropdown-custom" style="width: 180px;">
+                    <select name="filter" class="form-control pe-4" id="filter-select" style="appearance: none;">
+                        <option value="">Tampilkan</option>
                         <option value="terbaru">Terbaru</option>
                         <option value="terlama">Terlama</option>
                     </select>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary btn-md">filter</button>
+                    <i class="ti ti-chevron-down position-absolute top-50 end-0 translate-middle-y fs-6 text-dark me-3 chevron-icon" 
+                       id="chevron-icon"
+                       style="cursor: pointer; z-index: 1;"></i>
                 </div>
             </form>
         </div>
@@ -59,10 +107,11 @@
             <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
                 <thead>
                     <tr>
-                        <th>Nomor RFID</th>
-                        <th>Pengguna</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th style="background-color: #0896D1;" class="text-white">No</th>
+                        <th style="background-color: #0896D1;" class="text-white">Nama Pengguna</th>
+                        <th style="background-color: #0896D1;" class="text-white">Nomor RFID</th>
+                        <th style="background-color: #0896D1;" class="text-white">Status</th>
+                        <th style="background-color: #0896D1;" class="text-white">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,6 +148,7 @@
             </table>
         </div>
     </div>
+</div>
     <div class="pagination justify-content-end mb-0">
         <x-paginate-component :paginator="$rfids->appends(request()->input())" />
     </div>
