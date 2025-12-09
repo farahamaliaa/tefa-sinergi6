@@ -12,6 +12,7 @@ use App\Http\Controllers\ClassroomStudentController;
 use App\Http\Controllers\EmployeeJournalController;
 use App\Http\Controllers\ExtracurricularController;
 use App\Http\Controllers\ExtracurricularStudentController;
+use App\Http\Controllers\Schools\ExtracurricularJournalController;
 use App\Http\Controllers\Imports\ImportController;
 use App\Http\Controllers\LessonHourController;
 use App\Http\Controllers\LessonScheduleController;
@@ -176,6 +177,10 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('export-journal-staff', [EmployeeJournalController::class, 'export'])->name('employee-journal.export');
     Route::get('export-journal-staff/download', [EmployeeJournalController::class, 'downloadJournal'])->name('employee-journal.download');
     Route::get('journal-staff/export', [EmployeeJournalController::class, 'download_journal'])->name('export-journal-staff.export');
+
+    Route::get('journal-extracurricular', [ExtracurricularJournalController::class, 'show'])->name('extracurricular-journal.show');
+    Route::get('export-journal-extracurricular', [ExtracurricularJournalController::class, 'export'])->name('extracurricular-journal.export');
+    Route::get('export-journal-extracurricular/download', [ExtracurricularJournalController::class, 'downloadJournal'])->name('extracurricular-journal.download');
 
     // alumni
     Route::get('class-alumni', [ClassroomController::class, 'classroomAlumni'])->name('class-alumni.index');
