@@ -1,6 +1,6 @@
-@props(['paginator'])
+@props(['paginator', 'alwaysShow' => false])
 
-@if ($paginator->hasPages())
+@if ($paginator->hasPages() || $alwaysShow)
     <ul class="pagination justify-content-center mt-3">
         <!-- Previous Page Link -->
         @if ($paginator->onFirstPage())
