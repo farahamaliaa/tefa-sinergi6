@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://school.mischool.id/assets/dist/css/app.css" />
     <link id="themeColors" rel="stylesheet" href="{{ asset('admin_assets/dist/css/style.min.css') }}" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
     <style>
         .bg-custom {
             background-color: #0896d1;
@@ -22,7 +24,6 @@
             text-align: left;
         }
 
-        /* Input wrapper & icon */
         .input-wrapper {
             position: relative;
         }
@@ -47,44 +48,103 @@
             opacity: 1;
         }
 
-        /* Button custom */
         .btn-primary {
             background-color: #0896d1 !important;
             border-color: #0896d1 !important;
             border-radius: 12px !important;
         }
 
-        .form-check-label {
-            font-size: 0.95rem;
-        }
         #loginSection {
             position: relative;
             overflow: hidden;
         }
+
         .decoration {
             position: absolute;
             z-index: 1;
-            width: 120px;
             opacity: 0.9;
         }
 
         .decoration-left {
-            position: absolute;
             top: -10px;
             left: -40px;
             width: 200px;
             transform: rotate(-40deg);
-            z-index: 1;
         }
 
         .decoration-right {
-            position: absolute;
             top: 30px;
             right: -5px;
             width: 170px;
-            z-index: 2;
         }
 
+        #welcomeText {
+            white-space: nowrap;
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #welcomeText span {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 576px) {
+            #welcomeText {
+                font-size: 1.2rem !important;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .welcome-title {
+                font-size: 1.7rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .bg-custom {
+                display: none !important;
+            }
+
+            #loginSection {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .custom-input {
+                height: 50px;
+                font-size: 1rem;
+            }
+
+            .decoration-left,
+            .decoration-right {
+                display: none;
+            }
+
+            form.fs-5 {
+                font-size: 1rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #loginSection {
+                padding: 20px;
+            }
+
+            img[alt="Logo"] {
+                width: 250px !important;
+                margin: auto;
+                display: block;
+            }
+        }
     </style>
 </head>
 
@@ -92,25 +152,20 @@
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical">
         <div class="position-relative overflow-hidden radial-gradient min-vh-100">
             <div class="position-relative z-index-5">
-                <div class="row">
+                <div class="row g-0">
 
-                    <div class="col-xl-7 col-xxl-8 d-flex align-items-center justify-content-center bg-custom p-5">
-                        <div class="d-none d-xl-flex align-items-center justify-content-center">
-                            <img src="{{ asset('assets/images/frame.png') }}" alt="" class="img-fluid" width="600" />
-                        </div>
+                    <div class="col-xl-7 col-xxl-8 d-none d-xl-flex align-items-center justify-content-center bg-custom p-5">
+                        <img src="{{ asset('assets/images/frame.png') }}" alt="" class="img-fluid" width="600" />
                     </div>
 
-                    <div class="col-xl-5 col-xxl-4" id="loginSection"
-                        style="opacity:0; transform:translateX(100px); transition:all 0.8s ease;">
-                        
-                        <div class="authentication-login min-vh-100 bg-body row justify-content-center align-items-center p-5 position-relative">
-                          <img src="{{ asset('assets/images/rectangle1.png') }}" 
-                              class="decoration decoration-left" 
-                              alt="rec1">
+                    <div class="col-12 col-xl-5 col-xxl-4" id="loginSection"
+                        style="opacity: 0; transform: translateX(100px); transition: all 0.8s ease;">
 
-                          <img src="{{ asset('assets/images/rectangle2.png') }}" 
-                              class="decoration decoration-right" 
-                              alt="rec2">
+                        <div class="authentication-login min-vh-100 bg-body d-flex justify-content-center align-items-center p-5 position-relative">
+
+                            <img src="{{ asset('assets/images/rectangle1.png') }}" class="decoration decoration-left">
+                            <img src="{{ asset('assets/images/rectangle2.png') }}" class="decoration decoration-right">
+
                             <div class="col-sm-10 col-md-8 col-xl-10">
 
                                 <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Logo" width="300"
@@ -125,10 +180,8 @@
 
                                     <div class="mb-4">
                                         <div class="input-wrapper">
-                                            <input id="email" type="email"
-                                                class="form-control custom-input @error('email') is-invalid @enderror"
-                                                name="email" placeholder="Masukkan email" value="{{ old('email') }}"
-                                                required />
+                                            <input id="email" type="email" class="form-control custom-input @error('email') is-invalid @enderror"
+                                                name="email" placeholder="Masukkan email" value="{{ old('email') }}" required />
                                             <i class="bi bi-envelope input-icon"></i>
                                         </div>
                                         @error('email')
@@ -138,8 +191,7 @@
 
                                     <div class="mb-4">
                                         <div class="input-wrapper">
-                                            <input id="password" type="password"
-                                                class="form-control custom-input @error('password') is-invalid @enderror"
+                                            <input id="password" type="password" class="form-control custom-input @error('password') is-invalid @enderror"
                                                 name="password" placeholder="Masukkan password" required />
                                             <i class="bi bi-eye-slash input-icon" id="togglePassword"></i>
                                         </div>
@@ -225,7 +277,6 @@
     <script src="{{ asset('admin_assets/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('admin_assets/dist/libs/jquery/dist/jquery.min.js') }}"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 </body>
 
 </html>

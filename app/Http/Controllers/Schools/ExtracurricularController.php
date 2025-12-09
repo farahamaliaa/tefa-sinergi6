@@ -96,4 +96,10 @@ class ExtracurricularController extends Controller
         $this->extracurricular->delete($extracurricular->id);
         return redirect()->back()->with('success', 'Berhasil menghapus ekstrakulikuler');
     }
+
+    public function statistic(Request $request)
+    {
+        $extracurriculars = $this->extracurricular->extracurricularGet($request);
+        return view('school.pages.statistic-presence.extracurricular', compact('extracurriculars'));
+    }
 }

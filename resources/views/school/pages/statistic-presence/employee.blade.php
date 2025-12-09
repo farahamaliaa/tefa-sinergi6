@@ -3,34 +3,146 @@
 @section('style')
     <style>
         .card {
-        border: 1px solid #E0E6ED !important; 
-        box-shadow: none !important;
+            border: 1px solid #E0E6ED !important;
+            box-shadow: none !important;
         }
 
-        .card-hover:hover {
-            border-color: #00A9D9 !important;
-            transition: .2s ease-in-out;
+        .stat-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
-        .card.header-wave {
-            border-radius: 14px !important;
-            overflow: hidden !important;
-        }    
-
-        .nav-pills .nav-link.active {
-            background-color: #098FC6 !important;
-            color: #fff !important;
+        .week-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .week-label {
+            width: 100px;
+            font-weight: 500;
+            color: #2F393E;
         }
 
-        .nav-pills .nav-link {
-            color: #098FC6;
+        .progress-stacked {
+            flex-grow: 1;
+            height: 12px;
+            background-color: transparent;
+            display: flex;
+            gap: 8px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-pill {
+            height: 100%;
+            border-radius: 100px;
+        }
+
+        .bg-alfa { background-color: #EF4444; }
+        .bg-permit { background-color: #0EA5E9; }
+        .bg-late { background-color: #FBBF24; }
+        .bg-present { background-color: #10B981; }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .custom-table-header {
+            background-color: #00A3CE !important;
+            color: white !important;
+        }
+        .custom-table-header th {
+            background-color: #00A3CE !important;
+            color: white !important;
+            font-weight: 500;
+            border: none;
+            padding: 14px 16px;
+        }
+        .custom-table-header th:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .custom-table-header th:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .table-row td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .badge-status {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-permit {
+            background-color: #E0F2FE;
+            color: #0EA5E9;
+        }
+        .badge-present {
+            background-color: #DCFCE7;
+            color: #16A34A;
+        }
+
+        .print-btn {
+            background-color: #14B8A6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        .print-btn:hover {
+            background-color: #0D9488;
+            color: white;
         }
 
-        .nav-pills .nav-link:hover {
-            background-color: #0A8ABF20;
-            color: #098FC6;
+        .pagination-mock {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
         }
+        .page-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            color: #6B7280;
+            cursor: pointer;
+        }
+        .page-item.active {
+            background-color: #00A3CE;
+            color: white;
+            border-color: #00A3CE;
+        }
+        
         .header-wave {
             background-color: #1A94C8 !important;
             border-radius: 14px;
@@ -49,44 +161,6 @@
             background-size: cover;
             opacity: 1;
         }
-
-        .apexcharts-legend {
-            display: none;
-        }
-
-        .apexcharts-legend-series {
-            display: none;
-        }
-
-        .apexcharts-toolbar {
-            display: none !important;
-        }
-
-        #custom-legend {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 10px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-right: 15px;
-        }
-
-        .legend-marker {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-
-        .legend-text {
-            font-size: 12px;
-            color: #373d3f;
-            font-family: Helvetica, Arial, sans-serif;
-        }
     </style>
 @endsection
 
@@ -100,7 +174,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                    Statistik Absensi Guru
+                                    Statistik Absensi Staff
                                 </a>
                             </li>
                         </ol>
@@ -116,144 +190,205 @@
         </div>
     </div>
 
-    <div class="row align-items-center">
-        <!-- Bagian Statistik -->
-        <div class="col-12 col-lg-4 mb-3 mb-lg-0">
-            <div class="d-flex align-items-center">
-                <span class="badge p-1 d-flex align-items-center justify-content-center">
-                    <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="72" height="72" rx="8" fill="#ECF2FF"/>
-                        <path d="M21.3346 41.5V48.8333M36.0013 30.5V48.8333M54.3346 54.3333H17.668M50.668 37.8333V48.8333" stroke="#0896D1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M24.268 30.1334C23.9791 29.7482 23.6171 29.4236 23.2028 29.1783C22.7885 28.933 22.3299 28.7717 21.8532 28.7036C21.3765 28.6355 20.8911 28.6619 20.4247 28.7814C19.9582 28.9009 19.5199 29.1111 19.1347 29.4001C18.7494 29.689 18.4249 30.0509 18.1796 30.4652C17.9342 30.8796 17.7729 31.3382 17.7048 31.8148C17.5673 32.7775 17.8178 33.7554 18.4013 34.5334C18.9848 35.3114 19.8534 35.8257 20.8161 35.9632C21.7788 36.1007 22.7567 35.8502 23.5347 35.2667C24.3126 34.6832 24.8269 33.8146 24.9645 32.8519C25.102 31.8892 24.8515 30.9114 24.268 30.1334ZM24.268 30.1334L33.068 23.5334M33.068 23.5334C33.4428 24.0339 33.9394 24.4303 34.5106 24.6848C35.0818 24.9393 35.7086 25.0434 36.3315 24.9874C36.9543 24.9314 37.5524 24.717 38.069 24.3646C38.5856 24.0123 39.0035 23.5336 39.283 22.9742M33.068 23.5334C32.6767 23.0109 32.432 22.3934 32.3591 21.7447C32.2863 21.0959 32.3879 20.4395 32.6536 19.8432C32.9193 19.247 33.3393 18.7324 33.8704 18.3527C34.4014 17.9731 35.0242 17.7421 35.6743 17.6836C36.3245 17.6251 36.9785 17.7412 37.5688 18.02C38.159 18.2988 38.6642 18.7301 39.032 19.2694C39.3999 19.8087 39.6171 20.4364 39.6612 21.0877C39.7053 21.739 39.5747 22.3903 39.283 22.9742M39.283 22.9742L47.3863 27.0259M47.3863 27.0259C47.1708 27.4566 47.0423 27.9255 47.0081 28.4059C46.9738 28.8863 47.0345 29.3687 47.1867 29.8257C47.4941 30.7485 48.1555 31.5114 49.0253 31.9466C49.8952 32.3817 50.9023 32.4535 51.8251 32.1462C52.7479 31.8388 53.5108 31.1774 53.946 30.3076C54.3722 29.439 54.4379 28.4372 54.1286 27.5204C53.8194 26.6036 53.1604 25.8462 52.2952 25.4133C51.4299 24.9803 50.4287 24.9068 49.5095 25.2089C48.5904 25.511 47.8279 26.1641 47.3882 27.0259H47.3863Z" stroke="#0896D1" stroke-width="3"/>
-                    </svg>
-                </span>
-                <h3 class="ms-2 mb-0 fw-bold">Statistik Absensi Guru</h3>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center justify-content-center rounded-3 p-2" style="background-color: #E0F2FE; width: 48px; height: 48px;">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5.16667 25.3312V32.6645M19.8333 14.3312V32.6645M38.1667 38.1645H1.5M34.5 21.6645V32.6645" stroke="#0896D1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.10001 13.9646C7.81111 13.5794 7.44915 13.2548 7.03482 13.0095C6.62049 12.7642 6.1619 12.6028 5.68523 12.5348C5.20855 12.4667 4.72313 12.4931 4.25668 12.6126C3.79024 12.7321 3.35189 12.9423 2.96668 13.2312C2.58147 13.5201 2.25694 13.8821 2.01161 14.2964C1.76628 14.7108 1.60496 15.1693 1.53687 15.646C1.39934 16.6087 1.64987 17.5866 2.23335 18.3646C2.81682 19.1425 3.68545 19.6569 4.64814 19.7944C5.61082 19.9319 6.58871 19.6814 7.36668 19.0979C8.14465 18.5144 8.65897 17.6458 8.7965 16.6831C8.93402 15.7204 8.68349 14.7425 8.10001 13.9646ZM8.10001 13.9646L16.9 7.36457M16.9 7.36457C17.2749 7.8651 17.7715 8.26145 18.3427 8.51594C18.9139 8.77044 19.5407 8.87462 20.1635 8.81858C20.7863 8.76255 21.3844 8.54816 21.901 8.1958C22.4176 7.84343 22.8355 7.3648 23.115 6.8054M16.9 7.36457C16.5087 6.84205 16.264 6.22454 16.1912 5.57583C16.1183 4.92711 16.22 4.27071 16.4856 3.67442C16.7513 3.07814 17.1714 2.56359 17.7024 2.18392C18.2334 1.80426 18.8562 1.57325 19.5064 1.51475C20.1565 1.45626 20.8105 1.5724 21.4008 1.85118C21.9911 2.12995 22.4962 2.56126 22.8641 3.10055C23.2319 3.63984 23.4491 4.26756 23.4932 4.91886C23.5373 5.57016 23.4068 6.22143 23.115 6.8054M23.115 6.8054L31.2183 10.8571M31.2183 10.8571C31.0029 11.2878 30.8743 11.7567 30.8401 12.2371C30.8058 12.7175 30.8665 13.1999 31.0187 13.6568C31.3261 14.5797 31.9875 15.3426 32.8573 15.7777C33.7272 16.2129 34.7343 16.2847 35.6571 15.9773C36.5799 15.67 37.3428 15.0086 37.778 14.1387C38.2042 13.2702 38.2699 12.2683 37.9607 11.3516C37.6515 10.4348 36.9924 9.6774 36.1272 9.24443C35.262 8.81145 34.2607 8.738 33.3415 9.04006C32.4224 9.34213 31.6599 9.99524 31.2202 10.8571H31.2183Z" stroke="#0896D1" stroke-width="3"/>
+                </svg>
             </div>
+            <h4 class="fw-semibold mb-0" style="color: #374151; font-size: 20px;">Statistik Absensi Staff</h4>
         </div>
-
-        <!-- Form Filter -->
-        <div class="col-12 col-lg-6">
-            <form action="">
-                <div class="row g-2 align-items-center">
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <input type="date" name="start_date" class="form-control"
-                            value="{{ old('start_date', request()->start_date ?? date('Y-m-d')) }}">
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <input type="date" name="end_date" class="form-control"
-                            value="{{ old('end_date', request()->end_date ?? date('Y-m-d')) }}">
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <button type="submit" class="btn btn-primary w-100">Cari</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Tombol Cetak -->
-        <div class="col-12 col-lg-2 mt-3 mt-lg-0">
-            <form action="{{ route('school.teacher-attendance.export') }}" >
-                
-                <button class="btn btn-success d-flex align-items-center justify-content-center w-100" type="submit">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 10C18 10.2652 17.8946 10.5196 17.7071 10.7071C17.5196 10.8946 17.2652 11 17 11C16.7348 11 16.4804 10.8946 16.2929 10.7071C16.1054 10.5196 16 10.2652 16 10C16 9.73478 16.1054 9.48043 16.2929 9.29289C16.4804 9.10536 16.7348 9 17 9C17.2652 9 17.5196 9.10536 17.7071 9.29289C17.8946 9.48043 18 9.73478 18 10Z" fill="white"/>
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M11.945 1.25H12.055C13.422 1.25 14.525 1.25 15.392 1.367C16.292 1.487 17.05 1.747 17.652 2.348C18.392 3.088 18.62 4.075 18.702 5.299C18.946 5.31567 19.176 5.33833 19.392 5.367C20.292 5.487 21.05 5.747 21.652 6.348C22.254 6.95 22.512 7.708 22.634 8.608C22.75 9.475 22.75 10.578 22.75 11.945V12.055C22.75 13.422 22.75 14.525 22.634 15.392C22.512 16.292 22.254 17.05 21.652 17.652C20.912 18.392 19.925 18.62 18.701 18.702C18.685 18.946 18.6627 19.176 18.634 19.392C18.512 20.292 18.254 21.05 17.652 21.652C17.05 22.254 16.292 22.512 15.392 22.634C14.525 22.75 13.422 22.75 12.055 22.75H11.945C10.578 22.75 9.475 22.75 8.608 22.634C7.708 22.512 6.95 22.254 6.348 21.652C5.746 21.05 5.488 20.292 5.367 19.392C5.33767 19.176 5.315 18.946 5.299 18.702C4.075 18.62 3.089 18.392 2.349 17.652C1.746 17.05 1.488 16.292 1.367 15.392C1.25 14.525 1.25 13.422 1.25 12.055V11.945C1.25 10.578 1.25 9.475 1.367 8.608C1.487 7.708 1.747 6.95 2.348 6.348C2.95 5.746 3.708 5.488 4.608 5.367C4.83714 5.33636 5.06728 5.31368 5.298 5.299C5.38 4.075 5.608 3.089 6.348 2.349C6.95 1.746 7.708 1.488 8.608 1.367C9.475 1.25 10.578 1.25 11.945 1.25ZM6.807 5.253C7.16367 5.25033 7.543 5.24933 7.945 5.25H16.055C16.4563 5.25 16.8357 5.251 17.193 5.253C17.111 4.233 16.926 3.745 16.591 3.409C16.314 3.132 15.926 2.952 15.191 2.853C14.436 2.752 13.435 2.75 12 2.75C10.565 2.75 9.563 2.752 8.808 2.853C8.074 2.952 7.686 3.133 7.409 3.409C7.074 3.745 6.889 4.232 6.807 5.253ZM5.253 17.193C5.25033 16.8363 5.24933 16.457 5.25 16.055V14.75H5C4.80109 14.75 4.61032 14.671 4.46967 14.5303C4.32902 14.3897 4.25 14.1989 4.25 14C4.25 13.8011 4.32902 13.6103 4.46967 13.4697C4.61032 13.329 4.80109 13.25 5 13.25H19C19.1989 13.25 19.3897 13.329 19.5303 13.4697C19.671 13.6103 19.75 13.8011 19.75 14C19.75 14.1989 19.671 14.3897 19.5303 14.5303C19.3897 14.671 19.1989 14.75 19 14.75H18.75V16.055C18.75 16.4563 18.749 16.8357 18.747 17.193C19.767 17.111 20.256 16.926 20.591 16.591C20.868 16.314 21.048 15.926 21.147 15.191C21.248 14.436 21.25 13.435 21.25 12C21.25 10.565 21.248 9.563 21.147 8.808C21.048 8.074 20.867 7.686 20.591 7.409C20.314 7.132 19.926 6.952 19.191 6.853C18.436 6.752 17.435 6.75 16 6.75H8C6.565 6.75 5.563 6.752 4.808 6.853C4.074 6.952 3.686 7.133 3.409 7.409C3.132 7.686 2.952 8.074 2.853 8.809C2.752 9.563 2.75 10.565 2.75 12C2.75 13.435 2.752 14.437 2.853 15.192C2.952 15.926 3.133 16.314 3.409 16.591C3.745 16.926 4.232 17.111 5.253 17.193ZM17.25 14.75H6.75V16C6.75 17.435 6.752 18.436 6.853 19.192C6.952 19.926 7.133 20.314 7.409 20.591C7.686 20.868 8.074 21.048 8.809 21.147C9.563 21.248 10.565 21.25 12 21.25C13.435 21.25 14.437 21.248 15.192 21.147C15.926 21.048 16.314 20.867 16.591 20.591C16.868 20.314 17.048 19.926 17.147 19.191C17.248 18.436 17.25 17.435 17.25 16V14.75ZM5.25 10C5.25 9.80109 5.32902 9.61032 5.46967 9.46967C5.61032 9.32902 5.80109 9.25 6 9.25H9C9.19891 9.25 9.38968 9.32902 9.53033 9.46967C9.67098 9.61032 9.75 9.80109 9.75 10C9.75 10.1989 9.67098 10.3897 9.53033 10.5303C9.38968 10.671 9.19891 10.75 9 10.75H6C5.80109 10.75 5.61032 10.671 5.46967 10.5303C5.32902 10.3897 5.25 10.1989 5.25 10ZM8.25 16.805C8.25 16.6061 8.32902 16.4153 8.46967 16.2747C8.61032 16.134 8.80109 16.055 9 16.055H15C15.1989 16.055 15.3897 16.134 15.5303 16.2747C15.671 16.4153 15.75 16.6061 15.75 16.805C15.75 17.0039 15.671 17.1947 15.5303 17.3353C15.3897 17.476 15.1989 17.555 15 17.555H9C8.80109 17.555 8.61032 17.476 8.46967 17.3353C8.32902 17.1947 8.25 17.0039 8.25 16.805ZM8.25 19.305C8.25 19.1061 8.32902 18.9153 8.46967 18.7747C8.61032 18.634 8.80109 18.555 9 18.555H13C13.1989 18.555 13.3897 18.634 13.5303 18.7747C13.671 18.9153 13.75 19.1061 13.75 19.305C13.75 19.5039 13.671 19.6947 13.5303 19.8353C13.3897 19.976 13.1989 20.055 13 20.055H9C8.80109 20.055 8.61032 19.976 8.46967 19.8353C8.32902 19.6947 8.25 19.5039 8.25 19.305Z" fill="white"/>
-                    </svg>
-                    <span class="ms-2">Cetak Absensi</span>
-                </button>
-            </form>
-        </div>
+        
+        <form action="{{ route('school.teacher-attendance.export') }}">
+            <button class="print-btn" type="submit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 17H19C20.1046 17 21 16.1046 21 15V11C21 9.89543 20.1046 9 19 9H5C3.89543 9 3 9.89543 3 11V15C3 16.1046 3.89543 17 5 17H7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17 9V5C17 3.89543 16.1046 3 15 3H9C7.89543 3 7 3.89543 7 5V9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 15C7 13.8954 7.89543 13 9 13H15C16.1046 13 17 13.8954 17 15V19C17 20.1046 16.1046 21 15 21H9C7.89543 21 7 20.1046 7 19V15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Cetak Absensi
+            </button>
+        </form>
     </div>
 
-
-
-    <div class="row mt-3">
-        <div class="col-lg-8">
-            <div class="card card-body">
-                <h5 class="mb-4">Data Absensi Guru</h5>
-
-                <div class="table-responsive rounded-2 mb-4">
-                    <table class="table border text-nowrap customize-table mb-0 align-middle">
-                        <thead class="text-dark fs-4">
-                            <tr class="">
-                                <th class="text-white" style="background-color: #5D87FF;">No</th>
-                                <th class="text-white" style="background-color: #5D87FF;">Nama Guru</th>
-                                <th class="text-white" style="background-color: #5D87FF;">Masuk</th>
-                                <th class="text-white" style="background-color: #5D87FF;">Pulang</th>
-                                <th class="text-white" style="background-color: #5D87FF;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($attendances as $employee)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $employee->model->user->name }}</td>
-                                    <td>{{ $employee->checkin ? $employee->checkin : '-' }}</td>
-                                    <td>{{ $employee->checkout ? $employee->checkout : '-' }}</td>
-                                    <td><span
-                                            class="badge {{ $employee->status->color() }}">
-                                            {{ $employee->status->label() }}
-                                        </span></td>
-
-                                    {{-- <td>
-                                        <span class="badge {{ $employee->attendances->first()->status->color() }}">
-                                            {{ $employee->attendances->first()->status->label() }}
-                                        </span>
-                                    </td> --}}
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center align-middle">
-                                        <div class="d-flex flex-column justify-content-center align-items-center">
-                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
-                                                alt="" width="300px">
-                                            <p class="fs-5 text-dark text-center mt-2">
-                                                Belum ada guru yang absen
-                                            </p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+    <div class="card stat-card shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="section-title">Statistik Absensi Staff</h5>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px;">
+                    Desember
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+                    <li><a class="dropdown-item" href="#">Januari</a></li>
+                    <li><a class="dropdown-item" href="#">Februari</a></li>
+                </ul>
+            </div>
+        </div>
+    
+        <div class="d-flex mb-4">
+            <div class="legend-item">
+                <div class="legend-dot bg-alfa"></div>
+                <span>Alfa</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-permit"></div>
+                <span>Izin/sakit</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-late"></div>
+                <span>Telat</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot bg-present"></div>
+                <span>Masuk</span>
+            </div>
+        </div>
+    
+        <div class="chart-container">
+            <div class="week-row">
+                <span class="week-label">Minggu 1</span>
+                <div class="progress-stacked">
+                    <div class="progress-pill bg-alfa" style="width: 15%"></div>
+                    <div class="progress-pill bg-permit" style="width: 25%"></div>
+                    <div class="progress-pill bg-late" style="width: 10%"></div>
+                    <div class="progress-pill bg-present" style="width: 50%"></div>
+                </div>
+            </div>
+            <div class="week-row">
+                <span class="week-label">Minggu 2</span>
+                <div class="progress-stacked">
+                    <div class="progress-pill bg-alfa" style="width: 10%"></div>
+                    <div class="progress-pill bg-permit" style="width: 15%"></div>
+                    <div class="progress-pill bg-late" style="width: 15%"></div>
+                    <div class="progress-pill bg-present" style="width: 60%"></div>
+                </div>
+            </div>
+            <div class="week-row">
+                <span class="week-label">Minggu 3</span>
+                <div class="progress-stacked">
+                    <div class="progress-pill bg-alfa" style="width: 20%"></div>
+                    <div class="progress-pill bg-permit" style="width: 5%"></div>
+                    <div class="progress-pill bg-late" style="width: 15%"></div>
+                    <div class="progress-pill bg-present" style="width: 60%"></div>
+                </div>
+            </div>
+            <div class="week-row">
+                <span class="week-label">Minggu 4</span>
+                <div class="progress-stacked">
+                    <div class="progress-pill bg-present" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="week-row">
+                <span class="week-label">Minggu 5</span>
+                <div class="progress-stacked">
+                    <div class="progress-pill bg-alfa" style="width: 30%"></div>
+                    <div class="progress-pill bg-permit" style="width: 10%"></div>
+                    <div class="progress-pill bg-late" style="width: 20%"></div>
+                    <div class="progress-pill bg-present" style="width: 40%"></div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="card card-body">
-                <h5>Statistik Absensi Guru</h5>
-                <div>
-                    <p>20 Januari 2024</p>
-                </div>
-                <div id="chart-employee"></div>
-
-                <div class="d-flex">
-                    <div class="d-flex">
-                        <div id="custom-legend">
-                            <div class="legend-item">
-                                <span class="legend-marker" style="background-color: rgb(19, 222, 185);"></span>
-                                <span class="legend-text">Masuk</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-marker" style="background-color: rgb(93, 135, 255);"></span>
-                                <span class="legend-text">Izin</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-marker" style="background-color: rgb(255, 174, 31);"></span>
-                                <span class="legend-text">Sakit</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-marker" style="background-color: rgb(250, 137, 107);"></span>
-                                <span class="legend-text">Alfa</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    </div>
+    
+    <div class="card stat-card shadow-sm">
+        <div class="d-flex align-items-center mb-4 gap-2">
+            <h5 class="section-title mb-0">Data Absensi Staff Hari Ini</h5>
+            <span class="text-muted fw-normal">/</span>
+            <div class="d-flex align-items-center gap-2" style="background-color: #E0F2FE; padding: 4px 12px; border-radius: 6px; color: #0EA5E9;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span style="font-size: 14px; font-weight: 500;">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span>
             </div>
+        </div>
+    
+        <div class="table-responsive">
+            <table class="table table-borderless">
+                <thead class="custom-table-header">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Staff</th>
+                        <th>Masuk</th>
+                        <th>Pulang</th>
+                        <th>Point</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($attendances as $employee)
+                        <tr class="table-row">
+                            <td>{{ $loop->iteration }}.</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div style="width: 32px; height: 32px; background-color: #E5E7EB; border-radius: 50%; margin-right: 12px; overflow: hidden;">
+                                        <img src="{{ asset('assets/icons/user.svg') }}" alt="" class="w-100 h-100 object-fit-cover" onerror="this.innerHTML='<svg...>'">
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $employee->model->user->name }}</div>
+                                        <div class="text-muted small">Staff</div> 
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ $employee->checkin ? \Carbon\Carbon::parse($employee->checkin)->format('H:i') : '-' }}</td>
+                            <td>{{ $employee->checkout ? \Carbon\Carbon::parse($employee->checkout)->format('H:i') : '-' }}</td>
+                            <td>{{ $employee->model->point ?? 0 }}</td>
+                            <td>
+                                @php
+                                    $statusLabel = $employee->status->label();
+                                    $statusClass = 'badge-present';
+                                    
+                                    if(in_array(strtolower($statusLabel), ['sakit', 'izin'])) {
+                                        $statusClass = 'badge-permit';
+                                    } elseif(strtolower($statusLabel) == 'alfa') {
+                                        $statusClass = 'text-danger bg-light-danger px-3 py-1 rounded';
+                                    }
+                                @endphp
+                                <span class="badge {{ $employee->status->color() == 'danger' ? 'bg-danger' : ($employee->status->color() == 'warning' ? 'bg-warning' : ($employee->status->color() == 'primary' ? 'badge-permit' : 'badge-present')) }}" 
+                                      style="{{ $employee->status->color() == 'primary' ? 'background-color: #E0F2FE; color: #0EA5E9;' : '' }}">
+                                    {{ $statusLabel }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
+                                    alt="" width="150px">
+                                <p class="text-muted mt-2">Belum ada staff yang absen</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small">
+                Menampilkan 1 dari 12 halaman
+                </div>
+                <div class="pagination-mock">
+                <div class="page-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </div>
+                <div class="page-item active">1</div>
+                <div class="page-item">2</div>
+                <div class="page-item">3</div>
+                <div class="page-item border-0">...</div>
+                <div class="page-item">12</div>
+                <div class="page-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+                </div>
         </div>
     </div>
 @endsection
 
 @section('script')
-    @include('school.pages.statistic-presence.script.donut-chart')
+    <!-- Necessary scripts if any -->
 @endsection
