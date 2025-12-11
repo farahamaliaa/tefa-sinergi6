@@ -113,7 +113,7 @@
                         </li>
                     @endif
 
-                    {{-- <li class="sidebar-item ">
+                <li class="sidebar-item ">
                     <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256">
@@ -125,7 +125,7 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item">
+                <!-- <li class="sidebar-item">
                     <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                         <span class="d-flex">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -222,7 +222,7 @@
                             </a>
                         </li>
                     </ul>
-                </li> --}}
+                </li> -->
                 </ul>
             @endrole
 

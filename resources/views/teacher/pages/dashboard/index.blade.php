@@ -7,33 +7,40 @@
             overflow-x: auto;
         }
 
-        /* Customize scrollbar for WebKit browsers (Chrome, Safari) */
         .scroll-container::-webkit-scrollbar {
             height: 6px;
-            /* Change height for horizontal scrollbar */
         }
 
         .scroll-container::-webkit-scrollbar-thumb {
             background-color: #888;
-            /* Color of the scrollbar */
             border-radius: 10px;
-            /* Rounded corners */
         }
 
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background-color: #555;
-            /* Color when hovered */
         }
 
-        /* Firefox (using scrollbar-width) */
         .scroll-container {
             scrollbar-width: thin;
-            /* Reduce scrollbar size in Firefox */
             scrollbar-color: #888 #f0f0f0;
-            /* Thumb and track colors */
-        }
-    </style>
 
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #0B95D0 !important;
+        }
+
+    </style>
 @endsection
 
 @section('content')
@@ -52,7 +59,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body d-flex justify-content-between">
@@ -72,54 +79,49 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="card card-body">
-        <h4>Jadwal Mengajar</h4>
-        <ul class="nav nav-pills mt-3 rounded align-items-center flex-row" id="pills-tab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="pills-senin-tab" data-bs-toggle="pill" href="#pills-senin" role="tab"
-                    aria-controls="pills-senin" aria-selected="true">
-                    Senin
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-selasa-tab" data-bs-toggle="pill" href="#pills-selasa" role="tab"
-                    aria-controls="pills-selasa" aria-selected="false">
-                    Selasa
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-rabu-tab" data-bs-toggle="pill" href="#pills-rabu" role="tab"
-                    aria-controls="pills-rabu" aria-selected="false">
-                    Rabu
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-kamis-tab" data-bs-toggle="pill" href="#pills-kamis" role="tab"
-                    aria-controls="pills-kamis" aria-selected="false">
-                    Kamis
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-jumat-tab" data-bs-toggle="pill" href="#pills-jumat" role="tab"
-                    aria-controls="pills-jumat" aria-selected="false">
-                    Jumat
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-sabtu-tab" data-bs-toggle="pill" href="#pills-sabtu" role="tab"
-                    aria-controls="pills-sabtu" aria-selected="false">
-                    Sabtu
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-minggu-tab" data-bs-toggle="pill" href="#pills-minggu" role="tab"
-                    aria-controls="pills-minggu" aria-selected="false">
-                    Minggu
-                </a>
-            </li>
-        </ul>
+        <h4 class="mb-4 fw-bolder">Jadwal Mengajar Hari Ini</h4>
+        <div class="border rounded-pill p-1 d-inline-block w-100" style="max-width: 600px;">
+            <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill" id="pills-senin-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-senin" type="button" role="tab" aria-controls="pills-senin"
+                        aria-selected="true">
+                        Senin
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-selasa-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-selasa" type="button" role="tab" aria-controls="pills-selasa"
+                        aria-selected="false">
+                        Selasa
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-rabu-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-rabu" type="button" role="tab" aria-controls="pills-rabu"
+                        aria-selected="false">
+                        Rabu
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-kamis-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-kamis" type="button" role="tab" aria-controls="pills-kamis"
+                        aria-selected="false">
+                        Kamis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-jumat-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-jumat" type="button" role="tab" aria-controls="pills-jumat"
+                        aria-selected="false">
+                        Jumat
+                    </button>
+                </li>
+            </ul>
+        </div>
 
         <div class="tab-content mt-4" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-senin" role="tabpanel" aria-labelledby="pills-senin-tab">
@@ -146,11 +148,11 @@
         </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-lg-12">
             @include('teacher.pages.dashboard.panes.absence-history')
         </div>
-    </div>
+    </div> -->
 
     <h4>Riwayat Jurnal</h4>
     <h6 class="mb-4">Daftar jurnal guru setelah berkegiatan mengajar</h6>
