@@ -52,10 +52,11 @@ class TeacherJournalController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(LessonSchedule $lessonSchedule)
+    public function create(LessonSchedule $lessonSchedule, Request $request)
     {
-        $classroomStudents = $this->classroomStudent->getByClassId($lessonSchedule->classroom->id);
-        return view('teacher.pages.journals.create', compact('classroomStudents', 'lessonSchedule'));
+        $classroomStudents = $this->classroomStudent->where($lessonSchedule->classroom->id, $request);
+        $studentsPaginator = $classroomStudents;
+        return view('teacher.pages.journals.create', compact('classroomStudents', 'lessonSchedule', 'studentsPaginator'));
     }
 
     /**
@@ -78,7 +79,7 @@ class TeacherJournalController extends Controller
      */
     public function show(TeacherJournal $journal)
     {
-        $attendanceJournals = $journal->attendanceJournals;
+        $attendanceJournals = $journal->attendanceJournals()->paginate(10);
         return view('teacher.pages.journals.detail', compact('journal', 'attendanceJournals'));
     }
 
