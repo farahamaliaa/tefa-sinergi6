@@ -154,7 +154,7 @@
         </div>
     </div> -->
 
-    <h4>Riwayat Jurnal</h4>
+    <h4 style="font-size: 30px;" class="fw-bold">Riwayat Jurnal</h4>
     <h6 class="mb-4">Daftar jurnal guru setelah berkegiatan mengajar</h6>
 
    <div class="row">

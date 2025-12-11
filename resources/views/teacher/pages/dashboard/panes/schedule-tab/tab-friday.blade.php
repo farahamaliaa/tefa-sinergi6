@@ -1,12 +1,26 @@
+<style>
+    table thead tr th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    table thead tr th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    table thead th {
+        background-color: #0B97D1 !important;
+    }
+</style>
+
 <div class="table-responsive rounded-2">
     <table class="table border text-nowrap customize-table mb-0 align-middle">
         <thead>
             <tr>
-                <th class="text-white" style="background-color: #009EF7;">No</th>
-                <th class="text-white" style="background-color: #009EF7;">Mata Pelajaran</th>
-                <th class="text-white" style="background-color: #009EF7;">Waktu</th>
-                <th class="text-white" style="background-color: #009EF7;">Jam</th>
-                <th class="text-white" style="background-color: #009EF7;">Kelas</th>
+                <th class="text-white" style="background-color: #0B97D1;">No</th>
+                <th class="text-white" style="background-color: #0B97D1;">Mata Pelajaran</th>
+                <th class="text-white" style="background-color: #0B97D1;">Waktu</th>
+                <th class="text-white" style="background-color: #0B97D1;">Jam</th>
+                <th class="text-white" style="background-color: #0B97D1;">Kelas</th>
             </tr>
         </thead>
         <tbody>

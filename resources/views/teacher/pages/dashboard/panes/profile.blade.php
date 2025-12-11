@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-6 col-12 mb-3">
-        <div class="card h-100 overflow-hidden position-relative border-0 shadow-sm">
+        <div class="card h-100 overflow-hidden position-relative border shadow-none">
             <div class="position-absolute end-0 top-0 h-100" style="z-index: 0; pointer-events: none;">
                 <svg preserveAspectRatio="none" style="height: 100%; width: auto;" viewBox="0 0 115 209" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
@@ -62,7 +62,7 @@
     </div>
 
     <div class="col-lg-6 mb-3">
-        <div class="card h-100 border-0 shadow-sm position-relative overflow-hidden">
+        <div class="card h-100 border shadow-none position-relative overflow-hidden">
 
             <img src="{{ asset('assets/images/asset.png') }}" alt=""
                 class="position-absolute"

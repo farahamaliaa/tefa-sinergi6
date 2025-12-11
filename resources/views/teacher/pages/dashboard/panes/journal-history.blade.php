@@ -2,7 +2,7 @@
     <div class="col-lg-12 col-md-12">
         @forelse ($teacherJournals->take(3) as $teacherJournal)
             <div class="col-md-12 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 border shadow-none">
                     <div class="card-header bg-primary" style="border-radius: 0.50rem;">
                         <h4 class="mb-0 text-white card-title">
                             {{ $teacherJournal->lessonSchedule->classroom->name }} -
