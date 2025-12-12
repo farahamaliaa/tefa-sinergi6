@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Contracts\Interfaces\ExtracurricularInterface;
+use App\Contracts\Interfaces\ExtracurricularStudentInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Extracurricular;
 use Illuminate\Http\Request;
@@ -10,10 +11,14 @@ use Illuminate\Http\Request;
 class ExtracurricularController extends Controller
 {
     private ExtracurricularInterface $extracurricular;
+    private ExtracurricularStudentInterface $extracurricularStudent;
 
-    public function __construct(ExtracurricularInterface $extracurricular)
-    {
+    public function __construct(
+        ExtracurricularInterface $extracurricular,
+        ExtracurricularStudentInterface $extracurricularStudent
+    ) {
         $this->extracurricular = $extracurricular;
+        $this->extracurricularStudent = $extracurricularStudent;
     }
 
     public function index(Request $request)
@@ -29,5 +34,84 @@ class ExtracurricularController extends Controller
             ->get();
 
         return view('teacher.pages.ekstrakulikuler.index', compact('extracurriculars'));
+    }
+
+    public function studentsIndex(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+        
+        if (!$extracurricularId) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular info
+        $extracurricular = Extracurricular::find($extracurricularId);
+        
+        if (!$extracurricular) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular students
+        $extracurricularStudents = $extracurricular->extracurricularStudents()
+            ->with('student.user', 'student.classroomStudents.classroom')
+            ->when($request->search, function ($query) use ($request) {
+                $query->whereHas('student.user', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                });
+            })
+            ->get();
+        
+        return view('teacher.pages.extracurricular-students.index', compact('extracurricularStudents', 'extracurricular'));
+    }
+
+    public function attendanceIndex(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+        
+        if (!$extracurricularId) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular info
+        $extracurricular = Extracurricular::find($extracurricularId);
+        
+        if (!$extracurricular) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular students
+        $extracurricularStudents = $extracurricular->extracurricularStudents()
+            ->with('student.user', 'student.classroomStudents.classroom')
+            ->get();
+        
+        // TODO: Get attendance data for this extracurricular
+        $attendances = [];
+        
+        return view('teacher.pages.extracurricular-attendance.index', compact('extracurricularStudents', 'extracurricular', 'attendances'));
+    }
+
+    public function permissionIndex(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+        
+        if (!$extracurricularId) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular info
+        $extracurricular = Extracurricular::find($extracurricularId);
+        
+        if (!$extracurricular) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+        
+        // Get extracurricular students
+        $extracurricularStudents = $extracurricular->extracurricularStudents()
+            ->with('student.user', 'student.classroomStudents.classroom')
+            ->get();
+        
+        // TODO: Get permission data
+        
+        return view('teacher.pages.extracurricular-permission.index', compact('extracurricularStudents', 'extracurricular'));
     }
 }

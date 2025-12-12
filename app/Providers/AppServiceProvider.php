@@ -141,6 +141,7 @@ class AppServiceProvider extends ServiceProvider
         // View Composer untuk sidebar teacher
         View::composer('teacher.layouts.sidebar', function ($view) {
             $teacherClassrooms = [];
+            $teacherExtracurriculars = [];
             
             // Cek jika user sudah login dan memiliki employee
             if (auth()->check() && auth()->user()->employee) {
@@ -148,9 +149,14 @@ class AppServiceProvider extends ServiceProvider
                     ->with('levelClass')
                     ->orderBy('name')
                     ->get();
+                    
+                $teacherExtracurriculars = \App\Models\Extracurricular::where('employee_id', auth()->user()->employee->id)
+                    ->orderBy('name')
+                    ->get();
             }
             
             $view->with('teacherClassrooms', $teacherClassrooms);
+            $view->with('teacherExtracurriculars', $teacherExtracurriculars);
         });
     }
 

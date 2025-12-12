@@ -13,6 +13,21 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::get('', [DashboardTeacherController::class, 'index'])->name('dashboard');
 
     Route::get('extracurricular', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
+    
+    // Extracurricular Students
+    Route::prefix('extracurricular-students')->name('extracurricular-students.')->group(function () {
+        Route::get('/', [ExtracurricularController::class, 'studentsIndex'])->name('index');
+    });
+    
+    // Extracurricular Attendance
+    Route::prefix('extracurricular-attendance')->name('extracurricular-attendance.')->group(function () {
+        Route::get('/', [ExtracurricularController::class, 'attendanceIndex'])->name('index');
+    });
+    
+    // Extracurricular Permission
+    Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
+        Route::get('/', [ExtracurricularController::class, 'permissionIndex'])->name('index');
+    });
 
     Route::resource('journals', TeacherJournalController::class)->except(['create', 'store', 'update', 'edit']);
     Route::get('journals/update/{teacherJournal}', [TeacherJournalController::class, 'edit'])->name('journals.edit');
