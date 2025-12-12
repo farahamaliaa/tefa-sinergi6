@@ -147,72 +147,55 @@
                     @endif --}}
 
                     @if (App\Models\Classroom::where('employee_id', auth()->user()->employee->id)->exists())
-                        <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow {{ request()->routeIs('teacher.list-student-class.*') || request()->routeIs('teacher.classroom-attendance.*') || request()->routeIs('teacher.classroom-permission.*') ? 'active' : '' }}"
-                                href="javascript:void(0)" aria-expanded="false">
-                                <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        viewBox="0 0 256 256">
-                                        <path fill="currentColor"
-                                            d="M232 212h-20V40a20 20 0 0 0-20-20H64a20 20 0 0 0-20 20v172H24a12 12 0 0 0 0 24h208a12 12 0 0 0 0-24M68 44h120v168H68Zm104 88a16 16 0 1 1-16-16a16 16 0 0 1 16 16" />
-                                    </svg>
-                                </span>
-                                <span class="hide-menu">Kelas</span>
-                            </a>
-                            <ul aria-expanded="false"
-                                class="collapse first-level {{ request()->routeIs('teacher.list-student-class.*') || request()->routeIs('teacher.classroom-attendance.*') || request()->routeIs('teacher.classroom-permission.*') ? 'in' : '' }}">
-                                @forelse($teacherClassrooms as $classroom)
+                        @php
+                            // Get first classroom (wali kelas biasanya hanya 1 kelas)
+                            $classroom = $teacherClassrooms->first();
+                        @endphp
+                        @if($classroom)
+                            <li class="sidebar-item">
+                                <a class="sidebar-link has-arrow {{ request()->routeIs('teacher.list-student-class.*') || request()->routeIs('teacher.classroom-attendance.*') || request()->routeIs('teacher.classroom-permission.*') ? 'active' : '' }}"
+                                    href="javascript:void(0)" aria-expanded="false">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 256 256">
+                                            <path fill="currentColor"
+                                                d="M232 212h-20V40a20 20 0 0 0-20-20H64a20 20 0 0 0-20 20v172H24a12 12 0 0 0 0 24h208a12 12 0 0 0 0-24M68 44h120v168H68Zm104 88a16 16 0 1 1-16-16a16 16 0 0 1 16 16" />
+                                        </svg>
+                                    </span>
+                                    <span class="hide-menu">Kelas {{ $classroom->name }}</span>
+                                </a>
+                                <ul aria-expanded="false"
+                                    class="collapse first-level {{ request()->routeIs('teacher.list-student-class.*') || request()->routeIs('teacher.classroom-attendance.*') || request()->routeIs('teacher.classroom-permission.*') ? 'in' : '' }}">
                                     <li class="sidebar-item">
-                                        <a class="sidebar-link has-arrow {{ request()->get('classroom') == $classroom->id ? 'active' : '' }}"
-                                            href="javascript:void(0)" aria-expanded="false">
+                                        <a href="{{ route('teacher.list-student-class.index', ['classroom' => $classroom->id]) }}"
+                                            class="sidebar-link {{ request()->routeIs('teacher.list-student-class.*') ? 'active' : '' }}">
                                             <div class="round-16 d-flex align-items-center justify-content-center">
                                                 <i class="ti ti-circle"></i>
                                             </div>
-                                            <span class="hide-menu">{{ $classroom->name }}</span>
+                                            <span class="hide-menu">Daftar Siswa</span>
                                         </a>
-                                        <ul aria-expanded="false"
-                                            class="collapse second-level {{ request()->get('classroom') == $classroom->id ? 'in' : '' }}">
-                                            <li class="sidebar-item">
-                                                <a href="{{ route('teacher.list-student-class.index', ['classroom' => $classroom->id]) }}"
-                                                    class="sidebar-link {{ request()->routeIs('teacher.list-student-class.*') && request()->get('classroom') == $classroom->id ? 'active' : '' }}">
-                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                        <i class="ti ti-point"></i>
-                                                    </div>
-                                                    <span class="hide-menu">Daftar Siswa</span>
-                                                </a>
-                                            </li>
-                                            <li class="sidebar-item">
-                                                <a href="{{ route('teacher.classroom-attendance.index', ['classroom' => $classroom->id]) }}"
-                                                    class="sidebar-link {{ request()->routeIs('teacher.classroom-attendance.*') && request()->get('classroom') == $classroom->id ? 'active' : '' }}">
-                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                        <i class="ti ti-point"></i>
-                                                    </div>
-                                                    <span class="hide-menu">Absensi Siswa</span>
-                                                </a>
-                                            </li>
-                                            <li class="sidebar-item">
-                                                <a href="{{ route('teacher.classroom-permission.index', ['classroom' => $classroom->id]) }}"
-                                                    class="sidebar-link {{ request()->routeIs('teacher.classroom-permission.*') && request()->get('classroom') == $classroom->id ? 'active' : '' }}">
-                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                        <i class="ti ti-point"></i>
-                                                    </div>
-                                                    <span class="hide-menu">Perizinan</span>
-                                                </a>
-                                            </li>
-                                        </ul>
                                     </li>
-                                @empty
                                     <li class="sidebar-item">
-                                        <a href="javascript:void(0)" class="sidebar-link">
+                                        <a href="{{ route('teacher.classroom-attendance.index', ['classroom' => $classroom->id]) }}"
+                                            class="sidebar-link {{ request()->routeIs('teacher.classroom-attendance.*') ? 'active' : '' }}">
                                             <div class="round-16 d-flex align-items-center justify-content-center">
                                                 <i class="ti ti-circle"></i>
                                             </div>
-                                            <span class="hide-menu">Tidak ada kelas</span>
+                                            <span class="hide-menu">Absensi Siswa</span>
                                         </a>
                                     </li>
-                                @endforelse
-                            </ul>
-                        </li>
+                                    <li class="sidebar-item">
+                                        <a href="{{ route('teacher.classroom-permission.index', ['classroom' => $classroom->id]) }}"
+                                            class="sidebar-link {{ request()->routeIs('teacher.classroom-permission.*') ? 'active' : '' }}">
+                                            <div class="round-16 d-flex align-items-center justify-content-center">
+                                                <i class="ti ti-circle"></i>
+                                            </div>
+                                            <span class="hide-menu">Perizinan</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
                     @endif
 
                     <li class="sidebar-item">
