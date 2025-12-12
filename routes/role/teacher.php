@@ -25,6 +25,14 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::get('student-feedback', [StudentFeedbackController::class, 'index'])->name('student-feedback.index');
 
     Route::get('attendance/history', [AttendanceController::class, 'index'])->name('attendance.history');
+    
+    Route::prefix('classroom-attendance')->name('classroom-attendance.')->group(function () {
+        Route::get('/', [AttendanceController::class, 'classroomIndex'])->name('index');
+    });
+    
+    Route::prefix('classroom-permission')->name('classroom-permission.')->group(function () {
+        Route::get('/', [AttendanceController::class, 'permissionIndex'])->name('index');
+    });
 });
 
 

@@ -96,7 +96,14 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
 
     public function whereClassroom(mixed $id): mixed
     {
-        return $this->model->query()->whereRelation('classroomStudent', 'classroom_id', $id)->paginate(10);
+        return $this->model->query()
+            ->where('model_type', 'App\Models\ClassroomStudent')
+            ->whereHas('model', function ($query) use ($id) {
+                $query->where('classroom_id', $id);
+            })
+            ->with('model.student.user', 'model.classroom')
+            ->latest()
+            ->paginate(10);
     }
 
     public function whereClassroomCount(mixed $id, mixed $day, mixed $status): mixed

@@ -76,6 +76,8 @@ use App\Contracts\Repositories\UserRepository;
 use App\Contracts\Repositories\VillageRepository;
 use App\Policies\StudentRepairPolicy;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\Classroom;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -135,6 +137,21 @@ class AppServiceProvider extends ServiceProvider
     {
         config(['app.locale' => 'id']);
         \Carbon\Carbon::setLocale('id');
+        
+        // View Composer untuk sidebar teacher
+        View::composer('teacher.layouts.sidebar', function ($view) {
+            $teacherClassrooms = [];
+            
+            // Cek jika user sudah login dan memiliki employee
+            if (auth()->check() && auth()->user()->employee) {
+                $teacherClassrooms = Classroom::where('employee_id', auth()->user()->employee->id)
+                    ->with('levelClass')
+                    ->orderBy('name')
+                    ->get();
+            }
+            
+            $view->with('teacherClassrooms', $teacherClassrooms);
+        });
     }
 
 }
