@@ -346,4 +346,27 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
             })
             ->latest()->paginate(10);
     }
+
+    public function whereClassroomFiltered(mixed $id, Request $request): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', 'App\Models\ClassroomStudent')
+            ->whereHas('model', function ($query) use ($id) {
+                $query->where('classroom_id', $id);
+            })
+            ->when($request->search, function ($query) use ($request) {
+                $query->whereHas('model.student.user', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                });
+            })
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when($request->date, function ($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
+            ->with('model.student.user', 'model.classroom')
+            ->latest()
+            ->paginate(10);
+    }
 }

@@ -42,8 +42,8 @@ class AttendanceController extends Controller
         // Get classroom students
         $classroomStudents = $this->studentClass->where($classroomId, $request);
         
-        // Get attendance data for this classroom
-        $attendances = $this->attendance->whereClassroom($classroomId);
+        // Get attendance data for this classroom with filters
+        $attendances = $this->attendance->whereClassroomFiltered($classroomId, $request);
         
         return view('teacher.pages.classroom-attendance.index', compact('attendances', 'classroomStudents', 'classroom'));
     }
