@@ -131,10 +131,12 @@
                 </div>
                 <div class="d-flex align-items-start align-items-md-center">
                     <p class="mb-0">Tanggal saat ini:</p>
-                    <span class="badge bg-light-primary text-secondary ms-2 fw-semibold d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary me-1" viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
+                    <span class="badge bg-light-primary text-secondary ms-2 fw-semibold d-flex align-items-center gap-2">
+                        <svg width="23" height="26" viewBox="0 0 23 26" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M11.5 14.3H17.8889V20.8H11.5V14.3ZM20.4444 2.6H19.1667V0H16.6111V2.6H6.38889V0H3.83333V2.6H2.55556C1.15 2.6 0 3.77 0 5.2V23.4C0 24.83 1.15 26 2.55556 26H20.4444C21.85 26 23 24.83 23 23.4V5.2C23 3.77 21.85 2.6 20.4444 2.6ZM20.4444 5.2V7.8H2.55556V5.2H20.4444ZM2.55556 23.4V10.4H20.4444V23.4H2.55556Z"
+                                fill="#0896D1" />
                         </svg>
                         <?php echo date('d F Y'); ?>
                     </span>
