@@ -117,4 +117,32 @@ class ExtracurricularController extends Controller
         
         return view('teacher.pages.extracurricular-permission.index', compact('extracurricularStudents', 'extracurricular'));
     }
+
+    public function journalIndex(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+
+        if (!$extracurricularId) {
+            return redirect()->route('teacher.dashboard')
+                ->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+
+        $extracurricular = Extracurricular::find($extracurricularId);
+
+        if (!$extracurricular) {
+            return redirect()->route('teacher.dashboard')
+                ->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+
+        // Provide dummy empty datasets so the view can render without errors
+        $journals = [];
+        $histories = [];
+        $teacherSchedules = [];
+
+        return view(
+            'teacher.pages.journals-extracurricular.index',
+            compact('extracurricular', 'journals', 'histories', 'teacherSchedules')
+        );
+    }
+
 }

@@ -30,6 +30,7 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     });
 
     Route::resource('journals', TeacherJournalController::class)->except(['create', 'store', 'update', 'edit']);
+    Route::resource('journals/Extracuricular', TeacherJournalController::class)->except(['create', 'store', 'update', 'edit']);
     Route::get('journals/update/{teacherJournal}', [TeacherJournalController::class, 'edit'])->name('journals.edit');
     Route::put('journals/update/{teacherJournal}', [TeacherJournalController::class, 'update'])->name('journals.update');
 
@@ -48,6 +49,9 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::prefix('classroom-permission')->name('classroom-permission.')->group(function () {
         Route::get('/', [AttendanceController::class, 'permissionIndex'])->name('index');
     });
+
+    // Extracurricular Journal (teacher) - dummy page to open extracurricular journals
+    Route::get('extracurricular-journal', [ExtracurricularController::class, 'journalIndex'])->name('extracurricular-journal.index');
 });
 
 

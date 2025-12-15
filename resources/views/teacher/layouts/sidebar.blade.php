@@ -235,12 +235,12 @@
                                         </a>
                                         <!-- Submenu anak -->
                                         <ul class="collapse first-level">
-                                            <li class="sidebar-item">
+                                            {{-- <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
                                                 class="sidebar-link {{ request()->routeIs('teacher.extracurricular-info.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Informasi Eskul</span>
                                                 </a>
-                                            </li>
+                                            </li> --}}
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
@@ -264,7 +264,7 @@
                                             </li>
 
                                             <li class="sidebar-item">
-                                                <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                <a href="{{ route('teacher.extracurricular-journal.index', ['extracurricular' => $extracurricular->id]) }}"
                                                 class="sidebar-link {{ request()->routeIs('teacher.extracurricular-journal.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Jurnal</span>
                                                 </a>
