@@ -7,6 +7,9 @@ use App\Contracts\Interfaces\ExtracurricularStudentInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Extracurricular;
 use App\Models\Classroom;
+use App\Models\LessonSchedule;
+use App\Models\TeacherJournal;
+use App\Models\ClassroomStudent;
 use Illuminate\Http\Request;
 
 class ExtracurricularController extends Controller
@@ -145,4 +148,70 @@ class ExtracurricularController extends Controller
         );
     }
 
+    public function journalCreate(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+        $extracurricular = Extracurricular::find($extracurricularId);
+
+        // Get a lesson schedule for view compatibility (mocked for now)
+        $lessonSchedule = LessonSchedule::with('teacherSubject.subject', 'classroom')->first();
+        
+        if (!$lessonSchedule) {
+            return redirect()->back()->with('error', 'Data jadwal tidak ditemukan');
+        }
+
+        $classroomStudents = ClassroomStudent::with('student.user')
+            ->where('classroom_id', $lessonSchedule->classroom_id)
+            ->paginate(10);
+        $studentsPaginator = $classroomStudents;
+
+        return view('teacher.pages.journals-extracurricular.create', compact(
+            'classroomStudents',
+            'lessonSchedule',
+            'studentsPaginator',
+            'extracurricular'
+        ));
+    }
+
+    public function journalShow($id)
+    {
+        // Fetch the journal or fallback to first available
+        $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
+            ->find($id);
+
+        if (!$journal) {
+            $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
+                ->first();
+        }
+
+        if (!$journal) {
+            return redirect()->back()->with('error', 'Data jurnal tidak ditemukan');
+        }
+
+        $attendanceJournals = $journal->attendanceJournals()
+            ->with('classroomStudent.student.user', 'classroomStudent.classroom')
+            ->paginate(10);
+
+        return view('teacher.pages.journals-extracurricular.detail', compact('journal', 'attendanceJournals'));
+    }
+
+    public function journalEdit($id)
+    {
+        // Fetch the journal or fallback to first available
+        $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
+            ->find($id);
+
+        if (!$journal) {
+            $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
+                ->first();
+        }
+
+        if (!$journal) {
+            return redirect()->back()->with('error', 'Data jurnal tidak ditemukan');
+        }
+
+        $lessonSchedule = $journal->lessonSchedule;
+
+        return view('teacher.pages.journals-extracurricular.update', compact('journal', 'lessonSchedule'));
+    }
 }

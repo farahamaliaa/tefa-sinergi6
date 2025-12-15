@@ -71,7 +71,7 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold text-white mb-8">Jurnal Guru</h4>
+                    <h4 class="fw-semibold text-white mb-8">Jurnal Pembina Eskul</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    <div class="card">
+    {{-- <div class="card">
         <div>
             <span class="badge bg-warning fs-5 px-4 text-white mt-3 fw-semibold me-4 mb-4"
                 style="border-radius:0px 5px 5px 0px;">Informasi</span>
@@ -107,7 +107,7 @@
             <img src="{{ asset('assets/images/background/bub2.png') }}" alt="Description" class="img-fluid"
                 style="max-width: 150px; height: auto;">
         </div>
-    </div>
+    </div> --}}
 
     <div class="row me-3 mb-3">
         <div class="col-lg-12">
@@ -131,10 +131,12 @@
                 </div>
                 <div class="d-flex align-items-start align-items-md-center">
                     <p class="mb-0">Tanggal saat ini:</p>
-                    <span class="badge bg-light-primary text-secondary ms-2 fw-semibold d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary me-1" viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
+                    <span class="badge bg-light-primary text-secondary ms-2 fw-semibold d-flex align-items-center gap-2">
+                        <svg width="23" height="26" viewBox="0 0 23 26" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M11.5 14.3H17.8889V20.8H11.5V14.3ZM20.4444 2.6H19.1667V0H16.6111V2.6H6.38889V0H3.83333V2.6H2.55556C1.15 2.6 0 3.77 0 5.2V23.4C0 24.83 1.15 26 2.55556 26H20.4444C21.85 26 23 24.83 23 23.4V5.2C23 3.77 21.85 2.6 20.4444 2.6ZM20.4444 5.2V7.8H2.55556V5.2H20.4444ZM2.55556 23.4V10.4H20.4444V23.4H2.55556Z"
+                                fill="#0896D1" />
                         </svg>
                         <?php echo date('d F Y'); ?>
                     </span>
@@ -146,67 +148,76 @@
 
     <div class="card border shadow mt-3">
         <div class="card-body pt-3">
-            <h4 class="pb-3">Jadwal Mengajar Hari Ini</h4>
+            <h4 class="pb-3">Jurnal Kegiatan Esktrakulikuler Hari Ini</h4>
             <div class="table-responsive rounded-2 mb-4">
                 <table class="table text-nowrap border customize-table mb-0 align-middle">
                     <thead class="text-dark fs-4">
                         <tr>
                             <th class="text-white" style="background-color: #0896D1 !important;">No</th>
-                            <th class="text-white" style="background-color: #0896D1 !important;">Mata Pelajaran</th>
-                            <th class="text-white" style="background-color: #0896D1 !important;">Kelas</th>
-                            <th class="text-white" style="background-color: #0896D1 !important;">Jam</th>
                             <th class="text-white" style="background-color: #0896D1 !important;">Tanggal</th>
+                            <th class="text-white" style="background-color: #0896D1 !important;">Jam</th>
+                            <th class="text-white" style="background-color: #0896D1 !important;">Total Hadir</th>
                             <th class="text-white" style="background-color: #0896D1 !important;">Status</th>
                             <th class=" text-center text-white" style="background-color: #0896D1 !important;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($teacherSchedules as $lessonSchedule)
-                            {{-- @php
-                                dd(explode(' - ', $lessonSchedule->start->name)[1]);
-                            @endphp --}}
+                        @php
+                            $dummyData = [
+                                [
+                                    'date' => '20/12/2025',
+                                    'time' => '15:00',
+                                    'attendance' => 20,
+                                    'status' => 'Belum Mengisi',
+                                ],
+                                [
+                                    'date' => '20/12/2025',
+                                    'time' => '15:00',
+                                    'attendance' => 20,
+                                    'status' => 'Mengisi',
+                                ],
+                            ];
+                        @endphp
+                        @foreach ($dummyData as $data)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $lessonSchedule->teacherSubject->subject->name }}</td>
-                                <td>{{ $lessonSchedule->classroom->name }}</td>
-                                <td>{{ Carbon::parse($lessonSchedule->start->start)->format('H.i') }} -
-                                    {{ Carbon::parse($lessonSchedule->end->end)->format('H.i') }}</td>
-                                <td>{{ Carbon::now()->locale('id')->translatedFormat('d F Y') }}</td>
-                                @if ($lessonSchedule->teacherJournals->count() > 0)
-                                    <td>
-                                        <span class="badge bg-light-success text-success">Sudah Diisi</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('teacher.journals.show', $lessonSchedule->teacherJournals->first()->id) }}"
-                                            class="btn btn-primary btn-sm">Detail</a>
-                                        <a href="{{ route('teacher.journals.edit', $lessonSchedule->teacherJournals->first()->id) }}"
-                                            class="btn btn-warning btn-sm">Edit Jurnal</a>
-                                    </td>
-                                @else
-                                    <td>
-                                        <span class="badge bg-light-danger text-danger">Belum Diisi</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('teacher.journals.create', $lessonSchedule->id) }}"
-                                            class="btn btn-light-primary btn-lg">
-                                            <i class="ti ti-plus" style="color: #0896D1 !important;"></i>
+                                <td>{{ $data['date'] }}</td>
+                                <td>{{ $data['time'] }}</td>
+                                <td>{{ $data['attendance'] }} Siswa Hadir</td>
+                                <td>
+                                    @if ($data['status'] == 'Belum Mengisi')
+                                        <span class="badge px-3 py-2 rounded-2 fw-semibold"
+                                            style="background-color: #FEF2F2; color: #DC2626;">{{ $data['status'] }}</span>
+                                    @else
+                                        <span class="badge px-3 py-2 rounded-2 fw-semibold"
+                                            style="background-color: #F0FDFA; color: #0D9488;">{{ $data['status'] }}</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($data['status'] == 'Belum Mengisi')
+                                        <a href="{{ route('teacher.extracurricular-journal.create', ['extracurricular' => request('extracurricular')]) }}"
+                                            class="btn btn-sm d-inline-flex align-items-center justify-content-center"
+                                            style="background-color: #E0F2FE; color: #0284C7; width: 32px; height: 32px;">
+                                            <i class="ti ti-plus fs-5"></i>
                                         </a>
-                                    </td>
-                                @endif
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center align-middle">
-                                    <div class="d-flex flex-column justify-content-center align-items-center">
-                                        <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
-                                            width="300px">
-                                        <p class="fs-5 text-dark text-center mt-2">
-                                            Belum ada data
-                                        </p>
-                                    </div>
+                                    @else
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <button type="button"
+                                                class="btn btn-sm d-inline-flex align-items-center justify-content-center"
+                                                style="background-color: #E0F2FE; color: #0284C7; width: 32px; height: 32px;"
+                                                data-bs-toggle="modal" data-bs-target="#modal-detail">
+                                                <i class="ti ti-eye fs-5"></i>
+                                            </button>
+                                            <a href="{{ route('teacher.extracurricular-journal.edit', ['id' => 1]) }}"
+                                                class="btn btn-sm d-inline-flex align-items-center justify-content-center"
+                                                style="background-color: #FEF3C7; color: #D97706; width: 32px; height: 32px;">
+                                                <i class="ti ti-pencil fs-5"></i>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </td>
                             </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -266,17 +277,35 @@
     </div>
 
     <div class="row me-3 mb-3">
-        @forelse ($histories as $journal)
-            <div class="col-md-12 d-flex align-items-stretch">
-                <div class="card w-100">
+        @php
+            $historyDummyData = [
+                [
+                    'name' => 'Ekstrakulikuler - Basket',
+                    'date' => '09 Des 2025',
+                    'description' =>
+                        'Kegiatan basket hari ini sukses bikin capek dan ketawa bareng. Latihan berjalan aman dan tertib, meskipun ring masih terkesan pilih-pilih bola saat sesi shooting. Siswa tetap antusias mengikuti setiap latihan dari awal sampai akhir, walaupun beberapa sudah mulai kehabisan napas. Secara keseluruhan, semangat dan kebersamaan siswa patut diapresiasi.',
+                    'image' => 'assets/images/example-jurnal-ekstra.png',
+                ],
+                [
+                    'name' => 'Ekstrakulikuler - Basket',
+                    'date' => '09 Des 2025',
+                    'description' =>
+                        'Kegiatan basket hari ini sukses bikin capek dan ketawa bareng. Latihan berjalan aman dan tertib, meskipun ring masih terkesan pilih-pilih bola saat sesi shooting. Siswa tetap antusias mengikuti setiap latihan dari awal sampai akhir, walaupun beberapa sudah mulai kehabisan napas. Secara keseluruhan, semangat dan kebersamaan siswa patut diapresiasi.',
+                    'image' => 'assets/images/example-jurnal-ekstra.png',
+                ],
+            ];
+        @endphp
+
+        @foreach ($historyDummyData as $journal)
+            <div class="col-md-12 d-flex align-items-stretch mb-4">
+                <div class="card w-100 shadow-sm border" style="border-radius: 8px; overflow: hidden;">
                     <div class="card-header" style="color: #0896D1 !important; background-color: #0896D1 !important;">
                         <h4 class="mb-0 text-white card-title">
-                            {{ $journal->lessonSchedule->classroom->name }} -
-                            {{ $journal->lessonSchedule->teacherSubject->subject->name }}
+                            {{ $journal['name'] }}
                         </h4>
                         <div class="position-absolute top-0 end-0" style="padding: 0px; position: relative;">
                             {{-- <img src="{{ asset('assets/images/background/arrow-leftwarning1.png') }}" alt="Description"
-                                class="img-fluid" style="max-width: 210px; height: auto; position: relative;"> --}}
+                        class="img-fluid" style="max-width: 210px; height: auto; position: relative;"> --}}
                             <img src="{{ asset('assets/images/background/arrow-leftwarning1.png') }}" alt="Description"
                                 class="img-fluid" style="max-width: 268px; height: auto; position: relative;">
                             <span class="d-flex align-items-right ms-5"
@@ -286,74 +315,39 @@
                                     <path fill="currentColor"
                                         d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
                                 </svg>
-                                {{ Carbon::parse($journal->date)->isoFormat('DD MMMM YYYY') }}
+                                {{ $journal['date'] }}
                             </span>
                         </div>
                     </div>
 
-                    <div class="card-body">
-                        <div class="row pb-2" style="border-bottom: 1px solid #c0c0c0">
-                            <div class="col-lg-8" style="border-right: 1px solid #c0c0c0;">
-                                <div class="pe-3">
-                                    <h5 class="card-title mb-4">Deskripsi:</h5>
-                                    <p>{{ \Illuminate\Support\Str::limit($journal->description, 100) }}</p>
-                                </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-column flex-md-row gap-4">
+                            <div style="min-width: 200px; max-width: 200px;">
+                                <img src="{{ asset('assets/images/example-jurnal-ekstra.png') }}"
+                                    class="img-fluid rounded-3 w-100" style="height: 140px; object-fit: cover;"
+                                    alt="Kegiatan">
                             </div>
-                            <div class="col-lg-4">
-                                <div class="ps-3">
-                                    <h5 class="card-title mb-4 ms-5 ps-3">Rekap Absensi:</h5>
-                                    <div class="row px-5">
-                                        <div class="col-lg-4">
-                                            <div class="text-center">
-                                                <span class="badge bg-light-primary fs-7 fw-semibold mb-1 py-2"
-                                                    style="color: #0896D1 !important;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::PERMIT)->count() }}</span>
-                                                <p>Izin</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="text-center">
-                                                <span
-                                                    class="badge bg-light-warning text-warning fs-7 fw-semibold mb-1 py-2">{{ $journal->attendanceJournals->where('status', AttendanceEnum::SICK)->count() }}</span>
-                                                <p>Sakit</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="text-center">
-                                                <span
-                                                    class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 py-2">{{ $journal->attendanceJournals->where('status', AttendanceEnum::ALPHA)->count() }}</span>
-                                                <p>Alfa</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <div class="flex-grow-1">
+                                <h5 class="fw-semibold text-dark mb-2">Deskripsi</h5>
+                                <p class="text-muted mb-0" style="line-height: 1.6; text-align: justify;">
+                                    {{ $journal['description'] }}
+                                </p>
                             </div>
                         </div>
 
-                        <div>
-                            <a href="{{ route('teacher.journals.show', $journal->id) }}" class="btn btn-primary mt-3">
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-primary d-inline-flex align-items-center px-4 py-2"
+                                style="background-color: #0896D1; border: none;" data-bs-toggle="modal"
+                                data-bs-target="#modal-detail">
                                 Lihat Detail Jurnal
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="mb-1"
-                                    viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M17.92 11.62a1 1 0 0 0-.21-.33l-5-5a1 1 0 0 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76" />
-                                </svg>
-                            </a>
+                                <i class="ti ti-arrow-right ms-2 fs-5"></i>
+                            </button>
                         </div>
-
                     </div>
                 </div>
             </div>
-        @empty
-            <div class="text-center align-middle">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
-                    <p class="fs-5 text-dark text-center mt-2">
-                        Belum ada data
-                    </p>
-                </div>
-            </div>
-        @endforelse
+        @endforeach
+
     </div>
 
 
@@ -423,4 +417,6 @@
             </div>
         </div>
     </div>
+
+    @include('teacher.pages.journals-extracurricular.wigets.detail')
 @endsection

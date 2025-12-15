@@ -139,8 +139,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item text-white fs-3" aria-current="page">
-                                {{ $lessonSchedule->teacherSubject->subject->name }} -
-                                {{ $lessonSchedule->classroom->name }}</li>
+                                Extrakulikuler Basket
                         </ol>
                     </nav>
                 </div>
@@ -185,139 +184,62 @@
 
     <form action="{{ route('teacher.journals.store', $lessonSchedule->id) }}" method="POST">
         @csrf
-
-        {{-- attendance --}}
-        <div class="card shadow">
-            <div class="card-body pt-3">
-                <h4>Presensi Siswa</h4>
-                <div class="d-flex flex-wrap mb-3 mt-3 mb-2 w-64">
-                    <form class="d-flex gap-2" id="form-search">
-                        <div class="position-relative" style="padding-right: 10px">
-                            <input type="text" name="search" class="form-control product-search ps-5 text-dark"
-                                id="input-search" placeholder="Cari" value="{{ request('search') }}"
-                                style="border-radius: 10px; width: 250px;">
-                            <i
-                                class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-lg-auto"
-                            style="background-color: #0D93CA;">Filter</button>
-                    </form>
-                </div>
-                <div class="table-responsive rounded-2 mb-4">
-                    <table class="table text-nowrap customize-table mb-0 align-middle" id="student-table">
-                        <thead class="text-dark fs-4">
-                            <tr>
-                                <th class="text-white" style="background-color: #0D93CA; border-top-left-radius: 10px;">No
-                                </th>
-                                <th class="text-white" style="background-color: #0D93CA;">Nama Siswa</th>
-                                <th class="text-white" style="background-color: #0D93CA;">Kelas</th>
-                                <th class="text-white d-flex" style="background-color: #0D93CA;">
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input attendance-radio" type="checkbox">
-                                        {{-- <label class="form-check-label ms-2">
-                                            Hadir Semua
-                                        </label> --}}
-                                    </div>
-                                    {{-- Status Kehadiran --}}
-                                    Hadir Semua
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($classroomStudents as $classroomStudent)
-                                <tr>
-                                    <td>{{ ($studentsPaginator->currentPage() - 1) * $studentsPaginator->perPage() + $loop->iteration }}
-                                    </td>
-                                    <td> <img
-                                            src="{{ $classroomStudent->student->image ? asset('storage/' . $classroomStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
-                                            alt="" class="img-fluid rounded-circle" style="padding-right: 10px"
-                                            width="32" height="32">
-                                        {{ $classroomStudent->student->user->name }} </td>
-                                    <td>{{ $lessonSchedule->classroom->name }}</td>
-                                    <td>
-                                        <div class="d-flex gap-5 align-items-center">
-                                            <div class="form-check d-flex align-items-center">
-                                                <input class="form-check-input attendance-radio" type="radio"
-                                                    name="attendance[{{ $classroomStudent->id }}]"
-                                                    id="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::PRESENT->value }}"
-                                                    value="{{ AttendanceEnum::PRESENT->value }}" checked>
-                                                <label class="form-check-label ms-2"
-                                                    for="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::PRESENT->value }}">
-                                                    Hadir
-                                                </label>
-                                            </div>
-                                            <div class="form-check d-flex align-items-center">
-                                                <input class="form-check-input attendance-radio" type="radio"
-                                                    name="attendance[{{ $classroomStudent->id }}]"
-                                                    id="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::PERMIT->value }}"
-                                                    value="{{ AttendanceEnum::PERMIT->value }}">
-                                                <label class="form-check-label ms-2"
-                                                    for="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::PERMIT->value }}">
-                                                    Izin
-                                                </label>
-                                            </div>
-                                            <div class="form-check d-flex align-items-center">
-                                                <input class="form-check-input attendance-radio" type="radio"
-                                                    name="attendance[{{ $classroomStudent->id }}]"
-                                                    id="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::SICK->value }}"
-                                                    value="{{ AttendanceEnum::SICK->value }}">
-                                                <label class="form-check-label ms-2"
-                                                    for="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::SICK->value }}">
-                                                    Sakit
-                                                </label>
-                                            </div>
-                                            <div class="form-check d-flex align-items-center">
-                                                <input class="form-check-input attendance-radio" type="radio"
-                                                    name="attendance[{{ $classroomStudent->id }}]"
-                                                    id="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::ALPHA->value }}"
-                                                    value="{{ AttendanceEnum::ALPHA->value }}">
-                                                <label class="form-check-label ms-2"
-                                                    for="attendance-{{ $classroomStudent->id . '-' . AttendanceEnum::ALPHA->value }}">
-                                                    Alfa
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted">
-                        Menampilkan {{ $studentsPaginator->currentPage() }} dari {{ $studentsPaginator->lastPage() }}
-                        halaman
+        <h4 class="pb-3 fw-bold">Isi Jurnal</h4>
+        <div class="row">
+            {{-- Bukti Foto --}}
+            <div class="col-md-4">
+                <div class="card shadow overflow-hidden">
+                    <div class="card-header text-white py-3" style="background-color: #0896D1;">
+                        <h5 class="mb-0 text-white">Bukti Foto</h5>
                     </div>
-                    <div>
-                        <x-paginate-component :paginator="$studentsPaginator" />
+                    <div class="card-body p-4">
+                        <div class="text-center p-4 border-2 border-dashed rounded-3"
+                            style="border-color: #93c5fd; border-style: dashed; background-color: #f8fafc;">
+                            <div class="mb-3">
+                                <img src="{{ asset('assets/images/background/Image-upload-pana.png') }}" alt="Upload"
+                                    class="img-fluid" style="max-height: 300px;">
+                                {{-- Fallback if specific image missing, use a generic icon or keep empty if asset not available --}}
+                                {{-- If you don't have the exact illustration, implies I should maybe use a generic one or just the area --}}
+                            </div>
+                            <p class="text-muted small mb-3">Format harus berupa jpg, png dan jpeg</p>
+                            <button type="button" class="btn btn-primary px-4" style="background-color: #0896D1;">
+                                Unggah Gambar
+                            </button>
+                            <input type="file" name="image" class="d-none">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex flex-direction-row justify-content-between">
-            <h4 class="pb-3"><b>Isi Jurnal</b></h4>
-        </div>
-
-        {{-- description --}}
-        <div class="card shadow">
-            <div class="card-body">
-                <h5 class="fw-bold pb-3"><b>Laporan Kegiatan</b></h5>
-                <div class="form-group mb-3">
-                    <label for="title" class="form-label">Judul</label>
-                    <input type="text" class="form-control" name="title" id="title"
-                        placeholder="Masukkan Judul" value="{{ old('title') }}">
-                    @error('title')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="description" class="form-label">Deskripsi</label>
-                    <p>Isi laporan sesuai dengan kegiatan dan aktivitas yang berlaku pada jam pelajaran tersebut.</p>
-                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Masukkan Deskripsi">{{ old('description') }}</textarea>
-                    @error('description')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+            {{-- Isi Laporan --}}
+            <div class="col-md-8">
+                <div class="card shadow overflow-hidden">
+                    <div class="card-header text-white py-3" style="background-color: #0896D1;">
+                        <h5 class="mb-0 text-white">Isi Laporan Kegiatan</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="form-group mb-4">
+                            <label for="title" class="form-label fw-semibold">Judul</label>
+                            <input type="text" class="form-control py-2" name="title" id="title"
+                                placeholder="Masukkan Judul" value="{{ old('title') }}">
+                            @error('title')
+                                <span class="text-danger small">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="form-label fw-semibold">Deskripsi</label>
+                            <p class="text-muted small mb-2">Isi laporan sesuai dengan kegiatan dan aktivitas yang berlaku
+                                pada jam pelajaran tersebut.</p>
+                            <textarea class="form-control" id="description" name="description" rows="6" placeholder="Masukkan Deskripsi"
+                                style="resize: none;">{{ old('description') }}</textarea>
+                            <div class="text-start mt-1">
+                                <span class="text-black small">0 Karakter</span>
+                            </div>
+                            @error('description')
+                                <span class="text-danger small">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

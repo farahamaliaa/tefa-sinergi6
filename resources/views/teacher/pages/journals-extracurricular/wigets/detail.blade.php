@@ -31,49 +31,39 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h5 class="modal-title text-white" id="importPegawai">Detail Siswa</h5>
+                <h5 class="modal-title text-white" id="importPegawai">Detail Jurnal</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="row justify-content-center mb-4">
-                    <div class="col-12 text-center">
-                        <img src="{{ asset('admin_assets/dist/images/profile/user-7.jpg') }}" id="image-detail"
-                            class="rounded-circle user-profile mb-3"
-                            style="object-fit: cover; width: 120px; height: 120px;" alt="User Profile Picture" />
+            <div class="modal-body p-4">
+                {{-- Judul --}}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark fs-4">Judul</label>
+                    <div class="form-control-plaintext text-dark">
+                        Semangat Pantang Kendor di Lapangan Basket!
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Nama</label>
-                        <div class="form-control-plaintext" id="name-detail"></div>
+
+                {{-- Bukti Foto --}}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark fs-4">Bukti Foto</label>
+                    <div>
+                        {{-- Using a placeholder image or an existing asset that might fit --}}
+                        <img src="{{ asset('assets/images/example-jurnal-ekstra.png') }}"
+                            class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="width: 300px; height: 200px; object-fit: cover;" alt="Bukti Foto Kegiatan" />
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Email</label>
-                        <div class="form-control-plaintext" id="email-detail"></div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Jenis Kelamin</label>
-                        <div class="form-control-plaintext" id="gender-detail"></div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">NIK</label>
-                        <div class="form-control-plaintext" id="nik-detail"></div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">RFID</label>
-                        <div class="form-control-plaintext" id="rfid-detail">-</div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Status Kehadiran</label>
-                        <div>
-                            <span class="badge bg-light-success text-success px-3 py-2 rounded-2"
-                                id="status-detail">Masuk</span>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label class="form-label fw-semibold">Alamat</label>
-                        <div class="form-control-plaintext" style="height: 100px; overflow-y: auto;"
-                            id="address-detail"></div>
+                </div>
+
+                {{-- Deskripsi --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark fs-4">Deskripsi</label>
+                    <div class="form-control-plaintext text-dark" style="min-height: 120px; text-align: justify;">
+                        Kegiatan basket hari ini sukses bikin capek dan ketawa bareng. Latihan berjalan aman dan tertib,
+                        meskipun ring masih terkesan pilih-pilih bola saat sesi shooting. Siswa tetap antusias mengikuti
+                        setiap
+                        latihan dari awal sampai akhir, walaupun beberapa sudah mulai kehabisan napas. Secara
+                        keseluruhan,
+                        semangat dan kebersamaan siswa patut diapresiasi.
                     </div>
                 </div>
             </div>

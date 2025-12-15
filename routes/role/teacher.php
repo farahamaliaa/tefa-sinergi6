@@ -8,22 +8,21 @@ use App\Http\Controllers\Teacher\TeacherJournalController;
 use App\Http\Controllers\Teacher\TeacherStudentController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('', [DashboardTeacherController::class, 'index'])->name('dashboard');
 
     Route::get('extracurricular', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
-    
+
     // Extracurricular Students
     Route::prefix('extracurricular-students')->name('extracurricular-students.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'studentsIndex'])->name('index');
     });
-    
+
     // Extracurricular Attendance
     Route::prefix('extracurricular-attendance')->name('extracurricular-attendance.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'attendanceIndex'])->name('index');
     });
-    
+
     // Extracurricular Permission
     Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'permissionIndex'])->name('index');
@@ -41,18 +40,20 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::get('student-feedback', [StudentFeedbackController::class, 'index'])->name('student-feedback.index');
 
     Route::get('attendance/history', [AttendanceController::class, 'index'])->name('attendance.history');
-    
+
     Route::prefix('classroom-attendance')->name('classroom-attendance.')->group(function () {
         Route::get('/', [AttendanceController::class, 'classroomIndex'])->name('index');
     });
-    
+
     Route::prefix('classroom-permission')->name('classroom-permission.')->group(function () {
         Route::get('/', [AttendanceController::class, 'permissionIndex'])->name('index');
     });
 
-    // Extracurricular Journal (teacher) - dummy page to open extracurricular journals
-    Route::get('extracurricular-journal', [ExtracurricularController::class, 'journalIndex'])->name('extracurricular-journal.index');
+    // Extracurricular Journal (teacher)
+    Route::prefix('extracurricular-journal')->name('extracurricular-journal.')->group(function () {
+        Route::get('/', [ExtracurricularController::class, 'journalIndex'])->name('index');
+        Route::get('/create', [ExtracurricularController::class, 'journalCreate'])->name('create');
+        Route::get('/detail/{id}', [ExtracurricularController::class, 'journalShow'])->name('show');
+        Route::get('/edit/{id}', [ExtracurricularController::class, 'journalEdit'])->name('edit');
+    });
 });
-
-
-
