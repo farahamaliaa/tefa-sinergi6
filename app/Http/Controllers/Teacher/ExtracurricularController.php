@@ -6,6 +6,7 @@ use App\Contracts\Interfaces\ExtracurricularInterface;
 use App\Contracts\Interfaces\ExtracurricularStudentInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Extracurricular;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
 
 class ExtracurricularController extends Controller
@@ -60,8 +61,10 @@ class ExtracurricularController extends Controller
                 });
             })
             ->get();
+            $classrooms = Classroom::orderBy('name')->get();
+
         
-        return view('teacher.pages.extracurricular-students.index', compact('extracurricularStudents', 'extracurricular'));
+        return view('teacher.pages.extracurricular-students.index', compact('extracurricularStudents', 'extracurricular', 'classrooms'));
     }
 
     public function attendanceIndex(Request $request)

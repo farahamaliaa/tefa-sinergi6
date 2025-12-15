@@ -47,6 +47,14 @@
         color: #1191C6 !important;
         stroke: #1191C6 !important;
     }
+
+    .collapse .sidebar-item .sidebar-link {
+        padding-left: 30px !important;
+    }
+    .collapse .collapse .sidebar-item .sidebar-link {
+        padding-left: 50px !important;
+    }
+
 </style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
@@ -216,36 +224,52 @@
                                                 fill="#0896D1" />
                                         </svg>
                                     </span>
-                                    <span class="hide-menu">Ekskul {{ $extracurricular->name }}</span>
+                                    <span class="hide-menu">Ekskul</span>
                                 </a>
                                 <ul aria-expanded="false"
-                                    class="collapse first-level {{ request()->routeIs('teacher.extracurricular-students.*') || request()->routeIs('teacher.extracurricular-attendance.*') || request()->routeIs('teacher.extracurricular-permission.*') ? 'in' : '' }}">
+                                    class="collapse first-level {{ request()->routeIs('teacher.extracurricular-*') ? 'in' : '' }}">
+                                    <!-- Nama ekskul sebagai item -->
                                     <li class="sidebar-item">
-                                        <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
-                                            class="sidebar-link {{ request()->routeIs('teacher.extracurricular-students.*') ? 'active' : '' }}">
-                                            <div class="round-16 d-flex align-items-center justify-content-center">
-                                                <i class="ti ti-circle"></i>
-                                            </div>
-                                            <span class="hide-menu">Daftar Siswa</span>
+                                        <a class="sidebar-link has-arrow" href="javascript:void(0)">
+                                            <span class="hide-menu">{{ $extracurricular->name }}</span>
                                         </a>
-                                    </li>
-                                    <li class="sidebar-item">
-                                        <a href="{{ route('teacher.extracurricular-attendance.index', ['extracurricular' => $extracurricular->id]) }}"
-                                            class="sidebar-link {{ request()->routeIs('teacher.extracurricular-attendance.*') ? 'active' : '' }}">
-                                            <div class="round-16 d-flex align-items-center justify-content-center">
-                                                <i class="ti ti-circle"></i>
-                                            </div>
-                                            <span class="hide-menu">Absensi Siswa</span>
-                                        </a>
-                                    </li>
-                                    <li class="sidebar-item">
-                                        <a href="{{ route('teacher.extracurricular-permission.index', ['extracurricular' => $extracurricular->id]) }}"
-                                            class="sidebar-link {{ request()->routeIs('teacher.extracurricular-permission.*') ? 'active' : '' }}">
-                                            <div class="round-16 d-flex align-items-center justify-content-center">
-                                                <i class="ti ti-circle"></i>
-                                            </div>
-                                            <span class="hide-menu">Perizinan</span>
-                                        </a>
+                                        <!-- Submenu anak -->
+                                        <ul class="collapse first-level">
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-info.*') ? 'active' : '' }}">
+                                                    <span class="hide-menu">Informasi Eskul</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-students.*') ? 'active' : '' }}">
+                                                    <span class="hide-menu">Daftar Siswa</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('teacher.extracurricular-attendance.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-attendance.*') ? 'active' : '' }}">
+                                                    <span class="hide-menu">Absensi Siswa</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('teacher.extracurricular-permission.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-permission.*') ? 'active' : '' }}">
+                                                    <span class="hide-menu">Perizinan</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-journal.*') ? 'active' : '' }}">
+                                                    <span class="hide-menu">Jurnal</span>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                             </li>

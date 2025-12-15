@@ -1,6 +1,62 @@
 @extends('teacher.layouts.app')
+@section('style')
+<style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .card.header-wave {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }    
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+    .table-header-custom th {
+        background-color: #0891CA !important; 
+        color: white !important;
+    }
+
+</style>
+@endsection
 @section('content')
-    <div class="card bg-info shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
@@ -22,14 +78,14 @@
         <form class="d-flex gap-2">
             <input type="hidden" name="extracurricular" value="{{ $extracurricular->id }}">
             <input type="text" name="search" class="form-control search-chat" value="{{ old('search', request('search')) }}" placeholder="Cari..">
-            <button class="btn-primary btn" type="submit">Cari</button>
+            <button class="btn-primary btn" type="submit" style="background-color: #098CC3">Cari</button>
         </form>
     </div>
 
     <div class="">
-        <div class="table-responsive rounded-2 mb-4">
+        <div class="table-responsive rounded-3 mb-4">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="text-dark fs-4">
+                <thead class="fs-4 table-header-custom">
                     <tr>
                         <th class="text-black">No</th>
                         <th class="text-black">Nama</th>
