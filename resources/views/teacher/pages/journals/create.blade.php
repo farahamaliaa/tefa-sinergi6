@@ -191,7 +191,7 @@
             <div class="card-body pt-3">
                 <h4>Presensi Siswa</h4>
                 <div class="d-flex flex-wrap mb-3 mt-3 mb-2 w-64">
-                    <form class="d-flex gap-2" id="form-search">
+                    <div class="d-flex gap-2" id="form-search">
                         <div class="position-relative" style="padding-right: 10px">
                             <input type="text" name="search" class="form-control product-search ps-5 text-dark"
                                 id="input-search" placeholder="Cari" value="{{ request('search') }}"
@@ -199,9 +199,9 @@
                             <i
                                 class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </div>
-                        <button type="submit" class="btn btn-primary w-lg-auto"
+                        <button type="button" class="btn btn-primary w-lg-auto" onclick="locationSearch()"
                             style="background-color: #0D93CA;">Filter</button>
-                    </form>
+                    </div>
                 </div>
                 <div class="table-responsive rounded-2 mb-4">
                     <table class="table text-nowrap customize-table mb-0 align-middle" id="student-table">
@@ -334,4 +334,12 @@
             </button>
         </div>
     </form>
+    <script>
+        function locationSearch() {
+            var q = document.getElementById('input-search') ? document.getElementById('input-search').value : '';
+            var base = "{{ url()->current() }}";
+            var separator = base.indexOf('?') === -1 ? '?' : '&';
+            window.location.href = base + (q ? (separator + 'search=' + encodeURIComponent(q)) : '');
+        }
+    </script>
 @endsection

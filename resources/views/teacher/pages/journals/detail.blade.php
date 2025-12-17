@@ -306,7 +306,7 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <button type="button" class="btn bg-white" style="color: #0D93CA;"
+                                    <button type="button" class="btn bg-white btn-detail" style="color: #0D93CA;"
                                         data-bs-toggle="modal" data-bs-target="#modal-detail"
                                         data-attendance="{{ $attendance->id }}">Lihat
                                         Detail</button>
