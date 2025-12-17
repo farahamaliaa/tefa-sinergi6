@@ -111,6 +111,11 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
 
+    // Extra instructor static/demo page
+    Route::get('extra-instructor', function () {
+        return view('school.pages.extra-instructor.index');
+    })->name('extra-instructor.index');
+
     //parent
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
     Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
