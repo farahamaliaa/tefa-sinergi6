@@ -269,7 +269,7 @@
                         </div>
                     </div>
                     
-                    <!-- <div class="table-responsive rounded-2 mb-4">
+                    {{-- <div class="table-responsive rounded-2 mb-4">
                         <table class="table border text-nowrap customize-table mb-0 align-middle">
                             <thead class="text-dark fs-4">
                                 <tr>
@@ -332,7 +332,7 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div> -->
+                    </div> --}}
                 </div>
             </div>
         </div>

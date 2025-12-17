@@ -28,10 +28,11 @@ class TeacherStudentController extends Controller
         
         // Get lesson schedules for this classroom
         $lessonSchedules = $classroom->lessonSchedule()
-            ->with('teacherSubject.subject', 'teacherSubject.employee.user', 'lessonHourStart', 'lessonHourEnd')
+            ->with('teacherSubject.subject', 'teacherSubject.employee.user', 'start', 'end')
             ->orderBy('day')
             ->orderBy('lesson_hour_start')
-            ->get();
+            ->get()
+            ->groupBy('day');
         
         return view('teacher.pages.teacher-student.index', compact('classroomStudents', 'classroom', 'lessonSchedules'));
     }
