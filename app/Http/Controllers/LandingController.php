@@ -30,7 +30,7 @@ class LandingController extends Controller
                 'newses' => [],
                 'faqs' => [],
                 'error' => 'Server eksternal tidak merespon. Silakan coba lagi nanti.',
-            ]);            
+            ]);
         }
     }
 
