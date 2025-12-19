@@ -236,7 +236,7 @@
     <div class="col-lg-8 col-md-12 d-flex mb-4">
         <div class="card w-100 h-100 border">
             <div class="card-body">
-                <h5 class="mb-4"><b>Data Absensi Guru</b></h5>
+                <h5 class="mb-4"><b>Data Absensi Pembina Extra</b></h5>
                 <ul class="nav nav-pills mb-4 p-1 rounded-pill bg-light d-inline-flex">
                     <li class="nav-item">
                         <a href="#late-content" data-bs-toggle="tab"
@@ -295,7 +295,7 @@
         <div class="card w-100 h-100 overflow-hidden border">
             <div class="card-body">
                 <div class="row align-items-center">
-                    <h5 class="card-title fw-semibold">Statistik Absensi Guru</h5>
+                    <h5 class="card-title fw-semibold">Statistik Absensi Pembina Extra</h5>
                     <h6 class="mb-3">Hari ini</h6>
                     <div id="chart-student" class="d-flex justify-content-center"></div>
                 </div>
@@ -305,7 +305,7 @@
 </div> --}}
 
 
-<h4 class="mb-4"><b>Data Jurnal Guru Hari Ini / </b>
+<h4 class="mb-4"><b>Data Jurnal Pembina Extra Hari Ini / </b>
     <span class="mb-1 badge font-medium bg-light-primary text-primary" style="font-size: ">
         <b>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</b>
     </span>

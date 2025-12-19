@@ -102,21 +102,13 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <a type="button" class="text-secondary btn-detail-journal"
+                                    <button type="button" class="btn btn-primary btn-detail-journal"
                                         data-author="{{ $all_journal->teacherSubject->employee->user->name }}"
                                         data-date="{{ \Carbon\Carbon::parse($all_journal->created_at)->translatedFormat('d F Y') }}"
                                         data-description="{{ $all_journal->teacherJournals->first() ? $all_journal->teacherJournals->first()->description : 'kosong...' }}"
                                         data-classroom="{{ $all_journal->classroom->name }} - {{ $all_journal->teacherSubject->subject->name }}">
-                                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24">
-                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="1.5">
-                                                <path d="M3 13c3.6-8 14.4-8 18 0" />
-                                                <path d="M12 17a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
-                                            </g>
-                                        </svg> -->
                                         Lihat Detail
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

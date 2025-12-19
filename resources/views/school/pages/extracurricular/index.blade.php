@@ -299,8 +299,8 @@
                                 <label class="custom-switch">
                                     <input type="checkbox" id="status-{{ $extracurricular->id }}" {{ $extracurricular->is_active ? 'checked' : '' }}>
                                     <span class="slider">
-                                        <span class="slider-text text-on">Aktif</span>
-                                        <span class="slider-text text-off">Non</span>
+                                        {{-- <span class="slider-text text-on">Aktif</span>
+                                        <span class="slider-text text-off">Non</span> --}}
                                     </span>
                                 </label>
                                 <div class="dropdown dropstart">
