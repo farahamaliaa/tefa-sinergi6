@@ -147,11 +147,38 @@
 
     <div class="card card-body">
         <h4><b>Perizinan Siswa</b></h4>
-        <div class="col-lg-3 mb-3 mt-2">
+        {{-- <div class="col-lg-3 mb-3 mt-2">
             <form class="d-flex gap-2">
                 <input type="hidden" name="classroom" value="{{ $classroom->id }}">
                 <input type="text" name="search" class="form-control search-chat"
                     value="{{ old('search', request('search')) }}" placeholder="Cari..">
+                <button class="btn text-white" style="background-color: #098FC6;" type="submit">Cari</button>
+            </form>
+        </div> --}}
+        <div class="col-lg-5 mb-3 mt-2">
+            <form class="d-flex gap-2">
+                <input type="hidden" name="classroom" value="{{ $classroom->id }}">
+                <input type="text" name="search" class="form-control search-chat"
+                    value="{{ old('search', request('search')) }}" placeholder="Cari..">
+                <div>
+                    <select name="status" class="form-select py-2" id="search-status" style="min-width: 120px;">
+                        <option value="" {{ old('status', request('status')) == '' ? 'selected' : '' }}>Pilih
+                        </option>
+                        <option value="Pending" {{ old('status', request('status')) == 'Pending' ? 'selected' : '' }}>
+                            Pending
+                        </option>
+                        <option value="Disetujui" {{ old('status', request('status')) == 'Disetujui' ? 'selected' : '' }}>
+                            Disetujui
+                        </option>
+                        <option value="Ditolak" {{ old('status', request('status')) == 'Ditolak' ? 'selected' : '' }}>
+                            Ditolak
+                        </option>
+                    </select>
+                </div>
+                <div class="position-relative">
+                    <input type="date" name="date" class="form-control search-chat py-2 px-2 ps-3" id="search-date"
+                        value="{{ old('date', request('date')) }}">
+                </div>
                 <button class="btn text-white" style="background-color: #098FC6;" type="submit">Cari</button>
             </form>
         </div>
