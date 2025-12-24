@@ -9,4 +9,5 @@ enum RoleEnum: string
     case SCHOOL = "school";
     case STAFF = "staff";
     case PARENT = "parent";
+    case EXTRACURRICULAR = "extracurricular";
 }
