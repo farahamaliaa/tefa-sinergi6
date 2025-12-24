@@ -64,7 +64,7 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/username/tefa-sinergi6.git
+git clone https://github.com/farahamaliaa/tefa-sinergi6.git
 
 # Masuk ke direktori proyek
 cd tefa-sinergi6
