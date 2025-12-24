@@ -1,63 +1,97 @@
-<h1 align='center'>Tefa SMK6</h1>
+<h1 align="center">TEFA - Teaching Factory SMK6</h1>
 
-> Daftar API
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+</p>
 
-# API Parent
-API ini digunakan untuk mengelola data **Parent** dan relasinya dengan **Student** di sistem Tefa SMK6.  
-Dukungan CRUD relasi Parent ↔ Student menggunakan Laravel API.
+
+<p align="center">
+  <strong>Sistem Informasi Manajemen Sekolah Terpadu</strong><br>
+  <em>Solusi digital untuk pengelolaan sekolah modern yang efisien dan terintegrasi</em>
+</p>
 
 ---
 
-## 1. Get All Parent
-**Method:** GET  
-**URL:** `/api/parents`  
+## Tentang TEFA
 
-**Deskripsi:** Mengambil daftar semua parent beserta anak-anaknya.
+**TEFA (Teaching Factory)** adalah platform sistem informasi manajemen sekolah yang dikembangkan untuk **SMK Negeri 6** dengan pendekatan *Learning by Doing*. Proyek ini merupakan implementasi nyata dari konsep Teaching Factory, di mana siswa belajar sambil mengerjakan proyek yang bermanfaat untuk kebutuhan sekolah.
 
-**Contoh `curl`:**
+> *"Belajar sambil berkarya, menciptakan solusi nyata untuk sekolah"*
+
+---
+
+## Fitur Utama
+
+### Manajemen Orang Tua & Siswa
+- Pengelolaan data orang tua dan siswa secara terintegrasi
+- Hubungan relasi parent-student yang fleksibel
+- Monitoring perkembangan siswa oleh orang tua
+
+### Manajemen Ekstrakurikuler
+- Dashboard khusus untuk pembina ekstrakurikuler
+- Pencatatan kehadiran anggota eskul
+- Jurnal kegiatan ekstrakurikuler
+- Pengajuan izin siswa
+
+### Dashboard Multi-Role
+- **Admin** - Pengelolaan seluruh sistem
+- **Guru** - Manajemen kelas dan pembelajaran
+- **Orang Tua** - Monitoring anak
+- **Ekstrakurikuler** - Pengelolaan kegiatan eskul
+
+### Fitur Tambahan
+- Sistem absensi digital
+- Manajemen jurnal kegiatan
+- Laporan dan statistik real-time
+- UI/UX modern dan responsif
+
+---
+
+## Tech Stack
+
+| Kategori | Teknologi |
+|----------|-----------|
+| **Backend** | Laravel 10+ |
+| **Frontend** | Blade, Bootstrap |
+| **Database** | MySQL |
+| **API** | RESTful API |
+
+---
+
+## Instalasi
+
 ```bash
-curl -X GET http://localhost:8000/api/parents
+# Clone repository
+git clone https://github.com/username/tefa-sinergi6.git
+
+# Masuk ke direktori proyek
+cd tefa-sinergi6
+
+# Install dependencies
+composer install
+npm install
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Migrasi database
+php artisan migrate --seed
+
+# Jalankan server
+php artisan serve
 ```
-## 2. Opsi Parent Detail
-**Method:** GET  
-**URL:** `/api/parents/{id}`
 
-**Deskripsi:** Mengambil detail parent tertentu beserta daftar anaknya.
+---
 
-**Contoh `curl`:**
-```bash
-curl -X GET http://localhost:8000/api/parents/5
-```
+## Lisensi
 
-## 3. Attach Student To Parent
-**Method:** POST  
-**URL:** `/api/parents/{id}/students`
+Proyek ini dikembangkan untuk keperluan internal SMK Negeri 6.
 
-**Deskripsi:** Menghubungkan seorang student ke parent.
+---
 
-**Contoh `curl`:**
-```bash
-curl -X POST http://localhost:8000/api/parents/5/students \
-     -H "Content-Type: application/json" \
-     -d '{"student_id": 1}'
-```
-## 4. Detach Student from Parent
-**Method:** DELETE  
-**URL:** `/api/parents/{id}/students/{student_id}`
-
-**Deskripsi:** Melepas relasi seorang student dari parent.
-
-**Contoh `curl`:**
-```bash
-curl -X DELETE http://localhost:8000/api/parents/5/students/1
-```
-## ⚡ Catatan
-
-Pastikan Parent dan Student sudah ada di database sebelum melakukan attach.
-
-Endpoint menggunakan JSON format.
-
-Jika menggunakan auth middleware, tambahkan header Authorization:
-
-> [!CAUTION]
-> Readme Ini akan saya ubah jadi wiki untuk mendokumentasikan semua api yg ada
+<p align="center">
+  <strong>Dibuat oleh Tim TEFA SMK Negeri 6</strong>
+</p>
