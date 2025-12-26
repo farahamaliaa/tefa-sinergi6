@@ -1,11 +1,12 @@
-<div class="modal fade" id="modal-create-schedule" tabindex="-1" aria-labelledby="modal-create-schedule" aria-hidden="true">
+<div class="modal fade" id="modal-create-schedule" tabindex="-1" aria-labelledby="modal-create-schedule"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title text-white" id="modal-create-schedule">Tambah Jadwal</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST">
+            <form action="{{ route('school.extracurricular-schedule.store', $extracurricular->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="extracurricular_id" value="{{ $extracurricular->id }}">

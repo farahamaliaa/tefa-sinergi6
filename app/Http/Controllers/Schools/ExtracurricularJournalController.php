@@ -2,40 +2,46 @@
 
 namespace App\Http\Controllers\Schools;
 
-use App\Contracts\Interfaces\EmployeeJournalInterface;
-use App\Enums\StatusEnum;
-use App\Exports\EmployeeJournalExport;
 use App\Http\Controllers\Controller;
-use App\Models\EmployeeJournal;
+use App\Models\ExtracurricularJournal;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ExtracurricularJournalController extends Controller
 {
-    private EmployeeJournalInterface $employeeJournal;
-
-    public function __construct(EmployeeJournalInterface $employeeJournal)
-    {
-        $this->employeeJournal = $employeeJournal;
-    }
-
     public function show(Request $request)
     {
-        $allJournals = $this->employeeJournal->search($request);
-        $completedJournals = $this->employeeJournal->getByStatus(StatusEnum::COMPLETED->value, $request);
-        $notCompletedJournals = $this->employeeJournal->getByStatus(StatusEnum::NOT_COMPLETED->value, $request);
+        $query = ExtracurricularJournal::with([
+            'extracurricular.employee.user',
+            'schedule',
+            'attendances'
+        ])->orderBy('date', 'desc');
 
-        return view('school.pages.journals.journal-extracurricular', compact('completedJournals', 'notCompletedJournals', 'allJournals'));
+        if ($request->filled('name')) {
+            $query->whereHas('extracurricular', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->name . '%');
+            })->orWhereHas('extracurricular.employee.user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->name . '%');
+            });
+        }
+
+        $allJournals = $query->paginate(10);
+
+        return view('school.pages.journals.journal-extracurricular', compact('allJournals'));
     }
 
     public function export(Request $request)
     {
-        $journals = $this->employeeJournal->export($request);
+        $journals = ExtracurricularJournal::with([
+            'extracurricular.employee.user',
+            'schedule',
+            'attendances'
+        ])->orderBy('date', 'desc')->get();
+
         return view('school.pages.journals.export-extracurricular', compact('journals'));
     }
 
     public function downloadJournal(Request $request)
     {
-        return Excel::download(new EmployeeJournalExport($this->employeeJournal, $request), 'Jurnal-Pembina-Ekskul.xlsx');
+        return redirect()->back()->with('info', 'Fitur export sedang dalam pengembangan');
     }
 }

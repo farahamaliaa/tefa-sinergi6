@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Student\AttendanceController;
 use App\Http\Controllers\Student\DashboardStudentController;
+use App\Http\Controllers\Student\ExtracurricularStudentController;
 use App\Http\Controllers\Student\FeedbackController;
 use App\Http\Controllers\Student\RepairStudentController;
 use App\Http\Controllers\Student\ViolationController;
@@ -17,4 +18,13 @@ Route::middleware('auth')->prefix('student')->name('student.')->group(function (
     Route::put('feedback/update/{feedback}', [FeedbackController::class, 'update'])->name('feedback.update');
     Route::get('/all-feedback-schedule', [FeedbackController::class, 'show'])->name('feedback.show');
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance');
+
+    // Ekstrakurikuler
+    Route::prefix('extracurricular')->name('extracurricular.')->group(function () {
+        Route::get('/', [ExtracurricularStudentController::class, 'index'])->name('index');
+        Route::get('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'attendancePage'])->name('attendance');
+        Route::post('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'storeAttendance'])->name('attendance.store');
+        Route::get('/{extracurricular}/permission', [ExtracurricularStudentController::class, 'permissionPage'])->name('permission');
+        Route::post('/{extracurricular}/permission', [ExtracurricularStudentController::class, 'storePermission'])->name('permission.store');
+    });
 });

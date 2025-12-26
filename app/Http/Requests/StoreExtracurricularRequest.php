@@ -23,7 +23,7 @@ class StoreExtracurricularRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:extracurriculars,name',
-            'employee_id' => 'required',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 
@@ -37,7 +37,8 @@ class StoreExtracurricularRequest extends FormRequest
         return [
             'name.required' => 'Nama harus diisi.',
             'name.unique' => 'Ekstrakurikuler sudah ditambahkan.',
-            'employee_id.required' => 'Pengajar harus diisi.',
+            'user_id.required' => 'Pengajar harus diisi.',
+            'user_id.exists' => 'Pengajar tidak valid.',
         ];
     }
 

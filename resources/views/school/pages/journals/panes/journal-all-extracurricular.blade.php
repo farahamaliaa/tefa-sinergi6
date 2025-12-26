@@ -19,6 +19,26 @@
         background-color: #1e9c87 !important;
         border-color: #1e9c87 !important;
     }
+
+    .badge-hadir {
+        background-color: #0D9488;
+        color: white;
+    }
+
+    .badge-sakit {
+        background-color: #D97706;
+        color: white;
+    }
+
+    .badge-izin {
+        background-color: #2563EB;
+        color: white;
+    }
+
+    .badge-alpha {
+        background-color: #DC2626;
+        color: white;
+    }
 </style>
 <div class="card">
     <div class="card-body">
@@ -28,19 +48,8 @@
             <form class="d-flex flex-wrap gap-2 align-items-center" method="GET">
                 <div class="position-relative">
                     <i class="ti ti-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
-                    <input type="text" name="name" class="form-control ps-5" placeholder="Cari"
+                    <input type="text" name="name" class="form-control ps-5" placeholder="Cari nama eskul/pembina"
                         style="min-width: 250px;" value="{{ old('name', request()->input('name')) }}">
-                </div>
-                <div>
-                    <select name="status" class="form-select" id="search-status" style="min-width: 120px;">
-                        <option value="" {{ old('status', request('status')) == '' ? 'selected' : '' }}>Semua
-                        </option>
-                        <option value="filled" {{ old('status', request('status')) == 'filled' ? 'selected' : '' }}>
-                            Mengisi</option>
-                        <option value="not_filled"
-                            {{ old('status', request('status')) == 'not_filled' ? 'selected' : '' }}>Tidak Mengisi
-                        </option>
-                    </select>
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">Filter</button>
@@ -48,8 +57,7 @@
             </form>
             <div class="mt-2 mt-md-0">
                 <a href="{{ route('school.extracurricular-journal.export') }}" class="btn btn-import">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M22.5 18.75L21.4395 17.6895L19.5 19.629V13.5H18V19.629L16.0605 17.6895L15 18.75L18.75 22.5L22.5 18.75Z"
                             fill="white" />
@@ -67,59 +75,66 @@
                 <thead>
                     <tr>
                         <th style="background-color: #0896D1;" class="text-white">No</th>
-                        <th style="background-color: #0896D1;" class="text-white">Nama Pembina</th>
+                        <th style="background-color: #0896D1;" class="text-white">Ekstrakurikuler</th>
+                        <th style="background-color: #0896D1;" class="text-white">Pembina</th>
                         <th style="background-color: #0896D1;" class="text-white">Tanggal</th>
-                        <th style="background-color: #0896D1;" class="text-white">Jabatan</th>
-                        <th style="background-color: #0896D1;" class="text-white">Status</th>
-                        <!-- <th style="background-color: #0896D1;" class="text-white">Deskripsi</th> -->
+                        <th style="background-color: #0896D1;" class="text-white">Jadwal</th>
+                        <th style="background-color: #0896D1;" class="text-white">Kehadiran</th>
                         <th style="background-color: #0896D1;" class="text-white">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($allJournals as $journal)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $loop->iteration + ($allJournals->currentPage() - 1) * $allJournals->perPage() }}</td>
+                            <td>{{ $journal->extracurricular->name ?? '-' }}</td>
                             <td class="text-start">
                                 <div class="d-flex align-items-center">
-                                    <img src="{{ $journal->employee->image ? asset('storage/' . $journal->employee->image) : asset('assets/images/default-user.jpeg') }}"
-                                        class="rounded-circle me-2 user-profile" style="object-fit: cover"
-                                        width="40" height="40" alt="" />
+                                    <img src="{{ $journal->extracurricular->employee->image ?? false ? asset('storage/' . $journal->extracurricular->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                                        class="rounded-circle me-2 user-profile" style="object-fit: cover" width="40"
+                                        height="40" alt="" />
                                     <div class="ms-2">
                                         <h6 class="fs-4 fw-semibold mb-0 text-start">
-                                            {{ $journal->employee->user->name }}
+                                            {{ $journal->extracurricular->employee->user->name ?? '-' }}
                                         </h6>
-                                        <span class="fw-normal">{{ $journal->employee->user->email }}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ \Carbon\Carbon::parse($journal->created_at)->translatedFormat('d F Y') }}</td>
-                            <td>-</td>
+                            <td>{{ $journal->date->format('d M Y') }}</td>
                             <td>
-                                <span
-                                    class="mb-1 badge font-medium bg-light-{{ $journal->status->color() }} text-{{ $journal->status->color() }}">
-                                    {{ $journal->status->label() }}
-                                </span>
+                                {{ ucfirst(\App\Enums\DayEnum::tryFrom($journal->schedule->day ?? '')?->label() ?? '-') }},
+                                {{ \Carbon\Carbon::parse($journal->schedule->start_time ?? '00:00')->format('H:i') }}
                             </td>
-                            <!-- <td>{{ \Illuminate\Support\Str::limit($journal->description, 65, '...') }}</td> -->
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <a type="button" class="text-secondary btn-detail-journal"
-                                        data-author="{{ $journal->employee->user->name }}"
-                                        data-title="{{ $journal->title }}"
-                                        data-date="{{ \Carbon\Carbon::parse($journal->created_at)->translatedFormat('d F Y') }}"
-                                        data-description="{{ $journal->description }}">
-                                        Lihat Detail
-                                    </a>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span class="badge badge-hadir" title="Hadir">
+                                        H: {{ $journal->attendances->where('status', 'hadir')->count() }}
+                                    </span>
+                                    <span class="badge badge-sakit" title="Sakit">
+                                        S: {{ $journal->attendances->where('status', 'sakit')->count() }}
+                                    </span>
+                                    <span class="badge badge-izin" title="Izin">
+                                        I: {{ $journal->attendances->where('status', 'izin')->count() }}
+                                    </span>
+                                    <span class="badge badge-alpha" title="Alpha">
+                                        A: {{ $journal->attendances->where('status', 'alpha')->count() }}
+                                    </span>
                                 </div>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('school.extracurricular.journal.show', ['extracurricular' => $journal->extracurricular_id, 'journal' => $journal->id]) }}"
+                                    class="btn btn-sm btn-primary">
+                                    <i class="ti ti-eye"></i> Detail
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center align-middle">
-                                <div class="d-flex flex-column justify-content-center align-items-center">
+                            <td colspan="7" class="text-center align-middle">
+                                <div class="d-flex flex-column justify-content-center align-items-center py-4">
                                     <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
-                                        width="300px">
-                                    <p class="fs-5 text-dark text-center mt-2">Data tidak ditemukan</p>
+                                        width="200px">
+                                    <p class="fs-5 text-dark text-center mt-2">Belum ada jurnal pembina ekskul</p>
                                 </div>
                             </td>
                         </tr>
@@ -127,13 +142,15 @@
                 </tbody>
             </table>
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <div class="text-muted">
-                Menampilkan {{ $allJournals->currentPage() }} dari {{ $allJournals->lastPage() }} halaman
+        @if($allJournals->hasPages())
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted">
+                    Menampilkan {{ $allJournals->currentPage() }} dari {{ $allJournals->lastPage() }} halaman
+                </div>
+                <div>
+                    <x-paginate-component :paginator="$allJournals->appends(request()->input())" />
+                </div>
             </div>
-            <div>
-                <x-paginate-component :paginator="$allJournals->appends(request()->input())" />
-            </div>
-        </div>
+        @endif
     </div>
 </div>

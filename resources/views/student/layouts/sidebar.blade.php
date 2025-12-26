@@ -112,29 +112,43 @@
                         </span>
                         <span class="hide-menu">Absensi</span>
                     </a>
+                <li class="sidebar-item">
+                    <a class="sidebar-link {{ request()->routeIs('student.extracurricular.*') ? 'active' : '' }}"
+                        href="{{ route('student.extracurricular.index') }}" aria-expanded="false">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 8a6 6 0 0 0 -9 -5.197"></path>
+                                <path d="M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z"></path>
+                                <path d="M12 9l.01 0"></path>
+                                <path d="M11 12l1 0l0 4l1 0"></path>
+                            </svg>
+                        </span>
+                        <span class="hide-menu">Ekstrakurikuler</span>
+                    </a>
                 </li>
 
                 {{-- @if ($permission_feedback)
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/student/class" aria-expanded="false">
-                            <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M19 19V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v14H3v2h18v-2zm-2 0H7V5h10zm-4-8h2v2h-2z" />
-                                </svg>
-                            </span>
-                            <span class="hide-menu">Kelas & Tanggapan</span>
-                        </a>
-                    </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/student/class" aria-expanded="false">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M19 19V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v14H3v2h18v-2zm-2 0H7V5h10zm-4-8h2v2h-2z" />
+                            </svg>
+                        </span>
+                        <span class="hide-menu">Kelas & Tanggapan</span>
+                    </a>
+                </li>
                 @endif --}}
 
                 {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('student.violations') }}" aria-expanded="false">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <path fill="none" stroke="currentColor" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2"
+                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"
                                     d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1zm-8-5v4m0 4h.01" />
                             </svg>
                         </span>

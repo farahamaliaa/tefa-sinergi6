@@ -24,13 +24,25 @@ Route::middleware(['auth', 'role:extracurricular'])->prefix('extracurricular')->
     // Extracurricular Permission
     Route::prefix('permission')->name('permission.')->group(function () {
         Route::get('/', [ExtracurricularManagementController::class, 'permissionIndex'])->name('index');
+        Route::post('/approve/{id}', [ExtracurricularManagementController::class, 'permissionApprove'])->name('approve');
+        Route::post('/reject/{id}', [ExtracurricularManagementController::class, 'permissionReject'])->name('reject');
+    });
+
+    // Extracurricular Schedule
+    Route::prefix('schedule')->name('schedule.')->group(function () {
+        Route::get('/', [ExtracurricularManagementController::class, 'scheduleIndex'])->name('index');
+        Route::post('/store', [ExtracurricularManagementController::class, 'scheduleStore'])->name('store');
+        Route::delete('/destroy/{id}', [ExtracurricularManagementController::class, 'scheduleDestroy'])->name('destroy');
     });
 
     // Extracurricular Journal
     Route::prefix('journal')->name('journal.')->group(function () {
         Route::get('/', [ExtracurricularManagementController::class, 'journalIndex'])->name('index');
         Route::get('/create', [ExtracurricularManagementController::class, 'journalCreate'])->name('create');
+        Route::post('/store', [ExtracurricularManagementController::class, 'journalStore'])->name('store');
         Route::get('/detail/{id}', [ExtracurricularManagementController::class, 'journalShow'])->name('show');
         Route::get('/edit/{id}', [ExtracurricularManagementController::class, 'journalEdit'])->name('edit');
+        Route::put('/update/{id}', [ExtracurricularManagementController::class, 'journalUpdate'])->name('update');
+        Route::delete('/destroy/{id}', [ExtracurricularManagementController::class, 'journalDestroy'])->name('destroy');
     });
 });

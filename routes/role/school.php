@@ -30,6 +30,7 @@ use App\Http\Controllers\Schools\AttendanceEmployeeController;
 use App\Http\Controllers\Schools\AttendanceStudentController as SchoolsAttendanceStudentController;
 use App\Http\Controllers\Schools\EmployeeController;
 use App\Http\Controllers\Schools\ExtracurricularController as SchoolsExtracurricularController;
+use App\Http\Controllers\Schools\ExtraInstructorController;
 use App\Http\Controllers\Schools\GuestBookController;
 use App\Http\Controllers\Schools\JournalTeacherController;
 use App\Http\Controllers\Schools\PermissionController;
@@ -60,7 +61,8 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('max-late', [MaxLateController::class, 'index'])->name('max-late.index');
     Route::patch('max-late/{maxLate}', [MaxLateController::class, 'update'])->name('max-late.update');
 
-    Route::get('clock-settings', [AttendanceRuleController::class, 'setting'])->name('clock-settings.index');    Route::get('get-clock-settings', [AttendanceRuleController::class, 'index'])->name('clock-settings.get');
+    Route::get('clock-settings', [AttendanceRuleController::class, 'setting'])->name('clock-settings.index');
+    Route::get('get-clock-settings', [AttendanceRuleController::class, 'index'])->name('clock-settings.get');
     Route::post('add-clock-settings/{day}/{role}', [AttendanceRuleController::class, 'store'])->name('clock-settings.store');
 
     Route::post('school-points', [SchoolPointController::class, 'store'])->name('school-points.store');
@@ -110,11 +112,12 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::resource('lesson-hours', LessonHourController::class)->except(['store']);
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
+    Route::post('extracurricular-schedule/{extracurricular}', [SchoolsExtracurricularController::class, 'storeSchedule'])->name('extracurricular-schedule.store');
+    Route::delete('extracurricular-schedule/{schedule}', [SchoolsExtracurricularController::class, 'destroySchedule'])->name('extracurricular-schedule.destroy');
+    Route::get('extracurricular/{extracurricular}/journal/{journal}', [SchoolsExtracurricularController::class, 'journalShow'])->name('extracurricular.journal.show');
 
-    // Extra instructor static/demo page
-    Route::get('extra-instructor', function () {
-        return view('school.pages.extra-instructor.index');
-    })->name('extra-instructor.index');
+    // Extra instructor page
+    Route::get('extra-instructor', [ExtraInstructorController::class, 'index'])->name('extra-instructor.index');
 
     //parent
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');

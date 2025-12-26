@@ -51,10 +51,10 @@
     .collapse .sidebar-item .sidebar-link {
         padding-left: 30px !important;
     }
+
     .collapse .collapse .sidebar-item .sidebar-link {
         padding-left: 50px !important;
     }
-
 </style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
@@ -130,28 +130,35 @@
                                 class="collapse first-level {{ request()->get('extracurricular') == $extracurricular->id ? 'in' : '' }}">
                                 <li class="sidebar-item">
                                     <a href="{{ route('extracurricular.students.index', ['extracurricular' => $extracurricular->id]) }}"
-                                    class="sidebar-link {{ request()->routeIs('extracurricular.students.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                        class="sidebar-link {{ request()->routeIs('extracurricular.students.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
                                         <span class="hide-menu">Daftar Siswa</span>
                                     </a>
                                 </li>
 
                                 <li class="sidebar-item">
                                     <a href="{{ route('extracurricular.attendance.index', ['extracurricular' => $extracurricular->id]) }}"
-                                    class="sidebar-link {{ request()->routeIs('extracurricular.attendance.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                        class="sidebar-link {{ request()->routeIs('extracurricular.attendance.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
                                         <span class="hide-menu">Absensi Siswa</span>
                                     </a>
                                 </li>
 
                                 <li class="sidebar-item">
                                     <a href="{{ route('extracurricular.permission.index', ['extracurricular' => $extracurricular->id]) }}"
-                                    class="sidebar-link {{ request()->routeIs('extracurricular.permission.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                        class="sidebar-link {{ request()->routeIs('extracurricular.permission.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
                                         <span class="hide-menu">Perizinan</span>
                                     </a>
                                 </li>
 
                                 <li class="sidebar-item">
+                                    <a href="{{ route('extracurricular.schedule.index', ['extracurricular' => $extracurricular->id]) }}"
+                                        class="sidebar-link {{ request()->routeIs('extracurricular.schedule.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                        <span class="hide-menu">Jadwal</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-item">
                                     <a href="{{ route('extracurricular.journal.index', ['extracurricular' => $extracurricular->id]) }}"
-                                    class="sidebar-link {{ request()->routeIs('extracurricular.journal.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                        class="sidebar-link {{ request()->routeIs('extracurricular.journal.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
                                         <span class="hide-menu">Jurnal</span>
                                     </a>
                                 </li>
