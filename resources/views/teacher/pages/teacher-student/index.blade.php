@@ -1,63 +1,72 @@
 @extends('teacher.layouts.app')
 @section('style')
-<style>
-    .card {
-        border: 1px solid #E0E6ED !important; 
-        box-shadow: none !important;
-    }
+    <style>
+        .card {
+            border: 1px solid #E0E6ED !important;
+            box-shadow: none !important;
+        }
 
-    .card-hover:hover {
-        border-color: #00A9D9 !important;
-        transition: .2s ease-in-out;
-    }
+        .card-hover:hover {
+            border-color: #00A9D9 !important;
+            transition: .2s ease-in-out;
+        }
 
-    .card.header-wave {
-        border-radius: 14px !important;
-        overflow: hidden !important;
-    }    
+        .card.header-wave {
+            border-radius: 14px !important;
+            overflow: hidden !important;
+        }
 
-    .nav-pills .nav-link.active {
-        background-color: #098FC6 !important;
-        color: #fff !important;
-    }
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
 
-    .nav-pills .nav-link {
-        color: #098FC6;
-        border-radius: 8px;
-    }
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
 
-    .nav-pills .nav-link:hover {
-        background-color: #0A8ABF20;
-        color: #098FC6;
-    }
-    .header-wave {
-        background-color: #1A94C8 !important;
-        border-radius: 14px;
-        position: relative;
-        overflow: hidden;
-    }
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
 
-    .header-wave::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 256px;
-        background: url("{{ asset('assets/images/wave-header.png') }}");
-        background-size: cover;
-        opacity: 1;
-    }
-</style>
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+    </style>
 @endsection
 @section('content')
     <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h5 class="fw-semibold text-white mb-2">Informasi Kelas</h5>
-                    <h4 class="fw-semibold text-white mb-2">{{ $classroom->name }}</h4>
-                    <h6 class="fw-semibold text-white mb-2">Data siswa dan jadwal pelajaran kelas Anda</h6>
+                    {{-- <h5 class="fw-semibold text-white mb-2">Informasi Kelas</h5> --}}
+                    <h4 class="fw-semibold text-white mb-2">Kelas - {{ $classroom->name }}</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Daftar - daftar siswa di kelas ketika anda menjadi wali kelas
+                                </a>
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
                 <div class="col-3">
                     <div class="text-center mb-n3">
@@ -71,26 +80,16 @@
 
     <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
         <li class="nav-item">
-            <a class="nav-link d-flex align-items-center active gap-2"
-                id="pills-students-tab"
-                data-bs-toggle="pill"
-                href="#pills-students"
-                role="tab"
-                aria-controls="pills-students"
-                aria-selected="true">
+            <a class="nav-link d-flex align-items-center active gap-2" id="pills-students-tab" data-bs-toggle="pill"
+                href="#pills-students" role="tab" aria-controls="pills-students" aria-selected="true">
                 <i class="ti ti-users fs-5"></i>
                 Daftar Siswa
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link d-flex align-items-center gap-2"
-                id="pills-schedule-tab"
-                data-bs-toggle="pill"
-                href="#pills-schedule"
-                role="tab"
-                aria-controls="pills-schedule"
-                aria-selected="false">
+            <a class="nav-link d-flex align-items-center gap-2" id="pills-schedule-tab" data-bs-toggle="pill"
+                href="#pills-schedule" role="tab" aria-controls="pills-schedule" aria-selected="false">
                 <i class="ti ti-calendar fs-5"></i>
                 Jadwal Pelajaran
             </a>
@@ -102,21 +101,33 @@
             <div class="tab-content p-3" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-students" role="tabpanel"
                     aria-labelledby="pills-students-tab" tabindex="0">
-                    <div class="col-lg-6 col-md-12 mb-3">
+                    <div class="col-lg-4 col-md-12 mb-3">
                         <form class="d-flex flex-column flex-md-row gap-2">
                             <div class="position-relative flex-grow-1">
-                                <input type="text" name="search" class="form-control product-search ps-5" id="input-search" placeholder="Cari..." value="{{ old('search', request('search')) }}">
-                                <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                                <input type="text" name="search" class="form-control product-search ps-5"
+                                    id="input-search" placeholder="Cari..." value="{{ old('search', request('search')) }}">
+                                <i
+                                    class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                             </div>
                             <div class="d-flex flex-column flex-md-row gap-2">
                                 <select name="gender" class="form-select">
-                                    <option value="">Tampilkan semua</option>
-                                    <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Perempuan</option>
+                                    <option value="">semua</option>
+                                    <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Laki-laki
+                                    </option>
+                                    <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Perempuan
+                                    </option>
                                 </select>
-
+                                <select name="class" class="form-select">
+                                    <option value="">Kelas</option>
+                                    @foreach ($classrooms as $classroom)
+                                        <option value="{{ $classroom->name }}"
+                                            {{ request('class') == $classroom->name ? 'selected' : '' }}>
+                                            {{ $classroom->name }}</option>
+                                    @endforeach
+                                </select>
                                 <div>
-                                    <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto" style="background-color: #0b97d1">Filter</button>
+                                    <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto"
+                                        style="background-color: #0b97d1">Filter</button>
                                 </div>
                             </div>
                         </form>
@@ -142,7 +153,8 @@
                                                 <img src="{{ $classroomStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}"
                                                     class="rounded-circle" width="40" height="40">
                                                 <div class="ms-3">
-                                                    <h6 class="fs-4 fw-semibold mb-0">{{ $classroomStudent->student->user->name }}
+                                                    <h6 class="fs-4 fw-semibold mb-0">
+                                                        {{ $classroomStudent->student->user->name }}
                                                     </h6>
                                                     <span class="fw-normal">{{ $classroomStudent->classroom->name }}</span>
                                                 </div>
@@ -153,7 +165,7 @@
                                         <td>{{ $classroomStudent->student->nisn }}</td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-2">
-                                                <a type="button" class="text-primary btn-detail"
+                                                <a type="button" class="text-primary btn-detail bg-primary-light"
                                                     data-name="{{ $classroomStudent->student->user->name }}"
                                                     data-email="{{ $classroomStudent->student->user->email }}"
                                                     data-nisn="{{ $classroomStudent->student->nisn }}"
@@ -185,8 +197,8 @@
                                     <tr>
                                         <td colspan="7" class="text-center align-middle">
                                             <div class="d-flex flex-column justify-content-center align-items-center">
-                                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
-                                                    width="300px">
+                                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
+                                                    alt="" width="300px">
                                                 <p class="fs-5 text-dark text-center mt-2">
                                                     Belum ada data
                                                 </p>
@@ -207,37 +219,37 @@
                         <div class="border rounded-pill p-1 d-inline-block w-100" style="max-width: 600px;">
                             <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active rounded-pill" id="pills-senin-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-senin" type="button" role="tab" aria-controls="pills-senin"
-                                        aria-selected="true">
+                                    <button class="nav-link active rounded-pill" id="pills-senin-tab"
+                                        data-bs-toggle="pill" data-bs-target="#pills-senin" type="button"
+                                        role="tab" aria-controls="pills-senin" aria-selected="true">
                                         Senin
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link rounded-pill" id="pills-selasa-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-selasa" type="button" role="tab" aria-controls="pills-selasa"
-                                        aria-selected="false">
+                                        data-bs-target="#pills-selasa" type="button" role="tab"
+                                        aria-controls="pills-selasa" aria-selected="false">
                                         Selasa
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link rounded-pill" id="pills-rabu-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-rabu" type="button" role="tab" aria-controls="pills-rabu"
-                                        aria-selected="false">
+                                        data-bs-target="#pills-rabu" type="button" role="tab"
+                                        aria-controls="pills-rabu" aria-selected="false">
                                         Rabu
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link rounded-pill" id="pills-kamis-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-kamis" type="button" role="tab" aria-controls="pills-kamis"
-                                        aria-selected="false">
+                                        data-bs-target="#pills-kamis" type="button" role="tab"
+                                        aria-controls="pills-kamis" aria-selected="false">
                                         Kamis
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link rounded-pill" id="pills-jumat-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-jumat" type="button" role="tab" aria-controls="pills-jumat"
-                                        aria-selected="false">
+                                        data-bs-target="#pills-jumat" type="button" role="tab"
+                                        aria-controls="pills-jumat" aria-selected="false">
                                         Jumat
                                     </button>
                                 </li>
@@ -245,30 +257,36 @@
                         </div>
 
                         <div class="tab-content mt-4" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-senin" role="tabpanel" aria-labelledby="pills-senin-tab">
+                            <div class="tab-pane fade show active" id="pills-senin" role="tabpanel"
+                                aria-labelledby="pills-senin-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-monday')
                             </div>
-                            <div class="tab-pane fade" id="pills-selasa" role="tabpanel" aria-labelledby="pills-selasa-tab">
+                            <div class="tab-pane fade" id="pills-selasa" role="tabpanel"
+                                aria-labelledby="pills-selasa-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-tuesday')
                             </div>
                             <div class="tab-pane fade" id="pills-rabu" role="tabpanel" aria-labelledby="pills-rabu-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-wednesday')
                             </div>
-                            <div class="tab-pane fade" id="pills-kamis" role="tabpanel" aria-labelledby="pills-kamis-tab">
+                            <div class="tab-pane fade" id="pills-kamis" role="tabpanel"
+                                aria-labelledby="pills-kamis-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-thursday')
                             </div>
-                            <div class="tab-pane fade" id="pills-jumat" role="tabpanel" aria-labelledby="pills-jumat-tab">
+                            <div class="tab-pane fade" id="pills-jumat" role="tabpanel"
+                                aria-labelledby="pills-jumat-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-friday')
                             </div>
-                            <div class="tab-pane fade" id="pills-sabtu" role="tabpanel" aria-labelledby="pills-sabtu-tab">
+                            <div class="tab-pane fade" id="pills-sabtu" role="tabpanel"
+                                aria-labelledby="pills-sabtu-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-saturday')
                             </div>
-                            <div class="tab-pane fade" id="pills-minggu" role="tabpanel" aria-labelledby="pills-minggu-tab">
+                            <div class="tab-pane fade" id="pills-minggu" role="tabpanel"
+                                aria-labelledby="pills-minggu-tab">
                                 @include('teacher.pages.dashboard.panes.schedule-tab.tab-sunday')
                             </div>
                         </div>
                     </div>
-                    
+
                     {{-- <div class="table-responsive rounded-2 mb-4">
                         <table class="table border text-nowrap customize-table mb-0 align-middle">
                             <thead class="text-dark fs-4">
