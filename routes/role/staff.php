@@ -4,6 +4,8 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeJournalController;
 use App\Http\Controllers\Staff\StaffViolationController;
 use App\Http\Controllers\Staff\StudentRepairController;
+use App\Http\Controllers\Staff\StaffAttendanceController;
+use App\Http\Controllers\Staff\StaffExtracurricularController;
 use App\Http\Controllers\StudentViolationController;
 use App\Http\Controllers\GuestBookController;
 use App\Http\Controllers\ModelHasRfidController;
@@ -21,6 +23,32 @@ Route::middleware(['auth', 'role:staff'])->prefix('employee')->name('employee.')
     Route::get('permission',[DashboardStaffController::class, 'permission'])->name('permission');
     Route::post('store-permission', [AttendanceController::class, 'proof'])->name('store.permission');
     Route::delete('delete-permission/{attendance}', [Attendancecontroller::class, 'delete_proof'])->name('delete.permission');
+
+    // fitur absensi
+    Route::get('attendance', [StaffAttendanceController::class, 'index'])->name('attendance.index');
+
+    // Extracurricular Students
+    Route::prefix('extracurricular-students')->name('extracurricular-students.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'studentsIndex'])->name('index');
+    });
+
+    // Extracurricular Attendance
+    Route::prefix('extracurricular-attendance')->name('extracurricular-attendance.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'attendanceIndex'])->name('index');
+    });
+
+    // Extracurricular Permission
+    Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'permissionIndex'])->name('index');
+    });
+
+    // Extracurricular Journal
+    Route::prefix('extracurricular-journal')->name('extracurricular-journal.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'journalIndex'])->name('index');
+        Route::get('/create', [StaffExtracurricularController::class, 'journalCreate'])->name('create');
+        Route::get('/detail/{id}', [StaffExtracurricularController::class, 'journalShow'])->name('show');
+        Route::get('/edit/{id}', [StaffExtracurricularController::class, 'journalEdit'])->name('edit');
+    });
 });
 
 Route::middleware(['auth', 'role:staff|teacher', 'permission:view_violation'])->prefix('employee')->name('employee.')->group(function () {
