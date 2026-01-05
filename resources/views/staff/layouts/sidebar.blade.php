@@ -102,6 +102,7 @@
                     </a>
                 </li>
 
+                @if(auth()->user()->employee->position == 'staff_biasa' || auth()->user()->employee->position == null)
                 <!-- =================== -->
                 <!-- Jurnal Staff -->
                 <!-- =================== -->
@@ -153,7 +154,7 @@
                 <!-- =================== -->
                 <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('employee.permission') ? 'active' : '' }}"
-                        href="{{ route('employee.permission') }}" aria-expanded="false">
+                        href="{{ route('employee.permission.index') }}" aria-expanded="false">
                         <span>
                             <svg width="18" height="20" viewBox="0 0 18 20" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -165,6 +166,22 @@
                         <span class="hide-menu">Perizinan</span>
                     </a>
                 </li>
+                @endif
+
+                @if(auth()->user()->employee->position == 'ketua_tu')
+                <!-- =================== -->
+                <!-- Approval Perizinan -->
+                <!-- =================== -->
+                <li class="sidebar-item">
+                    <a class="sidebar-link {{ request()->routeIs('employee.approval.*') ? 'active' : '' }}"
+                        href="{{ route('employee.approval.index') }}" aria-expanded="false">
+                        <span>
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-checkbox"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11l3 3l8 -8" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>
+                        </span>
+                        <span class="hide-menu">Approval Perizinan</span>
+                    </a>
+                </li>
+                @endif
 
                 <!-- =================== -->
                 <!-- Ekstrakulikuler -->
