@@ -1,6 +1,79 @@
 @extends('staff.layouts.app')
+@section('style')
+    <style>
+        .card {
+            border: 1px solid #E0E6ED !important;
+            box-shadow: none !important;
+        }
+
+        .card-hover:hover {
+            border-color: #00A9D9 !important;
+            transition: .2s ease-in-out;
+        }
+
+        .card.header-wave {
+            border-radius: 14px !important;
+            overflow: hidden !important;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+    </style>
+@endsection
 @section('content')
-    <div class="card bg-info shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
+        <div class="card-body px-4 py-3">
+            <div class="row align-items-center">
+                <div class="col-9">
+                    <h4 class="fw-semibold text-white mb-8">Jurnal Staff</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
+                                    href="javascript:void(0)">{{ auth_user()->name }}</a></li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-3">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/laptops.png') }}" alt=""
+                            class="img-fluid img-header-floating">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- <div class="card bg-info shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
@@ -20,7 +93,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <div class="card">
         <div>
             <span class="badge bg-warning fs-5 px-4 text-white mt-3 fw-semibold me-4 mb-4"
@@ -33,7 +106,7 @@
             <li>Batas jam pengisian jurnal adalah 23.59 WIB</li>
         </ul>
         <div class="position-absolute bottom-0 end-0" style="padding: 0px;">
-            <img src="{{ asset('assets/images/background/bubble-warning.png') }}" alt="Description" class="img-fluid"
+            <img src="{{ asset('assets/images/background/bub2.png') }}" alt="Description" class="img-fluid"
                 style="max-width: 150px; height: auto;">
         </div>
     </div>
