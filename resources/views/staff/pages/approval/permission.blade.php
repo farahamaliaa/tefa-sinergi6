@@ -5,13 +5,13 @@
     <div class="card-body px-4 py-3">
         <div class="row align-items-center">
             <div class="col-9">
-                <h4 class="fw-semibold mb-8">Riwayat Perizinan</h4>
+                <h4 class="fw-semibold mb-8">Approval Perizinan</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
                             <a class="text-muted text-decoration-none" href="{{ route('employee.dashboard') }}">Dashboard</a>
                         </li>
-                        <li class="breadcrumb-item" aria-current="page">Perizinan</li>
+                        <li class="breadcrumb-item" aria-current="page">Approval Perizinan</li>
                     </ol>
                 </nav>
             </div>
@@ -25,11 +25,8 @@
 </div>
 
 <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar Pengajuan Izin</h5>
-        <a href="{{ route('employee.permission.create') }}" class="btn btn-primary">
-            <i class="ti ti-plus me-1"></i> Ajukan Izin
-        </a>
+    <div class="card-header">
+        <h5 class="mb-0">Daftar Pengajuan Izin Staff</h5>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -37,6 +34,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Nama Staff</th>
                         <th>Tanggal</th>
                         <th>Jenis Izin</th>
                         <th>Keterangan</th>
@@ -49,9 +47,17 @@
                     @forelse($permissions as $permission)
                         <tr>
                             <td>{{ $loop->iteration + $permissions->firstItem() - 1 }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="ms-0">
+                                        <h6 class="fs-4 fw-semibold mb-0">{{ $permission->employee->user->name ?? 'Unknown' }}</h6>
+                                        <span class="fw-normal text-muted">{{ $permission->employee->nip ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </td>
                             <td>{{ Carbon\Carbon::parse($permission->date)->format('d M Y') }}</td>
                             <td>{{ $permission->permission_type->label() ?? $permission->permission_type->value }}</td>
-                            <td>{{ Str::limit($permission->proof, 50) }}</td>
+                            <td>{{ Str::limit($permission->proof, 40) }}</td>
                             <td>
                                 @if($permission->proof_image)
                                     <a href="{{ asset('storage/' . $permission->proof_image) }}" target="_blank" class="btn btn-sm btn-info">
@@ -72,11 +78,16 @@
                             </td>
                             <td>
                                 @if($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
-                                    <form action="{{ route('employee.permission.destroy', $permission->id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('employee.approval.permission.approve', $permission->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus pengajuan ini?')">
-                                            <i class="ti ti-trash"></i>
+                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Setujui izin ini?')">
+                                            <i class="ti ti-check"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('employee.approval.permission.reject', $permission->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tolak izin ini?')">
+                                            <i class="ti ti-x"></i>
                                         </button>
                                     </form>
                                 @endif
@@ -84,9 +95,9 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="8" class="text-center py-4">
                                 <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" width="150" alt="No Data">
-                                <p class="mt-2 text-muted">Belum ada riwayat perizinan</p>
+                                <p class="mt-2 text-muted">Belum ada pengajuan izin masuk</p>
                             </td>
                         </tr>
                     @endforelse

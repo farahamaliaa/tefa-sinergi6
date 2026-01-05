@@ -27,6 +27,17 @@ class UserSeeder extends Seeder
             $user->assignRole($role);
             if ($role['name'] == 'staff') {
                 $user->givePermissionTo('view_violation');
+
+                // Create second staff user for "Staff Biasa"
+                $user2 = User::query()->create([
+                    'name' => 'Staff Biasa',
+                    'slug' => 'staff-biasa',
+                    'email' => 'staff2@gmail.com',
+                    'email_verified_at' => now(),
+                    'password' => bcrypt('password'),
+                ]);
+                $user2->assignRole($role);
+                $user2->givePermissionTo('view_violation');
             }
 
         }

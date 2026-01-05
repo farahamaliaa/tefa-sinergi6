@@ -57,6 +57,17 @@ class EmployeeJournalController extends Controller
      */
     public function store(StoreEmployeeJournalRequest $request)
     {
+        $employee = auth()->user()->employee;
+        
+        // Enforce 1 journal per day per employee
+        $existingJournal = \App\Models\EmployeeJournal::where('employee_id', $employee->id)
+            ->whereDate('created_at', now()->toDateString())
+            ->exists();
+
+        if ($existingJournal) {
+            return redirect()->back()->with('error', 'Anda sudah mengisi jurnal hari ini. Hanya diperbolehkan 1 jurnal per hari.');
+        }
+
         $data = $this->service->store($request);
         $this->employeeJournal->store($data);
         return redirect()->back()->with('success', 'Berhasil menambah jurnal.');

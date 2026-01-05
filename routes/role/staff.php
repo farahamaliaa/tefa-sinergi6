@@ -10,19 +10,30 @@ use App\Http\Controllers\StudentViolationController;
 use App\Http\Controllers\GuestBookController;
 use App\Http\Controllers\ModelHasRfidController;
 use App\Http\Controllers\Staff\DashboardStaffController;
+use App\Http\Controllers\Staff\StaffApprovalController;
+use App\Http\Controllers\Staff\StaffPermissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:staff'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [DashboardStaffController::class, 'index'])->name('dashboard');
+
+    // Staff Permissions (Staff Biasa)
+    Route::resource('permission', StaffPermissionController::class);
+
+    // Staff Approval (Ketua TU)
+    Route::prefix('approval')->name('approval.')->group(function () {
+        Route::get('/', [StaffApprovalController::class, 'index'])->name('index');
+        Route::post('/permission/approve/{id}', [StaffApprovalController::class, 'approve'])->name('permission.approve');
+        Route::post('/permission/reject/{id}', [StaffApprovalController::class, 'reject'])->name('permission.reject');
+    });
+
+    // Manual Attendance (Staff Biasa)
+    Route::post('attendance/check-in', [StaffAttendanceController::class, 'checkIn'])->name('attendance.check-in');
     // fitur buku tamu
     Route::resource('guestbook', GuestBookController::class);
     // fitur jurnal
     Route::resource('journal', EmployeeJournalController::class)->except('show');
     Route::get('journal/detail/{employeeJournal}', [EmployeeJournalController::class, 'detail'])->name('journal.detail');
-
-    Route::get('permission',[DashboardStaffController::class, 'permission'])->name('permission');
-    Route::post('store-permission', [AttendanceController::class, 'proof'])->name('store.permission');
-    Route::delete('delete-permission/{attendance}', [Attendancecontroller::class, 'delete_proof'])->name('delete.permission');
 
     // fitur absensi
     Route::get('attendance', [StaffAttendanceController::class, 'index'])->name('attendance.index');
