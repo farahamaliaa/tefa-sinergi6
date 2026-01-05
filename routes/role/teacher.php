@@ -26,6 +26,8 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     // Extracurricular Permission
     Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'permissionIndex'])->name('index');
+        Route::post('/approve/{id}', [ExtracurricularController::class, 'permissionApprove'])->name('approve');
+        Route::post('/reject/{id}', [ExtracurricularController::class, 'permissionReject'])->name('reject');
     });
 
     Route::resource('journals', TeacherJournalController::class)->except(['create', 'store', 'update', 'edit']);
@@ -53,7 +55,17 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::prefix('extracurricular-journal')->name('extracurricular-journal.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'journalIndex'])->name('index');
         Route::get('/create', [ExtracurricularController::class, 'journalCreate'])->name('create');
+        Route::post('/store', [ExtracurricularController::class, 'journalStore'])->name('store');
         Route::get('/detail/{id}', [ExtracurricularController::class, 'journalShow'])->name('show');
         Route::get('/edit/{id}', [ExtracurricularController::class, 'journalEdit'])->name('edit');
+        Route::put('/update/{id}', [ExtracurricularController::class, 'journalUpdate'])->name('update');
+        Route::delete('/destroy/{id}', [ExtracurricularController::class, 'journalDestroy'])->name('destroy');
+    });
+
+    // Extracurricular Schedule (teacher)
+    Route::prefix('extracurricular-schedule')->name('extracurricular-schedule.')->group(function () {
+        Route::get('/', [ExtracurricularController::class, 'scheduleIndex'])->name('index');
+        Route::post('/store', [ExtracurricularController::class, 'scheduleStore'])->name('store');
+        Route::delete('/destroy/{id}', [ExtracurricularController::class, 'scheduleDestroy'])->name('destroy');
     });
 });

@@ -2,7 +2,7 @@
     use App\Enums\DayEnum;
     use Carbon\Carbon;
 @endphp
-@extends('extracurricular.layouts.app')
+@extends('staff.layouts.app')
 
 @section('style')
     <style>
@@ -87,7 +87,7 @@
             <h5 class="mb-0"><i class="ti ti-plus me-2"></i>Tambah Jadwal Baru</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('extracurricular.schedule.store') }}" method="POST" id="scheduleForm">
+            <form action="{{ route('employee.extracurricular-schedule.store') }}" method="POST" id="scheduleForm">
                 @csrf
                 <input type="hidden" name="extracurricular_id" value="{{ $extracurricular->id }}">
                 <input type="hidden" name="latitude" id="latitude">
@@ -206,7 +206,7 @@
                                 </td>
                                 <td>{{ $schedule->radius ?? '-' }} m</td>
                                 <td class="text-center">
-                                    <form action="{{ route('extracurricular.schedule.destroy', $schedule->id) }}" method="POST"
+                                    <form action="{{ route('employee.extracurricular-schedule.destroy', $schedule->id) }}" method="POST"
                                         class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
                                         @csrf
                                         @method('DELETE')

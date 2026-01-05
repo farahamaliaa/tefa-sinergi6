@@ -2,7 +2,7 @@
     use App\Enums\DayEnum;
     use Carbon\Carbon;
 @endphp
-@extends('extracurricular.layouts.app')
+@extends('teacher.layouts.app')
 
 @section('style')
     <style>
@@ -87,7 +87,7 @@
             <h5 class="mb-0"><i class="ti ti-plus me-2"></i>Tambah Jadwal Baru</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('extracurricular.schedule.store') }}" method="POST" id="scheduleForm">
+            <form action="{{ route('teacher.extracurricular-schedule.store') }}" method="POST" id="scheduleForm">
                 @csrf
                 <input type="hidden" name="extracurricular_id" value="{{ $extracurricular->id }}">
                 <input type="hidden" name="latitude" id="latitude">
@@ -206,7 +206,7 @@
                                 </td>
                                 <td>{{ $schedule->radius ?? '-' }} m</td>
                                 <td class="text-center">
-                                    <form action="{{ route('extracurricular.schedule.destroy', $schedule->id) }}" method="POST"
+                                    <form action="{{ route('teacher.extracurricular-schedule.destroy', $schedule->id) }}" method="POST"
                                         class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -236,24 +236,19 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Default location (Indonesia - can be adjusted)
             const defaultLat = -6.200000;
             const defaultLng = 106.816666;
 
-            // Initialize map
             const map = L.map('map').setView([defaultLat, defaultLng], 15);
 
-            // Add OpenStreetMap tile layer (free, no API key needed)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Create draggable marker
             let marker = L.marker([defaultLat, defaultLng], {
                 draggable: true
             }).addTo(map);
 
-            // Create circle for radius visualization
             let circle = L.circle([defaultLat, defaultLng], {
                 color: '#0896D1',
                 fillColor: '#0896D1',
@@ -261,19 +256,16 @@
                 radius: 100
             }).addTo(map);
 
-            // Update location on marker drag
             marker.on('dragend', function (e) {
                 const position = marker.getLatLng();
                 updateLocation(position.lat, position.lng);
             });
 
-            // Update location on map click
             map.on('click', function (e) {
                 marker.setLatLng(e.latlng);
                 updateLocation(e.latlng.lat, e.latlng.lng);
             });
 
-            // Update radius circle when radius input changes
             document.querySelector('input[name="radius"]').addEventListener('change', function () {
                 circle.setRadius(parseInt(this.value) || 100);
             });
@@ -284,10 +276,8 @@
                 document.getElementById('locationText').textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
                 document.getElementById('submitBtn').disabled = false;
 
-                // Update circle position
                 circle.setLatLng([lat, lng]);
 
-                // Reverse geocoding to get address (optional)
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                     .then(response => response.json())
                     .then(data => {
@@ -298,7 +288,6 @@
                     .catch(err => console.log('Geocoding error:', err));
             }
 
-            // Try to get user's current location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     const lat = position.coords.latitude;
@@ -313,16 +302,13 @@
                 });
             }
 
-            // Search location functionality
             const searchInput = document.getElementById('searchLocation');
             const searchBtn = document.getElementById('searchBtn');
             const searchResults = document.getElementById('searchResults');
             let searchTimeout;
 
-            // Search on button click
             searchBtn.addEventListener('click', performSearch);
 
-            // Search on Enter key
             searchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -330,7 +316,6 @@
                 }
             });
 
-            // Auto search after typing (debounced)
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 const query = this.value.trim();
@@ -357,7 +342,6 @@
                 searchResults.innerHTML = '<div class="list-group-item text-muted"><i class="ti ti-loader ti-spin me-1"></i>Mencari...</div>';
                 searchResults.style.display = 'block';
 
-                // Use Nominatim API for geocoding (free, no API key needed)
                 fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&limit=5`)
                     .then(response => response.json())
                     .then(data => {
@@ -374,28 +358,23 @@
                             </a>
                         `).join('');
 
-                        // Add click handlers to results
                         searchResults.querySelectorAll('.list-group-item-action').forEach(item => {
                             item.addEventListener('click', function() {
                                 const lat = parseFloat(this.dataset.lat);
                                 const lng = parseFloat(this.dataset.lng);
                                 const name = this.dataset.name;
 
-                                // Move map and marker to selected location
                                 map.setView([lat, lng], 17);
                                 marker.setLatLng([lat, lng]);
                                 circle.setLatLng([lat, lng]);
                                 updateLocation(lat, lng);
 
-                                // Auto-fill location name if empty
                                 const locationNameInput = document.getElementById('location_name');
                                 if (!locationNameInput.value) {
-                                    // Get short name from display_name
                                     const shortName = name.split(',')[0];
                                     locationNameInput.value = shortName;
                                 }
 
-                                // Hide results and update search input
                                 searchInput.value = name.split(',').slice(0, 2).join(', ');
                                 searchResults.style.display = 'none';
                             });
@@ -407,7 +386,6 @@
                     });
             }
 
-            // Hide results when clicking outside
             document.addEventListener('click', function(e) {
                 if (!searchInput.contains(e.target) && !searchResults.contains(e.target) && !searchBtn.contains(e.target)) {
                     searchResults.style.display = 'none';

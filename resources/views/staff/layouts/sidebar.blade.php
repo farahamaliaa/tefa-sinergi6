@@ -287,6 +287,13 @@
                                         </li>
 
                                         <li class="sidebar-item">
+                                            <a href="{{ route('employee.extracurricular-schedule.index', ['extracurricular' => $staffExtracurricular->id]) }}"
+                                                class="sidebar-link {{ request()->routeIs('employee.extracurricular-schedule.*') ? 'active' : '' }}">
+                                                <span class="hide-menu">Jadwal</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="sidebar-item">
                                             <a href="{{ route('employee.extracurricular-journal.index', ['extracurricular' => $staffExtracurricular->id]) }}"
                                                 class="sidebar-link {{ request()->routeIs('employee.extracurricular-journal.*') ? 'active' : '' }}">
                                                 <span class="hide-menu">Jurnal</span>

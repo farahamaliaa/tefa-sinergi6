@@ -10,7 +10,12 @@ use App\Models\Classroom;
 use App\Models\LessonSchedule;
 use App\Models\TeacherJournal;
 use App\Models\ClassroomStudent;
+use App\Models\ExtracurricularSchedule;
+use App\Models\ExtracurricularPermission;
+use App\Models\ExtracurricularJournal;
+use App\Models\ExtracurricularAttendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StaffExtracurricularController extends Controller
 {
@@ -63,7 +68,6 @@ class StaffExtracurricularController extends Controller
             return redirect()->route('employee.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
         
-        // Get extracurricular info
         $extracurricular = Extracurricular::find($extracurricularId);
         
         if (!$extracurricular) {
@@ -75,10 +79,38 @@ class StaffExtracurricularController extends Controller
             ->with('student.user', 'student.classroomStudents.classroom')
             ->get();
         
-        // TODO: Get attendance data for this extracurricular
-        $attendances = [];
+        // Get date filter (default: today)
+        $date = $request->get('date', now()->format('Y-m-d'));
+
+        // Get journal for this date
+        $journal = $extracurricular->journals()
+            ->whereDate('date', $date)
+            ->first();
+
+        // Build attendance map
+        $attendanceMap = collect();
+        $summary = ['hadir' => 0, 'sakit' => 0, 'izin' => 0, 'alpha' => 0];
+
+        if ($journal) {
+            $attendances = ExtracurricularAttendance::where('extracurricular_journal_id', $journal->id)
+                ->get()
+                ->keyBy('extracurricular_student_id');
+
+            $attendanceMap = $attendances;
+
+            foreach ($attendances as $attendance) {
+                if (isset($summary[$attendance->status])) {
+                    $summary[$attendance->status]++;
+                }
+            }
+        }
         
-        return view('staff.pages.extracurricular-attendance.index', compact('extracurricularStudents', 'extracurricular', 'attendances'));
+        return view('staff.pages.extracurricular-attendance.index', compact(
+            'extracurricularStudents', 
+            'extracurricular', 
+            'attendanceMap',
+            'summary'
+        ));
     }
 
     public function permissionIndex(Request $request)
@@ -89,21 +121,19 @@ class StaffExtracurricularController extends Controller
             return redirect()->route('employee.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
         
-        // Get extracurricular info
         $extracurricular = Extracurricular::find($extracurricularId);
         
         if (!$extracurricular) {
             return redirect()->route('employee.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
         
-        // Get extracurricular students
-        $extracurricularStudents = $extracurricular->extracurricularStudents()
-            ->with('student.user', 'student.classroomStudents.classroom')
+        // Get permissions for this extracurricular
+        $permissions = ExtracurricularPermission::where('extracurricular_id', $extracurricularId)
+            ->with('extracurricularStudent.student.user', 'extracurricularStudent.student.classroomStudents.classroom', 'schedule')
+            ->orderBy('created_at', 'desc')
             ->get();
         
-        // TODO: Get permission data
-        
-        return view('staff.pages.extracurricular-permission.index', compact('extracurricularStudents', 'extracurricular'));
+        return view('staff.pages.extracurricular-permission.index', compact('permissions', 'extracurricular'));
     }
 
     public function journalIndex(Request $request)
@@ -115,88 +145,312 @@ class StaffExtracurricularController extends Controller
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
-        $extracurricular = Extracurricular::find($extracurricularId);
+        $extracurricular = Extracurricular::with('schedules', 'journals.schedule', 'journals.attendances', 'extracurricularStudents')
+            ->find($extracurricularId);
 
         if (!$extracurricular) {
             return redirect()->route('employee.dashboard')
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
-        // Provide dummy empty datasets so the view can render without errors
-        $journals = [];
-        $histories = [];
-        $teacherSchedules = [];
+        // Get today's day name in lowercase (e.g., 'monday', 'tuesday')
+        $todayDayName = strtolower(now()->format('l'));
+
+        // Get schedules for today
+        $todaySchedules = $extracurricular->schedules()
+            ->where('day', $todayDayName)
+            ->get();
+
+        // Check which schedules already have journals for today
+        $todaysJournals = $extracurricular->journals()
+            ->whereDate('date', now()->toDateString())
+            ->with('schedule', 'attendances')
+            ->get();
+
+        // Get journal history (past journals)
+        $journalHistory = $extracurricular->journals()
+            ->with('schedule', 'attendances')
+            ->orderBy('date', 'desc')
+            ->paginate(10);
 
         return view(
-            'staff.pages.journals-extracurricular.index',
-            compact('extracurricular', 'journals', 'histories', 'teacherSchedules')
+            'staff.pages.extracurricular-journal.index',
+            compact('extracurricular', 'todaySchedules', 'todaysJournals', 'journalHistory')
         );
     }
 
     public function journalCreate(Request $request)
     {
         $extracurricularId = $request->get('extracurricular');
-        $extracurricular = Extracurricular::find($extracurricularId);
+        $scheduleId = $request->get('schedule');
 
-        // Get a lesson schedule for view compatibility (mocked for now)
-        $lessonSchedule = LessonSchedule::with('teacherSubject.subject', 'classroom')->first();
+        $extracurricular = Extracurricular::find($extracurricularId);
         
-        if (!$lessonSchedule) {
-            return redirect()->back()->with('error', 'Data jadwal tidak ditemukan');
+        if (!$extracurricular) {
+            return redirect()->route('employee.dashboard')
+                ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
-        $classroomStudents = ClassroomStudent::with('student.user')
-            ->where('classroom_id', $lessonSchedule->classroom_id)
-            ->paginate(10);
-        $studentsPaginator = $classroomStudents;
+        $schedule = ExtracurricularSchedule::find($scheduleId);
 
-        return view('staff.pages.journals-extracurricular.create', compact(
-            'classroomStudents',
-            'lessonSchedule',
-            'studentsPaginator',
-            'extracurricular'
+        if (!$schedule) {
+            return redirect()->back()->with('error', 'Jadwal tidak ditemukan');
+        }
+
+        $extracurricularStudents = $extracurricular->extracurricularStudents()
+            ->with('student.user', 'student.classroomStudents.classroom')
+            ->get();
+            
+        return view('staff.pages.extracurricular-journal.create', compact(
+            'extracurricular',
+            'extracurricularStudents',
+            'schedule'
         ));
     }
 
     public function journalShow($id)
     {
-        // Fetch the journal or fallback to first available
-        $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
-            ->find($id);
-
-        if (!$journal) {
-            $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
-                ->first();
-        }
+        $journal = ExtracurricularJournal::with('extracurricular')->find($id);
 
         if (!$journal) {
             return redirect()->back()->with('error', 'Data jurnal tidak ditemukan');
         }
+        
+        $extracurricular = $journal->extracurricular;
 
-        $attendanceJournals = $journal->attendanceJournals()
-            ->with('classroomStudent.student.user', 'classroomStudent.classroom')
-            ->paginate(10);
+        $attendances = ExtracurricularAttendance::where('extracurricular_journal_id', $id)
+            ->with('extracurricularStudent.student.user', 'extracurricularStudent.student.classroomStudents.classroom')
+            ->get();
 
-        return view('staff.pages.journals-extracurricular.detail', compact('journal', 'attendanceJournals'));
+        return view('staff.pages.extracurricular-journal.detail', compact('journal', 'attendances', 'extracurricular'));
     }
 
     public function journalEdit($id)
     {
-        // Fetch the journal or fallback to first available
-        $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
-            ->find($id);
-
-        if (!$journal) {
-            $journal = TeacherJournal::with('lessonSchedule.teacherSubject.subject', 'lessonSchedule.classroom')
-                ->first();
-        }
+        $journal = ExtracurricularJournal::with('extracurricular')->find($id);
 
         if (!$journal) {
             return redirect()->back()->with('error', 'Data jurnal tidak ditemukan');
         }
 
-        $lessonSchedule = $journal->lessonSchedule;
+        $extracurricular = $journal->extracurricular;
+        $schedules = ExtracurricularSchedule::where('extracurricular_id', $extracurricular->id)->get();
+        
+        $attendances = ExtracurricularAttendance::where('extracurricular_journal_id', $id)
+            ->with('extracurricularStudent.student.user', 'extracurricularStudent.student.classroomStudents.classroom')
+            ->get()
+            ->keyBy('extracurricular_student_id');
+            
+        return view('staff.pages.extracurricular-journal.update', compact('journal', 'extracurricular', 'schedules', 'attendances'));
+    }
 
-        return view('staff.pages.journals-extracurricular.update', compact('journal', 'lessonSchedule'));
+    public function scheduleIndex(Request $request)
+    {
+        $extracurricularId = $request->get('extracurricular');
+
+        if (!$extracurricularId) {
+            return redirect()->route('employee.dashboard')
+                ->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+
+        $extracurricular = Extracurricular::with('schedules')->find($extracurricularId);
+
+        if (!$extracurricular) {
+            return redirect()->route('employee.dashboard')
+                ->with('error', 'Ekstrakurikuler tidak ditemukan');
+        }
+
+        return view('staff.pages.extracurricular-schedule.index', compact('extracurricular'));
+    }
+
+    public function scheduleStore(Request $request)
+    {
+        $request->validate([
+            'extracurricular_id' => 'required|exists:extracurriculars,id',
+            'day' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'location_name' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'radius' => 'required|integer|min:10|max:500',
+        ]);
+
+        $extracurricular = Extracurricular::findOrFail($request->extracurricular_id);
+
+        $extracurricular->schedules()->create([
+            'day' => $request->day,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'location_name' => $request->location_name,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'radius' => $request->radius,
+        ]);
+
+        return redirect()->back()->with('success', 'Jadwal berhasil ditambahkan');
+    }
+
+    public function scheduleDestroy($id)
+    {
+        $schedule = ExtracurricularSchedule::findOrFail($id);
+        $schedule->delete();
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus');
+    }
+
+    public function permissionApprove(Request $request, $id)
+    {
+        $permission = ExtracurricularPermission::findOrFail($id);
+
+        $permission->update(['status' => 'approved']);
+
+        // Create or update attendance with izin/sakit status
+        $journal = $permission->extracurricular->journals()
+            ->where('schedule_id', $permission->schedule_id)
+            ->whereDate('date', $permission->date)
+            ->first();
+
+        if ($journal) {
+            ExtracurricularAttendance::updateOrCreate(
+                [
+                    'extracurricular_journal_id' => $journal->id,
+                    'extracurricular_student_id' => $permission->extracurricular_student_id,
+                ],
+                [
+                    'status' => $permission->type
+                ]
+            );
+        } else {
+            // Create journal if not exists
+            $journal = $permission->extracurricular->journals()->create([
+                'schedule_id' => $permission->schedule_id,
+                'date' => $permission->date,
+                'description' => 'Jurnal absensi',
+                'image' => null,
+            ]);
+
+            ExtracurricularAttendance::create([
+                'extracurricular_journal_id' => $journal->id,
+                'extracurricular_student_id' => $permission->extracurricular_student_id,
+                'status' => $permission->type,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Izin disetujui dan status kehadiran diperbarui');
+    }
+
+    public function permissionReject(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_note' => 'nullable|string|max:500',
+        ]);
+
+        $permission = ExtracurricularPermission::findOrFail($id);
+
+        $permission->update([
+            'status' => 'rejected',
+            'rejection_note' => $request->rejection_note,
+        ]);
+
+        return redirect()->back()->with('success', 'Izin ditolak');
+    }
+
+    public function journalStore(Request $request)
+    {
+        $request->validate([
+            'extracurricular_id' => 'required|exists:extracurriculars,id',
+            'schedule_id' => 'required|exists:extracurricular_schedules,id',
+            'description' => 'required|string',
+            'image' => 'required|image|max:2048',
+            'attendance' => 'required|array',
+        ]);
+
+        // Handle image upload
+        $imagePath = $request->file('image')->store('extracurricular-journals', 'public');
+
+        // Create journal
+        $journal = ExtracurricularJournal::create([
+            'extracurricular_id' => $request->extracurricular_id,
+            'schedule_id' => $request->schedule_id,
+            'date' => now()->toDateString(),
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
+
+        // Create attendances
+        foreach ($request->attendance as $studentId => $status) {
+            ExtracurricularAttendance::create([
+                'extracurricular_journal_id' => $journal->id,
+                'extracurricular_student_id' => $studentId,
+                'status' => $status,
+            ]);
+        }
+
+        return redirect()->route('employee.extracurricular-journal.index', ['extracurricular' => $request->extracurricular_id])
+            ->with('success', 'Jurnal berhasil disimpan');
+    }
+
+    public function journalUpdate(Request $request, $id)
+    {
+        $journal = ExtracurricularJournal::find($id);
+
+        if (!$journal) {
+            return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
+        }
+
+        $request->validate([
+            'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+            'attendance' => 'required|array',
+        ]);
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($journal->image) {
+                Storage::disk('public')->delete($journal->image);
+            }
+            $journal->image = $request->file('image')->store('extracurricular-journals', 'public');
+        }
+
+        $journal->description = $request->description;
+        $journal->save();
+
+        // Update attendances
+        foreach ($request->attendance as $studentId => $status) {
+            ExtracurricularAttendance::updateOrCreate(
+                [
+                    'extracurricular_journal_id' => $journal->id,
+                    'extracurricular_student_id' => $studentId,
+                ],
+                ['status' => $status]
+            );
+        }
+
+        return redirect()->route('employee.extracurricular-journal.index', ['extracurricular' => $journal->extracurricular_id])
+            ->with('success', 'Jurnal berhasil diperbarui');
+    }
+
+    public function journalDestroy($id)
+    {
+        $journal = ExtracurricularJournal::find($id);
+
+        if (!$journal) {
+            return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
+        }
+
+        $extracurricularId = $journal->extracurricular_id;
+
+        // Delete image
+        if ($journal->image) {
+            Storage::disk('public')->delete($journal->image);
+        }
+
+        // Attendances will be deleted by cascade
+        $journal->delete();
+
+        return redirect()->route('employee.extracurricular-journal.index', ['extracurricular' => $extracurricularId])
+            ->with('success', 'Jurnal berhasil dihapus');
     }
 }
