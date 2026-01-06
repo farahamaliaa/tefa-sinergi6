@@ -33,8 +33,8 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-white" id="importPegawai">Detail Jurnal</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title text-white" id="detailJournalLabel">Detail Jurnal</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <section>
@@ -42,17 +42,17 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <div class="form-group">
-                                <label for="modal-journal-title" class="mb-1 fw-semibold">Judul</label>
-                                <input type="text" id="modal-journal-title" class="form-control rounded-input"
+                                <label for="detail-journal-title" class="mb-1 fw-semibold">Judul</label>
+                                <input type="text" id="detail-journal-title" class="form-control rounded-input"
                                     readonly>
                             </div>
                         </div>
 
                         <div class="col-md-12">
                             <div class="mb-3 form-group">
-                                <label for="modal-journal-description" class="mb-1 fw-semibold">Deskripsi
+                                <label for="detail-journal-description" class="mb-1 fw-semibold">Deskripsi
                                     Kegiatan</label>
-                                <textarea id="modal-journal-description" class="form-control rounded-input" rows="6" readonly></textarea>
+                                <textarea id="detail-journal-description" class="form-control rounded-input" rows="6" readonly></textarea>
                             </div>
                         </div>
                     </div>
@@ -63,13 +63,23 @@
 </div>
 
 <script>
-    function showJournalDetailModal(id, title, description, date) {
-        // Set modal content
-        document.getElementById('modal-journal-title').value = title || '-';
-        document.getElementById('modal-journal-description').value = description || '-';
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for detail journal buttons
+        document.querySelectorAll('.btn-detail-journal').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var title = this.getAttribute('data-title');
+                var description = this.getAttribute('data-description');
 
-        // Show modal
-        var modal = new bootstrap.Modal(document.getElementById('modal-detail-journal'));
-        modal.show();
-    }
+                // Set modal content
+                document.getElementById('detail-journal-title').value = title || '-';
+                document.getElementById('detail-journal-description').value = description ||
+                    '-';
+
+                // Show modal
+                var modal = new bootstrap.Modal(document.getElementById(
+                    'modal-detail-journal'));
+                modal.show();
+            });
+        });
+    });
 </script>

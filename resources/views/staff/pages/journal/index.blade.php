@@ -137,35 +137,19 @@
     <div class="col-lg-12">
         <div class="card border">
             <div class="card-body">
-                <h4 class="mb-4">Jurnal Harian</h4>
-                <form action="{{ route('employee.journal.store') }}" method="POST" enctype="multipart/form-data">
-                    @method('post')
-                    @csrf
-                    <div class="form-group mb-3">
-                        <h5>Judul</h5>
-                        <input type="text" class="form-control" name="title" id="placeholder"
-                            placeholder="Masukkan judul">
-                        @error('title')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
-                        <h5>Deskripsi</h5>
-                        <p>Isi laporan sesuai dengan kegiatan dan aktivitas yang berlaku pada jam pelajaran tersebut.</p>
-                        <textarea class="form-control" name="description" rows="4" placeholder="Masukkan deskripsi..."></textarea>
-                        @error('description')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="d-flex justify-content-end ">
-                        <button class="btn mb-1 waves-effect waves-light btn-success px-4" type="submit">Tambah
-                            Jurnal</button>
-                    </div>
-                </form>
+                <h4 class="mb-3">Jurnal Harian</h4>
+                <p class="text-muted">Klik tombol di bawah untuk menambahkan jurnal harian Anda.</p>
+                <div class="d-flex justify-content-end">
+                    <button class="btn waves-effect waves-light btn-success px-4" type="button" data-bs-toggle="modal"
+                        data-bs-target="#modal-create-journal">
+                        <i class="ti ti-plus me-1"></i> Tambah Jurnal
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    @include('staff.pages.journal.widget.modal-create')
 
     <div class="row me-3 mb-3">
         <div class="col-lg-6 col-md-12 mb-3">
@@ -217,15 +201,17 @@
                                     </div>
 
                                     <div>
-                                        <a href="{{ route('employee.journal.detail', ['employeeJournal' => $employeeJournal->id]) }}"
-                                            class="btn btn-primary">
+                                        <button type="button" class="btn btn-primary btn-detail-journal"
+                                            data-title="{{ $employeeJournal->title }}"
+                                            data-description="{{ $employeeJournal->description }}"
+                                            data-date="{{ $employeeJournal->created_at->locale('id')->translatedFormat('d F Y') }}">
                                             Lihat Detail Jurnal
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                                 class="mb-1" viewBox="0 0 24 24">
                                                 <path fill="currentColor"
                                                     d="M17.92 11.62a1 1 0 0 0-.21-.33l-5-5a1 1 0 0 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76" />
                                             </svg>
-                                        </a>
+                                        </button>
                                     </div>
 
                                 </div>
@@ -242,4 +228,6 @@
             </div>
         </div>
     </div>
+
+    @include('staff.pages.journal.widget.modal-detail')
 @endsection
