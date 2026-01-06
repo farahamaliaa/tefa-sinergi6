@@ -100,6 +100,42 @@
             </div>
         </div>
     </div>
+    {{-- 
+    <div class="card">
+        <div class="d-flex card-body justify-content-between align-items-center">
+            <div>
+                <h5 class="fs-4 mb-2 fw-normal">Absensi Hari Ini :</h5>
+                <h3 class="fw-semibold mb-0">{{ \Carbon\Carbon::now()->translatedFormat('d F Y - H.i') }}</h3>
+            </div>
+            <div>
+                <span class="badge px-4 py-2 rounded-2 fs-6 fw-semibold" style="background-color: #E5F9F6; color: #1EB196;">
+                    Masuk
+                </span>
+            </div>
+        </div>
+    </div> --}}
+
+    <div class="card">
+        <div class="d-flex card-body justify-content-between align-items-center">
+            <div>
+                <h5 class="fs-4 mb-3 fw-normal">Absensi Hari Ini :</h5>
+                <span class="border-0 px-4 py-2 mt-2 rounded-2 fs-4 fw-semibold"
+                    style="background-color: #E6E6E6; color: #555; pointer-events: none;">
+                    Belum Absen
+                </span>
+            </div>
+            <button class="btn border-0 fw-bold d-flex align-items-center gap-2 py-2 rounded-2"
+                style="background-color: #0896D1; color: white;">
+                <svg width="19" height="13" viewBox="0 0 19 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M6.49795 10.1626L16.9112 0.347439C17.1569 0.115813 17.4436 0 17.7713 0C18.099 0 18.3856 0.115813 18.6314 0.347439C18.8771 0.579065 19 0.854313 19 1.17318C19 1.49206 18.8771 1.76692 18.6314 1.99777L7.35804 12.6526C7.1123 12.8842 6.8256 13 6.49795 13C6.17029 13 5.8836 12.8842 5.63786 12.6526L0.354434 7.67261C0.108693 7.44098 -0.00926253 7.16612 0.000567093 6.84802C0.0103967 6.52992 0.138591 6.25467 0.385151 6.02227C0.63171 5.78987 0.923733 5.67406 1.26122 5.67483C1.5987 5.6756 1.89031 5.79142 2.13605 6.02227L6.49795 10.1626Z"
+                        fill="white" />
+                </svg>
+                Absen Sekarang
+            </button>
+        </div>
+    </div>
+
     <div class="col-lg-12">
         <div class="card border">
             <div class="card-body">
