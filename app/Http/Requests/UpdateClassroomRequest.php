@@ -24,7 +24,8 @@ class UpdateClassroomRequest extends FormRequest
         return [
             'name' => 'required',
             'employee_id' => 'required',
-            'level_class_id' => 'required'
+            'level_class_id' => 'required',
+            'whatsapp_group_id' => 'nullable|string|max:100'
         ];
     }
 
