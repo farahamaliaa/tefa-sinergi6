@@ -93,7 +93,7 @@
                 </div>
                 <div class="col-3">
                     <div class="text-center mb-n3">
-                        <img src="{{ asset('assets/images/background/laptops.png') }}" alt=""
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
                             class="img-fluid img-header-floating">
                     </div>
                 </div>
