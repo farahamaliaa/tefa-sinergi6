@@ -35,9 +35,10 @@
                             </div>
                             <div
                                 class="col-lg-3 col-md-4 mt-3 mt-md-0 d-flex justify-content-center justify-content-md-end">
-                                <a href="{{ route('employee.journal.detail', ['employeeJournal' => $employeeJournal->id]) }}"
+                                <button type="button"
                                     class="btn text-white fw-bold d-inline-flex align-items-center py-2 px-3"
-                                    style="background-color: #0896d1; border-radius: 6px;">
+                                    style="background-color: #0896d1; border-radius: 6px;"
+                                    onclick="showJournalDetailModal({{ $employeeJournal->id }}, '{{ addslashes($employeeJournal->title) }}', '{{ addslashes($employeeJournal->description) }}', '{{ \Carbon\Carbon::parse($employeeJournal->created_at)->translatedFormat('d F Y') }}')">
                                     Lihat Detail Jurnal
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="ms-2"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -45,7 +46,7 @@
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
                                         <polyline points="12 5 19 12 12 19"></polyline>
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -75,3 +76,6 @@
 
     </div>
 </div>
+
+<!-- Include Modal Detail Jurnal -->
+@include('staff.pages.journal.widget.modal-detail')
