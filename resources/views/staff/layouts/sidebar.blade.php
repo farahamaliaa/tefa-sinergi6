@@ -102,85 +102,93 @@
                     </a>
                 </li>
 
-                @if(auth()->user()->employee->position == 'staff_biasa' || auth()->user()->employee->position == null)
-                <!-- =================== -->
-                <!-- Jurnal Staff -->
-                <!-- =================== -->
-                <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('employee.journal.*') ? 'active' : '' }}"
-                        href="{{ route('employee.journal.index') }}" aria-expanded="false">
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
-                                <g fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 8V1h1v6.117L8.743 6.07a.5.5 0 0 1 .514 0L11 7.117V1h1v7a.5.5 0 0 1-.757.429L9 7.083L6.757 8.43A.5.5 0 0 1 6 8" />
+                @if (auth()->user()->employee->position == 'staff_biasa' || auth()->user()->employee->position == null)
+                    <!-- =================== -->
+                    <!-- Jurnal Staff -->
+                    <!-- =================== -->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.journal.*') ? 'active' : '' }}"
+                            href="{{ route('employee.journal.index') }}" aria-expanded="false">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                    viewBox="0 0 16 16">
+                                    <g fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M6 8V1h1v6.117L8.743 6.07a.5.5 0 0 1 .514 0L11 7.117V1h1v7a.5.5 0 0 1-.757.429L9 7.083L6.757 8.43A.5.5 0 0 1 6 8" />
+                                        <path
+                                            d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+                                        <path
+                                            d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
+                                    </g>
+                                </svg>
+                            </span>
+                            <span class="hide-menu">Jurnal Staff</span>
+                        </a>
+                    </li>
+
+                    <!-- =================== -->
+                    <!-- Absensi -->
+                    <!-- =================== -->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}"
+                            href="{{ route('employee.attendance.index') }}" aria-expanded="false">
+                            <span>
+                                <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path
-                                        d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+                                        d="M12.3382 6.72419L16.9133 7.94223M11.3588 10.362L13.6454 10.9715M11.4729 17.217L12.3871 17.4614C14.9746 18.1514 16.2684 18.4954 17.288 17.9099C18.3067 17.3253 18.6536 16.0382 19.3465 13.4661L20.3269 9.82728C21.0207 7.25415 21.3667 5.96807 20.7783 4.95415C20.1899 3.94024 18.8971 3.59619 16.3086 2.90715L15.3944 2.66278C12.8069 1.97278 11.5131 1.62874 10.4944 2.21428C9.47473 2.79886 9.12781 4.0859 8.43398 6.65807L7.45456 10.2969C6.76073 12.87 6.41382 14.1561 7.00319 15.17C7.59161 16.1829 8.88536 16.5279 11.4729 17.217Z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                     <path
-                                        d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
-                                </g>
-                            </svg>
-                        </span>
-                        <span class="hide-menu">Jurnal Staff</span>
-                    </a>
-                </li>
+                                        d="M11.4974 20.0731L10.5851 20.3222C8.00334 21.0247 6.71342 21.3764 5.69567 20.7794C4.67984 20.1833 4.33292 18.8723 3.64196 16.2484L2.6635 12.5377C1.97159 9.91474 1.62563 8.60278 2.21309 7.5697C2.721 6.67557 3.83075 6.70816 5.26825 6.70816"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
 
-                <!-- =================== -->
-                <!-- Absensi -->
-                <!-- =================== -->
-                <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}"
-                        href="{{ route('employee.attendance.index') }}" aria-expanded="false">
-                        <span>
-                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M12.3382 6.72419L16.9133 7.94223M11.3588 10.362L13.6454 10.9715M11.4729 17.217L12.3871 17.4614C14.9746 18.1514 16.2684 18.4954 17.288 17.9099C18.3067 17.3253 18.6536 16.0382 19.3465 13.4661L20.3269 9.82728C21.0207 7.25415 21.3667 5.96807 20.7783 4.95415C20.1899 3.94024 18.8971 3.59619 16.3086 2.90715L15.3944 2.66278C12.8069 1.97278 11.5131 1.62874 10.4944 2.21428C9.47473 2.79886 9.12781 4.0859 8.43398 6.65807L7.45456 10.2969C6.76073 12.87 6.41382 14.1561 7.00319 15.17C7.59161 16.1829 8.88536 16.5279 11.4729 17.217Z"
-                                    stroke="#0896D1" stroke-width="1.5" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path
-                                    d="M11.4974 20.0731L10.5851 20.3222C8.00334 21.0247 6.71342 21.3764 5.69567 20.7794C4.67984 20.1833 4.33292 18.8723 3.64196 16.2484L2.6635 12.5377C1.97159 9.91474 1.62563 8.60278 2.21309 7.5697C2.721 6.67557 3.83075 6.70816 5.26825 6.70816"
-                                    stroke="#0896D1" stroke-width="1.5" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
+                            </span>
+                            <span class="hide-menu">Absensi</span>
+                        </a>
+                    </li>
 
-                        </span>
-                        <span class="hide-menu">Absensi</span>
-                    </a>
-                </li>
-
-                <!-- =================== -->
-                <!-- Perizinan -->
-                <!-- =================== -->
-                <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('employee.permission') ? 'active' : '' }}"
-                        href="{{ route('employee.permission.index') }}" aria-expanded="false">
-                        <span>
-                            <svg width="18" height="20" viewBox="0 0 18 20" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C1.46957 20 0.960859 19.7893 0.585786 19.4142C0.210714 19.0391 0 18.5304 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H6.18C6.6 0.84 7.7 0 9 0C10.3 0 11.4 0.84 11.82 2H16ZM9 2C8.73478 2 8.48043 2.10536 8.29289 2.29289C8.10536 2.48043 8 2.73478 8 3C8 3.26522 8.10536 3.51957 8.29289 3.70711C8.48043 3.89464 8.73478 4 9 4C9.26522 4 9.51957 3.89464 9.70711 3.70711C9.89464 3.51957 10 3.26522 10 3C10 2.73478 9.89464 2.48043 9.70711 2.29289C9.51957 2.10536 9.26522 2 9 2ZM4 6V4H2V18H16V4H14V6H4ZM9 8C9.53043 8 10.0391 8.21071 10.4142 8.58579C10.7893 8.96086 11 9.46957 11 10C11 10.5304 10.7893 11.0391 10.4142 11.4142C10.0391 11.7893 9.53043 12 9 12C8.46957 12 7.96086 11.7893 7.58579 11.4142C7.21071 11.0391 7 10.5304 7 10C7 9.46957 7.21071 8.96086 7.58579 8.58579C7.96086 8.21071 8.46957 8 9 8ZM5 16V15C5 13.9 6.79 13 9 13C11.21 13 13 13.9 13 15V16H5Z"
-                                    fill="#0896D1" />
-                            </svg>
-                        </span>
-                        <span class="hide-menu">Perizinan</span>
-                    </a>
-                </li>
+                    <!-- =================== -->
+                    <!-- Perizinan -->
+                    <!-- =================== -->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.permission') ? 'active' : '' }}"
+                            href="{{ route('employee.permission.index') }}" aria-expanded="false">
+                            <span>
+                                <svg width="18" height="20" viewBox="0 0 18 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C1.46957 20 0.960859 19.7893 0.585786 19.4142C0.210714 19.0391 0 18.5304 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H6.18C6.6 0.84 7.7 0 9 0C10.3 0 11.4 0.84 11.82 2H16ZM9 2C8.73478 2 8.48043 2.10536 8.29289 2.29289C8.10536 2.48043 8 2.73478 8 3C8 3.26522 8.10536 3.51957 8.29289 3.70711C8.48043 3.89464 8.73478 4 9 4C9.26522 4 9.51957 3.89464 9.70711 3.70711C9.89464 3.51957 10 3.26522 10 3C10 2.73478 9.89464 2.48043 9.70711 2.29289C9.51957 2.10536 9.26522 2 9 2ZM4 6V4H2V18H16V4H14V6H4ZM9 8C9.53043 8 10.0391 8.21071 10.4142 8.58579C10.7893 8.96086 11 9.46957 11 10C11 10.5304 10.7893 11.0391 10.4142 11.4142C10.0391 11.7893 9.53043 12 9 12C8.46957 12 7.96086 11.7893 7.58579 11.4142C7.21071 11.0391 7 10.5304 7 10C7 9.46957 7.21071 8.96086 7.58579 8.58579C7.96086 8.21071 8.46957 8 9 8ZM5 16V15C5 13.9 6.79 13 9 13C11.21 13 13 13.9 13 15V16H5Z"
+                                        fill="#0896D1" />
+                                </svg>
+                            </span>
+                            <span class="hide-menu">Perizinan</span>
+                        </a>
+                    </li>
                 @endif
 
-                @if(auth()->user()->employee->position == 'ketua_tu')
-                <!-- =================== -->
-                <!-- Approval Perizinan -->
-                <!-- =================== -->
-                <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('employee.approval.*') ? 'active' : '' }}"
-                        href="{{ route('employee.approval.index') }}" aria-expanded="false">
-                        <span>
-                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-checkbox"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11l3 3l8 -8" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>
-                        </span>
-                        <span class="hide-menu">Approval Perizinan</span>
-                    </a>
-                </li>
+                @if (auth()->user()->employee->position == 'ketua_tu')
+                    <!-- =================== -->
+                    <!-- Approval Perizinan -->
+                    <!-- =================== -->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.approval.*') ? 'active' : '' }}"
+                            href="{{ route('employee.approval.index') }}" aria-expanded="false">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-checkbox">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M9 11l3 3l8 -8" />
+                                    <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+                                </svg>
+                            </span>
+                            <span class="hide-menu">Approval Perizinan</span>
+                        </a>
+                    </li>
                 @endif
 
                 <!-- =================== -->
