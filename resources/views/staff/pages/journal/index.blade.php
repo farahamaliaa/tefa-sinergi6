@@ -111,123 +111,102 @@
         </div>
     </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
-        <div class="d-flex align-items-center mb-3 mb-md-0">
-            <span class="badge bg-primary p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                        d="M12 7q-.825 0-1.412-.587T10 5t.588-1.412T12 3t1.413.588T14 5t-.587 1.413T12 7m0 14q-.625 0-1.062-.437T10.5 19.5v-9q0-.625.438-1.062T12 9t1.063.438t.437 1.062v9q0 .625-.437 1.063T12 21" />
-                </svg>
-            </span>
-            <h4 class="ms-3 mb-0"><b>Pengisian Jurnal</b></h4>
-        </div>
-        <div class="d-flex align-items-center">
-            <p class="mb-0 me-2">Tanggal saat ini:</p>
-            <span class="badge bg-light-primary text-primary fw-semibold d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="text-primary me-1" width="18" height="18"
-                    viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                        d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
-                </svg>
-                <?php echo date('d F Y'); ?>
-            </span>
-        </div>
-    </div>
-
     <div class="col-lg-12">
         <div class="card border">
             <div class="card-body">
-                <h4 class="mb-3">Jurnal Harian</h4>
-                <p class="text-muted">Klik tombol di bawah untuk menambahkan jurnal harian Anda.</p>
-                <div class="d-flex justify-content-end">
-                    <button class="btn waves-effect waves-light btn-success px-4" type="button" data-bs-toggle="modal"
-                        data-bs-target="#modal-create-journal">
-                        <i class="ti ti-plus me-1"></i> Tambah Jurnal
-                    </button>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Data Jurnal</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        <form class="d-flex gap-2" method="GET" action="{{ route('employee.journal.index') }}">
+                            <div class="position-relative">
+                                <input type="date" name="date" class="form-control search-chat"
+                                    value="{{ request('date') }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Cari</button>
+                        </form>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#modal-create-journal">
+                            <i class="ti ti-plus me-1"></i> Tambah Jurnal
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive rounded-2 ">
+                    <table class="table border text-nowrap customize-table mb-0 align-middle">
+                        <thead class="text-dark fs-4">
+                            <tr>
+                                <th class="text-white" style="background-color: #0896D1;">No</th>
+                                <th class="text-white" style="background-color: #0896D1;">Tanggal</th>
+                                <th class="text-white" style="background-color: #0896D1;">Judul</th>
+                                <th class="text-white" style="background-color: #0896D1;">Deskripsi Kegiatan</th>
+                                <th class="text-white" style="background-color: #0896D1;">Status</th>
+                                <th class="text-white text-center" style="background-color: #0896D1;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($employeeJournals as $employeeJournal)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($employeeJournal->created_at)->translatedFormat('d F Y') }}
+                                    </td>
+                                    <td>{{ $employeeJournal->title }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($employeeJournal->description, 50, '...') }}</td>
+                                    <td>
+                                        @if ($employeeJournal->title && $employeeJournal->description)
+                                            <span class="badge rounded-2 px-3 py-2 fs-2 fw-semibold"
+                                                style="background-color: #E5F9F6; color: #1EB196;">
+                                                Mengisi
+                                            </span>
+                                        @else
+                                            <span class="badge rounded-2 px-3 py-2 fs-2 fw-semibold"
+                                                style="background-color: #FDEDED; color: #D9534F;">
+                                                Tidak Mengisi
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <button type="button"
+                                                class="btn btn-sm btn-light-primary text-primary btn-detail-journal"
+                                                data-title="{{ $employeeJournal->title }}"
+                                                data-description="{{ $employeeJournal->description }}">
+                                                <i class="ti ti-eye fs-5"></i>
+                                            </button>
+                                            @if ($employeeJournal->created_at->isToday())
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light-warning text-warning btn-edit-journal"
+                                                    data-id="{{ $employeeJournal->id }}"
+                                                    data-title="{{ $employeeJournal->title }}"
+                                                    data-description="{{ $employeeJournal->description }}">
+                                                    <i class="ti ti-edit fs-5"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center align-middle">
+                                        <div class="d-flex flex-column justify-content-center align-items-center">
+                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
+                                                alt="" width="300px">
+                                            <p class="fs-5 text-dark text-center mt-2">
+                                                Belum ada data
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <div class="pagination justify-content-end mt-2 mb-0">
+                        {{-- <x-paginate-component :paginator="$attendances" /> --}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     @include('staff.pages.journal.widget.modal-create')
-
-    <div class="row me-3 mb-3">
-        <div class="col-lg-6 col-md-12 mb-3">
-            <div class="d-flex align-items-center">
-                <span class="mb-1 badge bg-primary p-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="currentColor"
-                            d="M12 7q-.825 0-1.412-.587T10 5t.588-1.412T12 3t1.413.588T14 5t-.587 1.413T12 7m0 14q-.625 0-1.062-.437T10.5 19.5v-9q0-.625.438-1.062T12 9t1.063.438t.437 1.062v9q0 .625-.437 1.063T12 21" />
-                    </svg>
-                </span>
-                <h4 class="ms-3 mb-0"><b>Riwayat Jurnal</b></h4>
-            </div>
-        </div>
-        <div class="col-lg-12">
-            <div class="row">
-                <div class="col-lg-12 col-md-12">
-                    @forelse ($employeeJournals as $employeeJournal)
-                        <div class="col-md-12 d-flex align-items-stretch">
-                            <div class="card w-100">
-                                <div class="card-header bg-primary" style="border-radius: 0.50rem;">
-                                    <h4 class="mb-0 text-white card-title">
-                                        {{ $employeeJournal->title }}
-                                    </h4>
-                                    <div class="position-absolute top-0 end-0" style="padding: 0px; position: relative;">
-                                        <img src="{{ asset('assets/images/background/arrow-leftwarning.png') }}"
-                                            alt="Description" class="img-fluid"
-                                            style="max-width: 210px; height: auto; position: relative;">
-                                        <span class="d-flex align-items-center ms-5 fs-2"
-                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold;width: 100%;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20"
-                                                height="20" viewBox="0 0 24 24">
-                                                <path fill="currentColor"
-                                                    d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
-                                            </svg>
-                                            {{ $employeeJournal->created_at->locale('id')->translatedFormat('d F Y') }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="pe-3">
-                                                <h5 class="card-title">Deskripsi:</h5>
-                                                <p>{{ \Illuminate\Support\Str::limit($employeeJournal->description, 200, '...') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <button type="button" class="btn btn-primary btn-detail-journal"
-                                            data-title="{{ $employeeJournal->title }}"
-                                            data-description="{{ $employeeJournal->description }}"
-                                            data-date="{{ $employeeJournal->created_at->locale('id')->translatedFormat('d F Y') }}">
-                                            Lihat Detail Jurnal
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                class="mb-1" viewBox="0 0 24 24">
-                                                <path fill="currentColor"
-                                                    d="M17.92 11.62a1 1 0 0 0-.21-.33l-5-5a1 1 0 0 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76" />
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="d-flex flex-column justify-content-center align-items-center">
-                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
-                                width="300px">
-                            <p class="fs-5 text-dark text-center mt-2">Belum ada jurnal</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-
+    @include('staff.pages.journal.widget.modal-edit')
     @include('staff.pages.journal.widget.modal-detail')
 @endsection

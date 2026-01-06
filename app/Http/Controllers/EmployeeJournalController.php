@@ -102,7 +102,7 @@ class EmployeeJournalController extends Controller
     {
         $data = $this->service->update($request);
         $this->employeeJournal->update($employeeJournal->id, $data);
-        return redirect()->back()->with('success', 'Berhasil mengedit jurnal.');
+        return redirect()->route('employee.journal.index')->with('success', 'Berhasil mengedit jurnal.');
     }
 
     /**

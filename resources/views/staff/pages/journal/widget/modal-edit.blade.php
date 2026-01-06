@@ -1,4 +1,4 @@
-<!-- Modal Detail Jurnal -->
+<!-- Modal Edit Jurnal -->
 <style>
     .modal-header {
         border-top-left-radius: 10.1px !important;
@@ -54,22 +54,23 @@
         border-color: #067aa7 !important;
     }
 </style>
-<div class="modal fade" id="modal-create-journal" tabindex="-1" aria-labelledby="createJournalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-edit-journal" tabindex="-1" aria-labelledby="editJournalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-white" id="createJournalLabel">Tambah Jurnal</h5>
+                <h5 class="modal-title text-white" id="editJournalLabel">Edit Jurnal</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="{{ route('employee.journal.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="form-edit-journal" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
                 <div class="modal-body mx-3" style="max-height: 70vh; overflow-y: auto;">
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <div class="form-group">
-                                <label for="modal-journal-title" class="mb-1 fw-semibold">Judul</label>
-                                <input type="text" id="modal-journal-title" name="title"
+                                <label for="edit-journal-title" class="mb-1 fw-semibold">Judul</label>
+                                <input type="text" id="edit-journal-title" name="title"
                                     class="form-control rounded-input" placeholder="Masukkan Judul" required>
                                 @error('title')
                                     <span class="text-danger">{{ $message }}</span>
@@ -79,21 +80,21 @@
 
                         <div class="col-md-12">
                             <div class="mb-3 form-group">
-                                <label for="modal-journal-description" class="mb-1 fw-semibold">Deskripsi
+                                <label for="edit-journal-description" class="mb-1 fw-semibold">Deskripsi
                                     Kegiatan</label>
-                                <textarea id="modal-journal-description" name="description" class="form-control rounded-input" rows="6"
-                                    placeholder="Masukkan Deskripsi" required oninput="updateCharCount()"></textarea>
+                                <textarea id="edit-journal-description" name="description" class="form-control rounded-input" rows="6"
+                                    placeholder="Masukkan Deskripsi" required oninput="updateEditCharCount()"></textarea>
                                 @error('description')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                     </div>
-                    <label id="char-count-label" class="mb-1 fw-semibold text-muted">0 Karakter</label>
+                    <label id="edit-char-count-label" class="mb-1 fw-semibold text-muted">0 Karakter</label>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Kembali</button>
-                    <button type="submit" class="btn btn-primary">Tambah</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
         </div>
@@ -101,9 +102,35 @@
 </div>
 
 <script>
-    function updateCharCount() {
-        var textarea = document.getElementById('modal-journal-description');
+    function updateEditCharCount() {
+        var textarea = document.getElementById('edit-journal-description');
         var charCount = textarea.value.length;
-        document.getElementById('char-count-label').textContent = charCount + ' Karakter';
+        document.getElementById('edit-char-count-label').textContent = charCount + ' Karakter';
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for edit journal buttons
+        document.querySelectorAll('.btn-edit-journal').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var title = this.getAttribute('data-title');
+                var description = this.getAttribute('data-description');
+
+                // Set form action with the journal ID (Laravel resource route)
+                var form = document.getElementById('form-edit-journal');
+                form.action = '/employee/journal/' + id;
+
+                // Set modal content
+                document.getElementById('edit-journal-title').value = title || '';
+                document.getElementById('edit-journal-description').value = description || '';
+
+                // Update character count
+                updateEditCharCount();
+
+                // Show modal
+                var modal = new bootstrap.Modal(document.getElementById('modal-edit-journal'));
+                modal.show();
+            });
+        });
+    });
 </script>
