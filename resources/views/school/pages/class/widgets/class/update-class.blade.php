@@ -37,6 +37,18 @@
                             </select>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="whatsapp-group-edit" class="form-label">
+                            <i class="ti ti-brand-whatsapp text-success"></i> ID Grup WhatsApp
+                        </label>
+                        <input type="text" class="form-control" id="whatsapp-group-edit" name="whatsapp_group_id" 
+                            placeholder="Contoh: 6281234567890-1234567890@g.us">
+                        <small class="text-muted">
+                            <strong>Cara mendapatkan ID Grup:</strong><br>
+                            1. Buka WhatsApp Web → Klik grup → Lihat URL<br>
+                            2. Atau kirim pesan ke grup, cek via Fonnte Dashboard
+                        </small>
+                    </div>
 
                 </div>
 

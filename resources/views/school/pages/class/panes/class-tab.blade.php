@@ -177,7 +177,7 @@
                                     </div>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end category-menu">
-                                    <button type="button" data-id="{{ $classroom->id }}" data-name="{{ $classroom->name }}" data-level="{{ $classroom->level_class_id }}" data-employee="{{ $classroom->employee_id }}" class="btn-update-classroom dropdown-item d-flex align-items-center btn-edit">
+                                    <button type="button" data-id="{{ $classroom->id }}" data-name="{{ $classroom->name }}" data-level="{{ $classroom->level_class_id }}" data-employee="{{ $classroom->employee_id }}" data-whatsapp="{{ $classroom->whatsapp_group_id }}" class="btn-update-classroom dropdown-item d-flex align-items-center btn-edit">
                                         <i class="ti ti-edit me-2"></i> Edit
                                     </button>
                                     <button class="dropdown-item d-flex align-items-center text-danger btn-delete-class" data-id="{{ $classroom->id }}">
@@ -189,6 +189,11 @@
                     </div>
 
                     <span class="fs-4 mb-2">{{ $classroom->employee->user->name }}</span>
+                    @if($classroom->whatsapp_group_id)
+                        <span class="badge bg-light-success text-success mb-2">
+                            <i class="ti ti-brand-whatsapp"></i> WA Terhubung
+                        </span>
+                    @endif
                     <div class="d-flex align-items-center pt-3 text-secondary">
                         <div class="bg-year p-2 rounded">
                             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 16 16" class="pb-1">

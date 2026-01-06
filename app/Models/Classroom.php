@@ -21,7 +21,8 @@ class Classroom extends Model
         'name',
         'employee_id',
         'school_year_id',
-        'level_class_id'
+        'level_class_id',
+        'whatsapp_group_id'
     ];
 
     public $incrementing = false;
