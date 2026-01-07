@@ -176,15 +176,15 @@
                                 </td> --}}
                                 <td>
                                     @if ($permission->status == \App\Enums\StatusPermissionEnum::APPROVED)
-                                        <span class="badge bg-success">Disetujui</span>
+                                        <span class="badge bg-light-success text-success">Disetujui</span>
                                     @elseif ($permission->status == \App\Enums\StatusPermissionEnum::REJECTED)
-                                        <span class="badge bg-danger">Ditolak</span>
+                                        <span class="badge bg-light-danger text-danger">Ditolak</span>
                                     @else
-                                        <span class="badge bg-warning">Menunggu</span>
+                                        <span class="badge bg-light-warning text-warning">Menunggu</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-info btn-view-detail"
+                                    <button type="button" class="btn btn-sm btn-primary btn-view-detail"
                                         data-bs-toggle="modal" data-bs-target="#student-permission-modal"
                                         data-id="{{ $permission->id }}"
                                         data-name="{{ $permission->employee->user->name ?? 'Unknown' }}"
@@ -193,9 +193,10 @@
                                         data-proof="{{ $permission->proof }}"
                                         data-proof-image="{{ $permission->proof_image ? asset('storage/' . $permission->proof_image) : '' }}"
                                         data-status="{{ $permission->status->value }}">
-                                        <i class="ti ti-eye"></i>
+                                        {{-- <i class="ti ti-eye"></i> --}}
+                                        Lihat
                                     </button>
-                                    @if ($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
+                                    {{-- @if ($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
                                         <form action="{{ route('employee.permission.destroy', $permission->id) }}"
                                             method="POST" class="d-inline">
                                             @csrf
@@ -205,7 +206,7 @@
                                                 <i class="ti ti-trash"></i>
                                             </button>
                                         </form>
-                                    @endif
+                                    @endif --}}
                                 </td>
                             </tr>
                         @empty
