@@ -99,13 +99,14 @@ class SchoolDashboardController extends Controller
         $permit_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::PERMIT->value, $request);
 
         $merged_teacher = $sick_teacher->merge($permit_teacher);
-        $totalPermit_teacher = $merged->count();
+        $totalPermit_teacher = $merged_teacher->count();
 
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
 
         return view('school.pages.dashboard.dashboard', compact(
-            'lates', 'alpha', 'sick', 'permit', 'totalPermit','lates_teacher', 'alpha_teacher', 'sick_teacher', 'totalPermit_teacher','studentChart',
-            'fill','notfill','classrooms', 'violations',
+            'lates', 'alpha', 'sick', 'permit', 'totalPermit',
+            'lates_teacher', 'alpha_teacher', 'sick_teacher', 'permit_teacher', 'totalPermit_teacher',
+            'studentChart', 'fill', 'notfill', 'classrooms', 'violations',
             'schoolYear', 'semester',
             'attendanceChart', 'alumni',
             'teachers', 'employees', 'students',

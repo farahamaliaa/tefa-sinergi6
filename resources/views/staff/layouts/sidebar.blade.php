@@ -169,9 +169,46 @@
                 @endif
 
                 @if (auth()->user()->employee->position == 'ketua_tu')
-                    <!-- =================== -->
-                    <!-- Approval Perizinan -->
-                    <!-- =================== -->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.journal.*') ? 'active' : '' }}"
+                            href="{{ route('employee.journal.index') }}" aria-expanded="false">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                    viewBox="0 0 16 16">
+                                    <g fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M6 8V1h1v6.117L8.743 6.07a.5.5 0 0 1 .514 0L11 7.117V1h1v7a.5.5 0 0 1-.757.429L9 7.083L6.757 8.43A.5.5 0 0 1 6 8" />
+                                        <path
+                                            d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+                                        <path
+                                            d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
+                                    </g>
+                                </svg>
+                            </span>
+                            <span class="hide-menu">Jurnal Staff</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}"
+                            href="{{ route('employee.attendance.index') }}" aria-expanded="false">
+                            <span>
+                                <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12.3382 6.72419L16.9133 7.94223M11.3588 10.362L13.6454 10.9715M11.4729 17.217L12.3871 17.4614C14.9746 18.1514 16.2684 18.4954 17.288 17.9099C18.3067 17.3253 18.6536 16.0382 19.3465 13.4661L20.3269 9.82728C21.0207 7.25415 21.3667 5.96807 20.7783 4.95415C20.1899 3.94024 18.8971 3.59619 16.3086 2.90715L15.3944 2.66278C12.8069 1.97278 11.5131 1.62874 10.4944 2.21428C9.47473 2.79886 9.12781 4.0859 8.43398 6.65807L7.45456 10.2969C6.76073 12.87 6.41382 14.1561 7.00319 15.17C7.59161 16.1829 8.88536 16.5279 11.4729 17.217Z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M11.4974 20.0731L10.5851 20.3222C8.00334 21.0247 6.71342 21.3764 5.69567 20.7794C4.67984 20.1833 4.33292 18.8723 3.64196 16.2484L2.6635 12.5377C1.97159 9.91474 1.62563 8.60278 2.21309 7.5697C2.721 6.67557 3.83075 6.70816 5.26825 6.70816"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span class="hide-menu">Absensi</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item">
                         <a class="sidebar-link {{ request()->routeIs('employee.approval.*') ? 'active' : '' }}"
                             href="{{ route('employee.approval.index') }}" aria-expanded="false">
@@ -190,9 +227,6 @@
                     </li>
                 @endif
 
-                <!-- =================== -->
-                <!-- Ekstrakulikuler -->
-                <!-- =================== -->
                 {{-- @if (\App\Models\Extracurricular::where('employee_id', auth()->user()->employee->id)->exists())
                     @php
                         $staffExtracurriculars = \App\Models\Extracurricular::where(

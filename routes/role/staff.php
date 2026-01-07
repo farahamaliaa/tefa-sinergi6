@@ -14,7 +14,7 @@ use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Staff\StaffPermissionController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'role:staff'])->prefix('employee')->name('employee.')->group(function () {
+Route::middleware(['auth', 'role:staff|teacher'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [DashboardStaffController::class, 'index'])->name('dashboard');
 
     // Staff Permissions (Staff Biasa)
@@ -29,6 +29,8 @@ Route::middleware(['auth', 'role:staff'])->prefix('employee')->name('employee.')
 
     // Manual Attendance (Staff Biasa)
     Route::post('attendance/check-in', [StaffAttendanceController::class, 'checkIn'])->name('attendance.check-in');
+    Route::post('attendance/check-out', [StaffAttendanceController::class, 'checkOut'])->name('attendance.check-out');
+    Route::post('attendance/permission', [StaffAttendanceController::class, 'storePermission'])->name('attendance.permission');
     // fitur buku tamu
     Route::resource('guestbook', GuestBookController::class);
     // fitur jurnal

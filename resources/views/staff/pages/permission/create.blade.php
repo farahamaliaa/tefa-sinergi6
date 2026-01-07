@@ -160,11 +160,12 @@
                                 <label class="form-label fw-semibold">Jenis Izin <span class="text-danger">*</span></label>
                                 <select name="permission_type" class="form-select" required>
                                     <option value="">Pilih</option>
-                                    {{-- @foreach (\App\Enums\PermissionTypeEnum::cases() as $type)
-                                    <option value="{{ $type->value }}"
-                                        {{ old('permission_type') == $type->value ? 'selected' : '' }}>
-                                        {{ $type->label() }}</option>
-                                @endforeach --}}
+                                    @foreach (\App\Enums\PermissionTypeEnum::cases() as $type)
+                                        <option value="{{ $type->value }}"
+                                            {{ old('permission_type') == $type->value ? 'selected' : '' }}>
+                                            {{ $type->label() }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

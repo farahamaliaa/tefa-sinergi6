@@ -4,7 +4,7 @@ use App\Http\Controllers\Extracurricular\DashboardExtracurricularController;
 use App\Http\Controllers\Extracurricular\ExtracurricularManagementController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'role:extracurricular'])->prefix('extracurricular')->name('extracurricular.')->group(function () {
+Route::middleware(['auth', 'role:extracurricular|staff|teacher'])->prefix('extracurricular')->name('extracurricular.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardExtracurricularController::class, 'index'])->name('dashboard');
 

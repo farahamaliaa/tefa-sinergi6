@@ -194,7 +194,7 @@
                     <div id="late-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
                             <div class="col-12">
-                                @include('school.pages.dashboard.panes.student-tab.late-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.late-tab')
                             </div>
                         </div>
                     </div>
@@ -202,7 +202,7 @@
                     <div id="permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12">
-                                @include('school.pages.dashboard.panes.student-tab.permisson-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.permission-tab')
                             </div>
                         </div>
                     </div>
@@ -210,7 +210,7 @@
                     <div id="alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12">
-                                @include('school.pages.dashboard.panes.student-tab.alpha-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.alpha-tab')
                             </div>
                         </div>
                     </div>

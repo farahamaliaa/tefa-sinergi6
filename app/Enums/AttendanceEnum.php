@@ -9,6 +9,7 @@ enum AttendanceEnum: string
     case SICK = 'sick';
     case ALPHA = 'alpha';
     case PERMIT = 'permit';
+    case DINAS = 'dinas';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum AttendanceEnum: string
             self::SICK => 'sakit',
             self::ALPHA => 'alpha',
             self::PERMIT => 'izin',
+            self::DINAS => 'dinas',
         };
     }
     public function color(): string
@@ -28,6 +30,8 @@ enum AttendanceEnum: string
             self::SICK => 'bg-light-info text-info',
             self::ALPHA => 'bg-light-danger text-danger',
             self::PERMIT => 'bg-light-secondary text-secondary',
+            self::DINAS => 'bg-light-primary text-primary',
         };
     }
 }
+

@@ -187,6 +187,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function AttendanceDasboard(mixed $model, mixed $query, Request $request): mixed
     {
         $result = $this->model->query();
+        $result->with('model.user');
         $result->where('model_type', $model);
         $result->where('status', $query);
         $request->date ? $result->whereDate('created_at', $request->date) : $result->whereDate('created_at', now());
@@ -323,6 +324,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function whereModelAndNow(mixed $model, Request $request): mixed
     {
         $query = $this->model->query()
+            ->with('model.user')
             ->where('model_type', $model);
 
         if ($request->has(['start_date', 'end_date'])) {
