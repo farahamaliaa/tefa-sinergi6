@@ -152,7 +152,7 @@
                             <th class="text-white" style="background-color: #0896D1;">Tanggal</th>
                             <th class="text-white" style="background-color: #0896D1;">Jenis Izin</th>
                             <th class="text-white" style="background-color: #0896D1;">Keterangan</th>
-                            <th class="text-white" style="background-color: #0896D1;">Bukti</th>
+                            {{-- <th class="text-white" style="background-color: #0896D1;">Bukti</th> --}}
                             <th class="text-white" style="background-color: #0896D1;">Status</th>
                             <th class="text-white" style="background-color: #0896D1;">Aksi</th>
                         </tr>
@@ -164,7 +164,7 @@
                                 <td>{{ Carbon\Carbon::parse($permission->date)->format('d M Y') }}</td>
                                 <td>{{ $permission->permission_type->label() ?? $permission->permission_type->value }}</td>
                                 <td>{{ Str::limit($permission->proof, 50) }}</td>
-                                <td>
+                                {{-- <td>
                                     @if ($permission->proof_image)
                                         <a href="{{ asset('storage/' . $permission->proof_image) }}" target="_blank"
                                             class="btn btn-sm btn-info">
@@ -173,7 +173,7 @@
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
-                                </td>
+                                </td> --}}
                                 <td>
                                     @if ($permission->status == \App\Enums\StatusPermissionEnum::APPROVED)
                                         <span class="badge bg-success">Disetujui</span>
@@ -184,6 +184,17 @@
                                     @endif
                                 </td>
                                 <td>
+                                    <button type="button" class="btn btn-sm btn-info btn-view-detail"
+                                        data-bs-toggle="modal" data-bs-target="#student-permission-modal"
+                                        data-id="{{ $permission->id }}"
+                                        data-name="{{ $permission->employee->user->name ?? 'Unknown' }}"
+                                        data-date="{{ Carbon\Carbon::parse($permission->date)->format('d/m/Y') }}"
+                                        data-type="{{ $permission->permission_type->label() ?? $permission->permission_type->value }}"
+                                        data-proof="{{ $permission->proof }}"
+                                        data-proof-image="{{ $permission->proof_image ? asset('storage/' . $permission->proof_image) : '' }}"
+                                        data-status="{{ $permission->status->value }}">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
                                     @if ($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
                                         <form action="{{ route('employee.permission.destroy', $permission->id) }}"
                                             method="POST" class="d-inline">
@@ -218,4 +229,57 @@
             </div>
         </div>
     </div>
+
+    @include('staff.pages.permission.widgets.detail')
+@endsection
+
+@section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('student-permission-modal');
+
+            modal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+
+                // Get data from button attributes
+                const name = button.getAttribute('data-name');
+                const date = button.getAttribute('data-date');
+                const type = button.getAttribute('data-type');
+                const proof = button.getAttribute('data-proof');
+                const proofImage = button.getAttribute('data-proof-image');
+                const status = button.getAttribute('data-status');
+
+                // Update modal content
+                modal.querySelector('#modal-staff-name').value = name;
+                modal.querySelector('#modal-date').value = date;
+                modal.querySelector('#modal-type').value = type;
+                modal.querySelector('#modal-proof').value = proof || '-';
+
+                // Update proof image
+                const imgContainer = modal.querySelector('#modal-proof-image-container');
+                if (proofImage) {
+                    imgContainer.innerHTML =
+                        `<img src="${proofImage}" class="img-fluid rounded-3" alt="Bukti Izin" style="width: 300px; max-height: 300px; object-fit: cover;">`;
+                } else {
+                    imgContainer.innerHTML = '<p class="text-muted">Tidak ada bukti</p>';
+                }
+
+                // Update status badge
+                const statusBadge = modal.querySelector('#modal-status');
+                if (status === 'approved') {
+                    statusBadge.textContent = 'Disetujui';
+                    statusBadge.style.backgroundColor = '#E6FFFA';
+                    statusBadge.style.color = '#13DEB9';
+                } else if (status === 'rejected') {
+                    statusBadge.textContent = 'Ditolak';
+                    statusBadge.style.backgroundColor = '#FFE5E5';
+                    statusBadge.style.color = '#DC3545';
+                } else {
+                    statusBadge.textContent = 'Menunggu';
+                    statusBadge.style.backgroundColor = '#FFF4E5';
+                    statusBadge.style.color = '#FA896B';
+                }
+            });
+        });
+    </script>
 @endsection

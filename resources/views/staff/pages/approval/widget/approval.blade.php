@@ -56,6 +56,21 @@
                         <p class="text-muted">Tidak ada bukti</p>
                     </div>
                 </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <form id="form-reject" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" id="modal-btn-reject" class="btn text-white px-5 py-2"
+                            style="background-color: #DC3545; border-radius: 8px; font-weight: 500;"
+                            onclick="return confirm('Tolak izin ini?')">Tolak</button>
+                    </form>
+                    <form id="form-approve" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" id="modal-btn-approve" class="btn text-white px-5 py-2"
+                            style="background-color: #13DEB9; border-radius: 8px; font-weight: 500;"
+                            onclick="return confirm('Setujui izin ini?')">Setujui</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
