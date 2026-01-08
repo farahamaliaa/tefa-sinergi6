@@ -6,9 +6,11 @@ use App\Contracts\Interfaces\AttendanceInterface;
 use App\Contracts\Interfaces\ClassroomStudentInterface;
 use App\Http\Controllers\Controller;
 use App\Models\ClassroomStudent;
+use App\Models\LessonSchedule;
 use App\Services\StudentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class DashboardStudentController extends Controller
 {
@@ -36,7 +38,18 @@ class DashboardStudentController extends Controller
         $single_attendance = $this->attendance->userToday('App\Models\ClassroomStudent', $studentClasses->id);
         $history_attendance = $this->attendance->whereUser($studentClasses->id, 'App\Models\ClassroomStudent');
         $chartAttendance = $this->service->chartAttendance(auth()->user()->student->id);
-        return view('student.pages.dashboard.dashboard', compact('studentClasses', 'single_attendance', 'history_attendance', 'chartAttendance'));
+
+        // Get today's day in lowercase (e.g., 'monday', 'tuesday', etc.)
+        $today = strtolower(Carbon::now()->format('l'));
+
+        // Get today's lesson schedules for this classroom
+        $todaySchedules = LessonSchedule::where('classroom_id', $studentClasses->classroom_id)
+            ->where('day', $today)
+            ->with(['teacherSubject.subject', 'teacherSubject.employee.user', 'start', 'end'])
+            ->orderBy('lesson_hour_start')
+            ->get();
+
+        return view('student.pages.dashboard.dashboard', compact('studentClasses', 'single_attendance', 'history_attendance', 'chartAttendance', 'todaySchedules'));
     }
 
     /**
