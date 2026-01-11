@@ -92,11 +92,6 @@
                         <span class="hide-menu">Beranda</span>
                     </a>
                 </li>
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">Fitur</span>
-                </li>
-
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="/student/attendance" aria-expanded="false">
                         <span>
@@ -112,6 +107,13 @@
                         </span>
                         <span class="hide-menu">Absensi</span>
                     </a>
+                </li>
+                <li class="nav-small-cap">
+                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                    <span class="hide-menu">Fitur</span>
+                </li>
+
+
                 <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('student.extracurricular.*') ? 'active' : '' }}"
                         href="{{ route('student.extracurricular.index') }}" aria-expanded="false">

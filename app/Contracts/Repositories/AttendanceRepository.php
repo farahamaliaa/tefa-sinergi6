@@ -371,4 +371,19 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
             ->latest()
             ->paginate(10);
     }
+
+    public function whereUserFiltered(mixed $id, mixed $model, Request $request): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', $model)
+            ->where('model_id', $id)
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when($request->date, function ($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
+            ->latest()
+            ->paginate(10);
+    }
 }

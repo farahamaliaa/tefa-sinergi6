@@ -18,10 +18,10 @@ class AttendanceController extends Controller
         $this->studentClass = $studentClass;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $studentClasses = $this->studentClass->whereStudent(auth()->user()->student->id);
-        $attendances = $this->attendance->whereUser($studentClasses->id, 'App\Models\ClassroomStudent');
-        return view('student.pages.attendance.index', compact('attendances'));
+        $attendances = $this->attendance->whereUserFiltered($studentClasses->id, 'App\Models\ClassroomStudent', $request);
+        return view('student.pages.attendance.index', compact('attendances', 'studentClasses'));
     }
 }
