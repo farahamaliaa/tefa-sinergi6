@@ -13,17 +13,14 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
 
     Route::get('extracurricular', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
 
-    // Extracurricular Students
     Route::prefix('extracurricular-students')->name('extracurricular-students.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'studentsIndex'])->name('index');
     });
 
-    // Extracurricular Attendance
     Route::prefix('extracurricular-attendance')->name('extracurricular-attendance.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'attendanceIndex'])->name('index');
     });
 
-    // Extracurricular Permission
     Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'permissionIndex'])->name('index');
         Route::post('/approve/{id}', [ExtracurricularController::class, 'permissionApprove'])->name('approve');
@@ -49,9 +46,10 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
 
     Route::prefix('classroom-permission')->name('classroom-permission.')->group(function () {
         Route::get('/', [AttendanceController::class, 'permissionIndex'])->name('index');
+        Route::post('/approve/{id}', [AttendanceController::class, 'approvePermission'])->name('approve');
+        Route::post('/reject/{id}', [AttendanceController::class, 'rejectPermission'])->name('reject');
     });
 
-    // Extracurricular Journal (teacher)
     Route::prefix('extracurricular-journal')->name('extracurricular-journal.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'journalIndex'])->name('index');
         Route::get('/create', [ExtracurricularController::class, 'journalCreate'])->name('create');
@@ -62,7 +60,6 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
         Route::delete('/destroy/{id}', [ExtracurricularController::class, 'journalDestroy'])->name('destroy');
     });
 
-    // Extracurricular Schedule (teacher)
     Route::prefix('extracurricular-schedule')->name('extracurricular-schedule.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'scheduleIndex'])->name('index');
         Route::post('/store', [ExtracurricularController::class, 'scheduleStore'])->name('store');

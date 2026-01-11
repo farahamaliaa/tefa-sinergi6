@@ -183,11 +183,11 @@ $(document).ready(function () {
   $('#Gotop').on('click', function () {
     let windiowTop = $(window).scrollTop();
     if (windiowTop <= 1000) {
-      $('body,html').animate({scrollTop: 0}, 1000);
+      $('body,html').animate({ scrollTop: 0 }, 1000);
     } else if (windiowTop <= 2000 && windiowTop > 1000) {
-      $('body,html').animate({scrollTop: 0}, 2000);
+      $('body,html').animate({ scrollTop: 0 }, 2000);
     } else {
-      $('body,html').animate({scrollTop: 0}, 2500);
+      $('body,html').animate({ scrollTop: 0 }, 2500);
     }
   });
 });
@@ -214,7 +214,7 @@ $('.navbar-toggler').on('click', function () {
 });
 //YOUTUBE VIDEO
 $(".play-button").on('click', function (e) {
-  var iframeEl = $("<iframe>", {src: $(this).data("url")});
+  var iframeEl = $("<iframe>", { src: $(this).data("url") });
   $("#youtubevideo").attr("src", $(this).data("url"));
 });
 $("#close-video").on('click', function (e) {
@@ -247,7 +247,7 @@ $(document).ready(function () {
 (function () {
   $(".toggle-wrap").on("click", function () {
     $(this).toggleClass("active");
-    $("aside").animate({width: "toggle"}, 200);
+    $("aside").animate({ width: "toggle" }, 200);
   });
 })();
 // INITIALIZE AOS

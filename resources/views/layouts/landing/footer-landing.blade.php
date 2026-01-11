@@ -1,147 +1,116 @@
-    <!-- Footer-Section start -->
-    <footer>
-        <div class="top_footer" id="contact" style="background-color: #5A6A85;">
+<footer style="background-color: #0f172a; color: #94a3b8; font-family: 'Outfit', sans-serif; position: relative; overflow: hidden; margin-top: 0; z-index: 50;">
+    
+    <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 100%; height: 300px; background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
 
-            {{-- <div class="container">
-                <div class="anim_line dark_bg">
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                    <span><img src="{{ asset('landing_assets/images/anim_line_2.png') }}" alt="anim_line"></span>
-                </div>
-            </div> --}}
-
-            <!-- container start -->
-            <div class="container">
-                <!-- row start -->
-                <div class="row">
-                    <!-- footer link 1 -->
-                    <div class="col-lg-4 col-md-6 col-12">
-                        <div class="abt_side">
-                            <div class="logo"> <img src="{{ asset('landing_assets/images/logo/sinergi6-white.png') }}"
-                                    alt="image"></div>
-                            <p>Sinergi6 hadir sebagai solusi manajemen sekolah yang inovatif, mendukung berbagai aktivitas dan proses dalam lingkungan pendidikan.</p>
-                            <div class="news_letter_block">
-                            </div>
-                        </div>
+    <div class="top_footer" style="padding: 140px 0 60px; position: relative; z-index: 1;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-5 mb-lg-0">
+                    <div class="mb-4">
+                        <img src="{{ asset('landing_assets/images/logo/sinergi6-white.png') }}" 
+                             alt="Sinergi6 Logo" 
+                             style="max-width: 160px; filter: brightness(0) invert(1);"> 
                     </div>
-
-                    <!-- footer link 2 -->
-                    <div class="col-lg-2 col-md-6 col-12">
-                        <div class="links">
-                            <h3>Menu</h3>
-                            <ul>
-                                <li><a href="{{ route('beranda') }}">Beranda</a></li>
-                                <li><a href="{{ route('about-us') }}">Tentang Kami</a></li>
-                                <li><a href="{{ route('contact-us') }}">Kontak</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- footer link 3 -->
-                    <div class="col-lg-3 col-md-6 col-12">
-                        <div class="links">
-                            <h3>Fitur - fitur</h3>
-                            <ul>
-                                <li><a href="javascript:void(0)">Absensi</a></li>
-                                <li><a href="javascript:void(0)">Jurnal Mengajar</a></li>
-                                <li><a href="javascript:void(0)">Jurnal Staf</a></li>
-                                <li><a href="javascript:void(0)">Pelanggaran & Perbaikan</a></li>
-                                <li><a href="javascript:void(0)">Tanggapan Siswa</a></li>
-                                <li><a href="javascript:void(0)">Buku Tamu</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- footer link 4 -->
-                    <div class="col-lg-3 col-md-6 col-12">
-                        <div class="try_out">
-                            <h3>Hubungi</h3>
-                            <ul>
-                                <li>
-                                    <span class="icon">
-                                        <img src="{{ asset('landing_assets/images/new/contact_01.png') }}"
-                                            alt="image">
-                                    </span>
-                                    <div class="text">
-                                        <p>Jl. PB.Sudirman, Tekoan, Tanggul Kulon, Kec. Tanggul, Kabupaten Jember, Jawa Timur 68155</p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="icon">
-                                        <img src="{{ asset('landing_assets/images/new/contact_02.png') }}"
-                                            alt="image">
-                                    </span>
-                                    <div class="text">
-                                        <p>Telepon kami <a href="tel:+62-82132560566">(0336) 441347</a></p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="icon">
-                                        <img src="{{ asset('landing_assets/images/new/contact_03.png') }}"
-                                            alt="image">
-                                    </span>
-                                    <div class="text">
-                                        <p>Email kami <a href="mailto:smkn6.jember@yahoo.com">smkn6.jember@yahoo.com</a></p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                    <p style="line-height: 1.7; margin-bottom: 24px;">
+                        Platform manajemen sekolah modern yang membantu institusi pendidikan beralih ke era digital dengan mudah dan aman.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="footer-social"><i class="icofont-facebook"></i></a>
+                        <a href="#" class="footer-social"><i class="icofont-twitter"></i></a>
+                        <a href="https://www.instagram.com/mischool.id/" class="footer-social"><i class="icofont-instagram"></i></a>
                     </div>
                 </div>
-                <!-- row end -->
+
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0 ml-lg-auto">
+                    <h5 style="color: white; margin-bottom: 24px; font-weight: 600; font-size: 1.1rem;">Menu</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li class="mb-3"><a href="{{ route('beranda') }}" class="footer-link">Beranda</a></li>
+                        <li class="mb-3"><a href="{{ route('about-us') }}" class="footer-link">Tentang Kami</a></li>
+                        <li class="mb-3"><a href="{{ route('contact-us') }}" class="footer-link">Kontak</a></li>
+                        <li class="mb-3"><a href="/login" class="footer-link">Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <h5 style="color: white; margin-bottom: 24px; font-weight: 600; font-size: 1.1rem;">Fitur Utama</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li class="mb-3"><a href="#" class="footer-link">Absensi Digital</a></li>
+                        <li class="mb-3"><a href="#" class="footer-link">Manajemen Staff</a></li>
+                        <li class="mb-3"><a href="#" class="footer-link">Jurnal Kelas</a></li>
+                        <li class="mb-3"><a href="#" class="footer-link">Laporan Akademik</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 style="color: white; margin-bottom: 24px; font-weight: 600; font-size: 1.1rem;">Hubungi Kami</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li class="d-flex mb-3 align-items-start">
+                            <i class="icofont-location-pin text-primary mt-1 mr-3"></i>
+                            <span style="font-size: 0.95rem;">Jl. PB.Sudirman, Tanggul Kulon, Jember, Jawa Timur 68155</span>
+                        </li>
+                        <li class="d-flex mb-3 align-items-center">
+                            <i class="icofont-phone text-primary mr-3"></i>
+                            <a href="tel:+62336441347" class="footer-link">(0336) 441347</a>
+                        </li>
+                        <li class="d-flex mb-3 align-items-center">
+                            <i class="icofont-email text-primary mr-3"></i>
+                            <a href="mailto:smkn6.jember@yahoo.com" class="footer-link">smkn6.jember@yahoo.com</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <!-- container end -->
         </div>
+    </div>
 
-        <!-- last footer -->
-        <div class="bottom_footer" style="background-color: #5A6A85; border-color: white">
-            <!-- container start -->
-            <div class="container">
-                <!-- row start -->
-                <div class="row">
-                    {{-- <div class="col-md-4">
-                        <p>© Copyrights 2024. All rights reserved.</p>
-                    </div> --}}
-                    <div class="col-md-4">
-                        <ul class="social_media">
-                            <li><a href="#"><i class="icofont-facebook"></i></a></li>
-                            <li><a href="#"><i class="icofont-twitter"></i></a></li>
-                            <li><a href="https://www.instagram.com/mischool.id/"><i class="icofont-instagram"></i></a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-8">
-                        <p class="developer_text">
-                            Dikembangkan oleh
-                            <a href="https://www.smkn6jember.sch.id/" target="_blank"> <img
-                                    src="{{ asset('landing_assets/images/logo/smkn-6-jember-text.png') }}"
-                                    class="dark-logo img-fluid" width="170" alt="Logo SMKN 6 Jember"
-                                    style="margin-left: 8px;" /></a>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15"
-                                class="mx-2">
-                                <path fill="currentColor"
-                                    d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27" />
-                            </svg>
-                            <a href="https://hummatech.com/" target="_blank">
-                                <img src="{{ asset('landing_assets/images/logo/LOGO-HUMMATECH_Putih.png') }}"
-                                    class="dark-logo img-fluid" width="150" alt="Logo HUMMATECH"
-                                    style="margin-left: 8px;" />
-                            </a>
-                        </p>
-                    </div>
+    <div class="bottom_footer" style="background-color: #0b1120; padding: 25px 0; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 1;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
+                    <p class="mb-0 small">&copy; {{ date('Y') }} Sinergi6. Hak Cipta Dilindungi.</p>
                 </div>
-                <!-- row end -->
+                <div class="col-md-6 text-center text-md-right">
+                    <span class="mr-2 small text-muted">Powered by:</span>
+                    <a href="https://www.smkn6jember.sch.id/" target="_blank" class="d-inline-block align-middle ml-2 opacity-75 hover-opacity-100">
+                        <img src="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" alt="SMKN 6 Jember" style="height: 24px; width: auto;">
+                    </a>
+                    <span class="mx-2 text-muted x-separator">×</span>
+                    <a href="https://hummatech.com/" target="_blank" class="d-inline-block align-middle opacity-75 hover-opacity-100">
+                        <img src="{{ asset('landing_assets/images/logo/LOGO-HUMMATECH_Putih.png') }}" alt="Hummatech" style="height: 20px; width: auto;">
+                    </a>
+                </div>
             </div>
-            <!-- container end -->
         </div>
-
-        <!-- go top button -->
-        <div class="go_top" id="Gotop">
-            <span><i class="icofont-arrow-up"></i></span>
-        </div>
-    </footer>
+    </div>
+    
+    <style>
+        .footer-link {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .footer-link:hover {
+            color: #ffffff;
+            transform: translateX(5px);
+            text-decoration: none;
+        }
+        .footer-social {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.05);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .footer-social:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        .hover-opacity-100:hover { opacity: 1 !important; }
+    </style>
+</footer>

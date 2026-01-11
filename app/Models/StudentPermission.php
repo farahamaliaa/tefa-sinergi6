@@ -15,7 +15,7 @@ class StudentPermission extends Model
         'classroom_id',
         'permission_type',
         'proof',
-        'proof_images',
+        'proof_image',
         'submitted_by',
         'approved_by',
         'status',

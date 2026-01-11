@@ -1,108 +1,143 @@
 <style>
-    .navbar-nav .nav-item:last-child {
-        margin-left: 20px;
+    .navbar-dynamic {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 1280px;
+        padding: 0 20px;
+        z-index: 1000;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .navbar-nav {
-        margin: 0;
-        padding: 0;
+    .navbar-pill {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border-radius: 100px;
+        padding: 10px 30px;
+        transition: all 0.4s ease;
     }
 
-    .navbar-nav .nav-item {
-        margin: 0 10px;
+    .navbar-dynamic.scrolled {
+        top: 10px;
+        max-width: 900px;
     }
 
-    .navbar-nav .nav-link {
-        padding: 10px 15px;
+    .navbar-dynamic.scrolled .navbar-pill {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 
-    .navbar-nav .nav-item .dark_btn {
-        margin-left: auto;
+    .navbar-brand img {
+        height: 32px;
+        width: auto;
     }
 
-    .navbar-nav .nav-item .dark_btn {
-        background-color: #E02123;
-        color: #fff;
+    .nav-link-dynamic {
+        color: #334155 !important;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 8px 18px !important;
+        border-radius: 20px;
+        transition: all 0.2s;
+    }
+
+    .nav-link-dynamic:hover,
+    .nav-link-dynamic.active {
+        color: #2563eb !important;
+        background: rgba(37, 99, 235, 0.05);
+    }
+
+    .btn-login-dynamic {
+        background: #2563eb;
+        color: white !important;
+        padding: 10px 24px !important;
+        border-radius: 50px;
+        font-weight: 600;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
     }
 
-    .navbar-nav .nav-item .dark_btn:hover {
-        background-color: #0056b3;
-        color: #fff;
+    .btn-login-dynamic:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
     }
-
-    .navbar-expand-lg .navbar-nav .nav-link.dark_btn {
-        color: var(--text-white);
-        background-image: var(#5D87FF);
-        font-size: 15px;
-        padding: 9px 38px;
-        border-radius: 25px;
-        margin-left: 20px;
-        position: relative;
-        overflow: hidden;
-        transition: 0.4s all;
-        font-weight: 700;
+    
+    @media (max-width: 991px) {
+        .navbar-dynamic {
+            top: 0;
+            padding: 0;
+            max-width: 100%;
+        }
+        .navbar-pill {
+            border-radius: 0;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .navbar-dynamic.scrolled {
+            max-width: 100%;
+            top: 0;
+        }
+        .navbar-collapse {
+            margin-top: 15px;
+            padding-bottom: 20px;
+        }
+        .btn-login-dynamic {
+            width: 100%;
+            margin-top: 10px;
+            text-align: center;
+        }
     }
-
-    .nav-item.active .nav-link {
-        color: #E02123 !important;
-    }
-
 </style>
 
+<div class="navbar-dynamic">
+    <nav class="navbar navbar-expand-lg navbar-pill">
+        <a class="navbar-brand" href="{{ url('/') }}">
+            <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Sinergi6">
+        </a>
+        
+        <button class="navbar-toggler border-0 p-0" type="button" data-toggle="collapse" data-target="#landingNavbar">
+            <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml,...');">
+                <i class="icofont-navigation-menu text-dark" style="font-size: 24px;"></i>
+            </span>
+        </button>
 
-<!-- Header Start -->
-<header class="fixed">
-    <!-- container start -->
-    <div class="container">
-        <!-- navigation bar -->
-        <nav class="navbar navbar-expand-lg">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" style="width:160px" alt="image">
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon">
-                    <div class="toggle-wrap">
-                        <span class="toggle-bar"></span>
-                    </div>
-                </span>
-            </button>
+        <div class="collapse navbar-collapse" id="landingNavbar">
+            <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('beranda') ? 'active' : '' }}" href="{{ route('beranda') }}">Beranda</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('about-us') ? 'active' : '' }}" href="{{ route('about-us') }}">Tentang Kami</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('contact-us') ? 'active' : '' }}" href="{{ route('contact-us') }}">Kontak</a>
+                </li>
+                <li class="nav-item ml-lg-2">
+                    <a class="nav-link btn-login-dynamic" href="/login">
+                        Masuk
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item {{ request()->routeIs('beranda') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('beranda') }}">Beranda</a>
-                    </li>
-                    <li class="nav-item {{ request()->routeIs('about-us') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('about-us') }}">Tentang Kami</a>
-                    </li>
-                    {{-- <li class="nav-item {{ request()->routeIS('news') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('news') }}">Berita</a>
-                    </li> --}}
-                    <li class="nav-item {{ request()->routeIS('contact-us') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('contact-us') }}">Kontak</a>
-                    </li>
-                    {{-- <li class="nav-item has_dropdown {{ request()->routeIs('testimoni') || request()->routeIs('news') ? 'active' : '' }}">
-                        <a class="nav-link" href="#">Lainnya</a>
-                        <span class="drp_btn"><i class="icofont-rounded-down"></i></span>
-                        <div class="sub_menu">
-                            <ul>
-                                <li><a href="javascript:void(0)">Dokumentasi</a></li>
-                                <li><a href="{{ route('testimoni') }}">Testimonial</a></li>
-                                <li><a href="{{ route('news') }}">Berita</a></li>
-                            </ul>
-                        </div>
-                    </li> --}}
-                    <li class="nav-item">
-                        <a class="nav-link dark_btn" href="/login">Masuk<i class="icofont-arrow-right"></i></a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <!-- navigation end -->
-    </div>
-    <!-- container end -->
-</header>
+<script>
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('.navbar-dynamic');
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+</script>

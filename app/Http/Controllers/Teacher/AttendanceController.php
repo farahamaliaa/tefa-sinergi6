@@ -66,9 +66,61 @@ class AttendanceController extends Controller
         // Get classroom students
         $classroomStudents = $this->studentClass->where($classroomId, $request);
         
-        // TODO: Get permission data for this classroom
-        // This will depend on your StudentPermission model structure
+        $permissions = \App\Models\StudentPermission::where('classroom_id', $classroomId)
+            ->with(['student', 'submittedBy', 'approvedBy'])
+            ->latest()
+            ->get();
         
-        return view('teacher.pages.classroom-permission.index', compact('classroomStudents', 'classroom'));
+        return view('teacher.pages.classroom-permission.index', compact('classroomStudents', 'classroom', 'permissions'));
+    }
+
+    public function approvePermission(Request $request, $id)
+    {
+        $permission = \App\Models\StudentPermission::findOrFail($id);
+        
+        $classroom = \App\Models\Classroom::find($permission->classroom_id);
+        
+        if (!$classroom || $classroom->employee_id !== auth()->user()->employee->id) {
+            return back()->with('error', 'Anda bukan wali kelas untuk kelas ini');
+        }
+        
+        $permission->update([
+            'status' => 'approved',
+            'approved_by' => auth()->id(),
+        ]);
+        
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Izin berhasil disetujui',
+            ]);
+        }
+        
+        return back()->with('success', 'Izin berhasil disetujui');
+    }
+
+    public function rejectPermission(Request $request, $id)
+    {
+        $permission = \App\Models\StudentPermission::findOrFail($id);
+        
+        $classroom = \App\Models\Classroom::find($permission->classroom_id);
+        
+        if (!$classroom || $classroom->employee_id !== auth()->user()->employee->id) {
+            return back()->with('error', 'Anda bukan wali kelas untuk kelas ini');
+        }
+        
+        $permission->update([
+            'status' => 'rejected',
+            'approved_by' => auth()->id(),
+        ]);
+        
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Izin berhasil ditolak',
+            ]);
+        }
+        
+        return back()->with('success', 'Izin berhasil ditolak');
     }
 }

@@ -120,3 +120,12 @@ Route::get('/permissions', [StudentPermissionController::class, 'index']);
 Route::post('/students/{student_id}/permissions', [StudentPermissionController::class, 'store']);
 Route::post('/permissions/{id}/approve', [StudentPermissionController::class, 'approve']);
 Route::post('/permissions/{id}/reject', [StudentPermissionController::class, 'reject']);
+
+// Parent API routes
+Route::prefix('parent')->group(function () {
+    Route::get('/{user}/children', [ParentController::class, 'getChildren']);
+    Route::get('/{user}/children/{student}/lessons', [ParentController::class, 'getChildLessons']);
+    Route::post('/{user}/permissions', [ParentController::class, 'createPermission']);
+    Route::get('/{user}/permissions', [ParentController::class, 'getPermissionHistory']);
+});
+
