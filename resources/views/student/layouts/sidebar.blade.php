@@ -47,6 +47,11 @@
         color: #1191C6 !important;
         stroke: #1191C6 !important;
     }
+
+    /* Fix gap submenu level 2 agar tidak terlalu menjorok */
+    .sidebar-nav .two-level .sidebar-item .sidebar-link {
+        padding-left: 30px !important;
+    }
 </style>
 
 <aside class="left-sidebar">

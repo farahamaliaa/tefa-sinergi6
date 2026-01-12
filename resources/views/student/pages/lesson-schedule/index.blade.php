@@ -5,10 +5,6 @@
 
 @section('style')
     <style>
-        body {
-            background-color: #f4f6f9;
-        }
-
         .header-wave {
             background-color: #1A94C8 !important;
             border-radius: 14px;
