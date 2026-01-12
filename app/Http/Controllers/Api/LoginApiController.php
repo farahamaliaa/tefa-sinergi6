@@ -28,7 +28,6 @@ class LoginApiController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         $fullDomain = request()->root();
-        // dd($fullDomain);
 
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
@@ -41,28 +40,39 @@ class LoginApiController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'role' => $user->roles->first()->name,
-                        'password' => $user->password,
-                        'image' => $user->roles->first()->name == 'student' ? ($user->student->image ? asset($fullDomain.'/storage/'.$user->student->image) : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg')) : ($user->employee->image ? asset($fullDomain.'storage/'.$user->employee->image) : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg')),
+                        'image' => match($user->roles->first()->name) {
+                            'student' => $user->student && $user->student->image 
+                                ? asset($fullDomain.'/storage/'.$user->student->image) 
+                                : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                            'parent' => asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'), // Parent doesn't have image yet, use default
+                            default => $user->employee && $user->employee->image 
+                                ? asset($fullDomain.'/storage/'.$user->employee->image) 
+                                : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                        },
                     ],
                 ]);
             } else {
-                return response()->json(['message' => 'Password salah'], 401);
+                return response()->json(['message' => 'Email atau password salah'], 401);
             }
         } else {
-            return response()->json(['message' => 'Email dan Password salah'], 401);
+            return response()->json(['message' => 'Email atau password salah'], 401);
         }
     }
 
     public function user_detail(User $user)
     {
-        if ($user->roles->pluck('name')[0] == 'student') {
+        $role = $user->roles->first()->name;
+        
+        if ($role == 'student') {
             $student = $this->student->whereUserId($user->id);
+            if (!$student) return response()->json(['message' => 'Data siswa tidak ditemukan'], 404);
+            
             return response()->json(['status' => 'success', 'message' => "Data Berhasil di Tambahkan", 'code' => 200, 'data' => [
                 'nisn' => $student->nisn,
-                'class' => $student->classroomStudents()->latest()->first()->classroom->name,
+                'class' => optional($student->classroomStudents()->latest()->first()->classroom)->name,
                 'gender' => $student->gender->label(),
-                'religion' => $student->religion->name,
-                'birth_date' => Carbon::parse($student->birth_date)->format('d-m-Y'),
+                'religion' => optional($student->religion)->name,
+                'birth_date' => $student->birth_date ? Carbon::parse($student->birth_date)->format('d-m-Y') : null,
                 'birth_place' => $student->birth_place,
                 'number_kk' => $student->number_kk,
                 'nik' => $student->nik,
@@ -71,15 +81,27 @@ class LoginApiController extends Controller
                 'count_siblings' => $student->count_siblings,
                 'address' => $student->address,
             ]]);
+        } elseif ($role == 'parent') {
+            $parent = \App\Models\Parents::where('user_id', $user->id)->first();
+            return response()->json(['status' => 'success', 'message' => "Data Berhasil Diambil", 'code' => 200, 'data' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $parent->phone ?? '-',
+                'address' => $parent->address ?? '-',
+                'role' => 'Wali Murid',
+            ]]);
         } else {
+            // Employee (Teacher/Staff)
             $employee = $this->employee->getByUser($user->id);
+            if (!$employee) return response()->json(['message' => 'Data pegawai tidak ditemukan'], 404);
+            
             return response()->json(['status' => 'success', 'message' => "Data Berhasil di Tambahkan", 'code' => 200, 'data' => [
                 'nip' => $employee->nip,
-                'birth_date' => Carbon::parse($employee->birth_date)->format('d-m-Y'),
+                'birth_date' => $employee->birth_date ? Carbon::parse($employee->birth_date)->format('d-m-Y') : null,
                 'nik' => $employee->nik,
                 'phone_number' => $employee->phone_number,
                 'address' => $employee->address,
-                'religion' => $employee->religion->name,
+                'religion' => optional($employee->religion)->name,
             ]]);
         }
     }

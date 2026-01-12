@@ -215,23 +215,24 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('student-feedback/detail/{teacher}', [SchoolFeedbackController::class, 'show'])->name('feedback.detail');
 });
 
-//tes absensi
+// SECURITY: Routes for attendance hardware/device
+// These routes are intentionally public for RFID devices, but should be protected with API keys in production
 Route::post('attendance-create/{school_id}', [AttendanceStudentController::class, 'store'])->name('attendance.store');
 
-Route::get('menu-test', function () {
-    return view('school.pages.test.menu');
-})->name('menu-test.index');
+// Protected attendance list routes - require authentication
+Route::middleware(['auth'])->group(function () {
+    Route::get('list-attendance', [AttendanceStudentController::class, 'index'])->name('list-attendance.index');
+    Route::post('add-teacher-list-attendance', [AttendanceTeacherController::class, 'store'])->name('add-teacher-list-attendance.index');
+    Route::get('list-attendance-teacher', [AttendanceTeacherController::class, 'index'])->name('list-attendance-teacher.index');
+});
 
-// Route::get('user-list', function () {
-//     return view('school.pages.test.user-list');
-// })->name('user-list.index');
-
-// list absensi
-Route::get('list-attendance', [AttendanceStudentController::class, 'index'])->name('list-attendance.index');
-Route::post('add-teacher-list-attendance', [AttendanceTeacherController::class, 'store'])->name('add-teacher-list-attendance.index');
-
-// list absensi guru
-Route::get('list-attendance-teacher', [AttendanceTeacherController::class, 'index'])->name('list-attendance-teacher.index');
-Route::get('attendance-test', [AttendanceMasterController::class, 'index'])->name('attendance-test.index');
-Route::get('attendance-test-teacher', [AttendanceMasterController::class, 'index_teacher'])->name('attendance-test-teacher.index');
-Route::post('attendance-test-teacher', [AttendanceMasterController::class, 'check_teacher'])->name('attendance-test-teacher.check');
+// Attendance test routes - only available in local/development environment
+if (app()->environment('local', 'development')) {
+    Route::get('menu-test', function () {
+        return view('school.pages.test.menu');
+    })->name('menu-test.index');
+    
+    Route::get('attendance-test', [AttendanceMasterController::class, 'index'])->name('attendance-test.index');
+    Route::get('attendance-test-teacher', [AttendanceMasterController::class, 'index_teacher'])->name('attendance-test-teacher.index');
+    Route::post('attendance-test-teacher', [AttendanceMasterController::class, 'check_teacher'])->name('attendance-test-teacher.check');
+}

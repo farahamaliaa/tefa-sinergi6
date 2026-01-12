@@ -30,7 +30,7 @@ class StaffPermissionController extends Controller
         $request->validate([
             'permission_type' => 'required',
             'date' => 'required|date',
-            'proof_image' => 'required|image|max:2048',
+            'proof_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'proof' => 'required|string',
         ]);
 

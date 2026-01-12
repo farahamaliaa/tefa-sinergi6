@@ -13,8 +13,26 @@ class StudentPermissionController extends Controller
      */
     public function index()
     {
-        $permission = StudentPermission::with(['student', 'submittedBy', 'approvedBy'])->latest()->get();
-        return response()->json($permission);
+        $user = auth()->user();
+        
+        // Filter permissions based on user role
+        $query = StudentPermission::with(['student', 'submittedBy', 'approvedBy', 'classroom']);
+        
+        // If user is a teacher/wali kelas, only show their class permissions
+        if ($user->employee) {
+            $classroom = $user->employee->classroom;
+            if ($classroom) {
+                $query->where('classroom_id', $classroom->id);
+            }
+        }
+        // If user is a parent, only show their children's permissions
+        elseif ($user->parent) {
+            $studentIds = $user->parent->students()->pluck('students.id');
+            $query->whereIn('student_id', $studentIds);
+        }
+        
+        $permissions = $query->latest()->get();
+        return response()->json($permissions);
     }
 
     /**
@@ -27,7 +45,7 @@ class StudentPermissionController extends Controller
             'classroom_id' => 'nullable|uuid',
             'permission_type' => 'required|in:sick,permit,other',
             'proof' => 'nullable|string',
-            'proof_image' => 'nullable|image|max:2048',
+            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'submitted_by' => 'nullable|integer',
             'date' => 'required|date',
         ]);
@@ -36,8 +54,8 @@ class StudentPermissionController extends Controller
             $validated['proof_image'] = $request->file('proof_image')->store('permissions', 'public');
         }
 
-        // $validated['submitted_by'] = auth()->id();
-        $validated['submitted_by'] = $request->input('submitted_by', 0);
+        // SECURITY: Always use authenticated user's ID to prevent IDOR
+        $validated['submitted_by'] = auth()->id();
         $validated['status'] = 'pending';
 
         $permission = StudentPermission::create($validated);

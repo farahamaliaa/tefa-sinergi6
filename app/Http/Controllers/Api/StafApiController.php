@@ -72,6 +72,11 @@ class StafApiController extends Controller
      */
     public function index(User $user)
     {
+        // SECURITY: Verify user authorization
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
         try {
             $approved = $this->studentRepair->count_approved('1');
             $process = $this->studentRepair->count_approved('0');
@@ -89,6 +94,11 @@ class StafApiController extends Controller
 
     public function history_journals(User $user)
     {
+        // SECURITY: Verify user authorization
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
         try {
             $employeeJournals = $this->employeeJournal->getEmployee($user->id, 'get');
 

@@ -70,5 +70,10 @@ class User extends Authenticatable
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
-    }       
+    }
+
+    public function parent(): HasOne
+    {
+        return $this->hasOne(Parents::class);
+    }
 }

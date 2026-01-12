@@ -81,7 +81,7 @@
                             <div class="blog_info">
                                 <span class="date">{{ $latest ? $latest['date'] : ''}}</span>
                                 <h2><a href="{{ route('news.detail', $latest['slug']) }}">{{ $latest ? Str::limit($latest['title'], 200) : '' }}</a></h2>
-                                <p>{!! $latest ? Str::limit($latest['description'], 500, '...') : ''!!}</p>
+                                <p>{!! $latest ? Str::limit(strip_tags($latest['description'], '<p><br><strong><em><b><i>'), 500, '...') : ''!!}</p>
                             </div>
                         </div>
                     </div>
