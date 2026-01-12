@@ -99,8 +99,8 @@
         </div>
     </div>
 
-    <div class="card mt-4">
-        <div class="card-body">
+    <div class="mt-4">
+        <div class="">
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <h5 class="fw-semibold mb-3">
@@ -161,11 +161,11 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between mt-3">
+            {{-- <div class="d-flex justify-content-between mt-3">
                 <a href="{{ route('student.extracurricular.index') }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-1"></i> Kembali
                 </a>
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection
@@ -174,7 +174,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const targetLat = {{ $todaySchedule->latitude }};
             const targetLng = {{ $todaySchedule->longitude }};
             const radius = {{ $todaySchedule->radius ?? 100 }};
@@ -199,7 +199,9 @@
                 className: 'target-marker'
             });
 
-            L.marker([targetLat, targetLng], { icon: targetIcon })
+            L.marker([targetLat, targetLng], {
+                    icon: targetIcon
+                })
                 .addTo(map)
                 .bindPopup('Lokasi Titik Kumpul');
 
@@ -214,16 +216,15 @@
             // Get user location
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
-                    function (position) {
+                    function(position) {
                         userLat = position.coords.latitude;
                         userLng = position.coords.longitude;
 
                         updateUserPosition();
                     },
-                    function (error) {
+                    function(error) {
                         showError('Tidak dapat mengakses lokasi. Pastikan GPS aktif dan izinkan akses lokasi.');
-                    },
-                    {
+                    }, {
                         enableHighAccuracy: true,
                         timeout: 10000,
                         maximumAge: 0
@@ -243,7 +244,9 @@
                         className: 'user-marker'
                     });
 
-                    userMarker = L.marker([userLat, userLng], { icon: userIcon })
+                    userMarker = L.marker([userLat, userLng], {
+                            icon: userIcon
+                        })
                         .addTo(map)
                         .bindPopup('Posisi Anda');
                 }
@@ -263,7 +266,8 @@
                     btnHelperEl.textContent = 'Klik tombol di atas untuk melakukan absensi';
                 } else {
                     statusEl.className = 'location-status error';
-                    document.getElementById('statusText').textContent = `Anda di luar jangkauan (${Math.round(distance)}m dari lokasi)`;
+                    document.getElementById('statusText').textContent =
+                        `Anda di luar jangkauan (${Math.round(distance)}m dari lokasi)`;
                     btnEl.disabled = true;
                     btnHelperEl.textContent = `Dekati lokasi titik kumpul hingga dalam radius ${radius} meter`;
                 }
@@ -291,7 +295,7 @@
             }
 
             // Attendance button handler
-            document.getElementById('attendanceBtn').addEventListener('click', function () {
+            document.getElementById('attendanceBtn').addEventListener('click', function() {
                 if (!userLat || !userLng) {
                     alert('Lokasi Anda belum terdeteksi');
                     return;
@@ -302,22 +306,22 @@
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
 
                 fetch(`/student/extracurricular/${extracurricularId}/attendance`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        latitude: userLat,
-                        longitude: userLng,
-                        schedule_id: scheduleId
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            latitude: userLat,
+                            longitude: userLng,
+                            schedule_id: scheduleId
+                        })
                     })
-                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             alert(data.message);
-                            window.location.href = '{{ route("student.extracurricular.index") }}';
+                            window.location.href = '{{ route('student.extracurricular.index') }}';
                         } else {
                             alert(data.message);
                             btn.disabled = false;
