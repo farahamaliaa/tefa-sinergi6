@@ -2,10 +2,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importPegawai">Tambah Mata Pelajaran</h5>
+                <h5 class="modal-title text-white" id="importPegawai">Tambah Mata Pelajaran</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('school.teacher-subject.store', ['employee' => $teacher->id]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('school.teacher-subject.store', ['employee' => $teacher->id]) }}" method="POST"
+                enctype="multipart/form-data">
                 @method('post')
                 @csrf
                 <input type="hidden" name="old_rfid" id="old_rfid_input">
@@ -14,14 +15,16 @@
                         <div class="form-group">
                             <label for="subject" class="form-label">Pilih Mata Pelajaran</label>
                             <div>
-                                <select id="subject" name="subject[]" multiple class="select2 @error('subject') is-invalid @enderror" aria-label="Pilih Mata Pelajaran">
+                                <select id="subject" name="subject[]" multiple
+                                    class="select2 @error('subject') is-invalid @enderror"
+                                    aria-label="Pilih Mata Pelajaran">
                                     @forelse ($subjects as $subject)
-                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                                     @empty
                                     @endforelse
                                 </select>
                                 @error('subject', 'create')
-                                <strong class="text-danger error-create">{{ $message }}</strong>
+                                    <strong class="text-danger error-create">{{ $message }}</strong>
                                 @enderror
                             </div>
                         </div>

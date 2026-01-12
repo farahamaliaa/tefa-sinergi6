@@ -61,6 +61,44 @@
             padding-left: 12px;
             margin-left: 10px;
         }
+
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background-color: #0896D1 !important;
+            border-color: #0896D1 !important;
+        }
+
+        .bg-primary {
+            background-color: #0896D1 !important;
+            border-color: #0896D1 !important;
+        }
+
+        .text-primary {
+            color: #0896D1 !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #067aa7 !important;
+            border-color: #067aa7 !important;
+        }
     </style>
 @endsection
 
@@ -174,7 +212,7 @@
 
                     <!-- Image Container -->
                     <div class="position-absolute bottom-0 end-0" style="padding: 0px;">
-                        <img src="{{ asset('assets/images/background/buble.png') }}" alt="Description" class="img-fluid"
+                        <img src="{{ asset('assets/images/background/bub3.png') }}" alt="Description" class="img-fluid"
                             style="max-width: 100px; height: auto;">
                     </div>
                 </div>
