@@ -51,10 +51,10 @@
     .collapse .sidebar-item .sidebar-link {
         padding-left: 30px !important;
     }
+
     .collapse .collapse .sidebar-item .sidebar-link {
         padding-left: 50px !important;
     }
-
 </style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
@@ -103,22 +103,22 @@
                         </a>
                     </li>
                     <!-- <li class="sidebar-item">
-                                                            <a class="sidebar-link" href="/teacher/attendance/history" aria-expanded="false">
-                                                                <span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                                                        <g fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                            <circle cx="9" cy="9" r="2" />
-                                                                            <path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2s1.79-2 4-2s4 .895 4 2Z" />
-                                                                            <path
-                                                                                d="M2 12c0-3.771 0-5.657 1.172-6.828S6.229 4 10 4h4c3.771 0 5.657 0 6.828 1.172S22 8.229 22 12s0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12Z" />
-                                                                            <path stroke-linecap="round" d="M19 12h-4m4-3h-5m5 6h-3" />
-                                                                        </g>
-                                                                    </svg>
-                                                                </span>
-                                                                <span class="hide-menu">Absensi</span>
+                                                                <a class="sidebar-link" href="/teacher/attendance/history" aria-expanded="false">
+                                                                    <span>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                                            <g fill="none" stroke="currentColor" stroke-width="1.5">
+                                                                                <circle cx="9" cy="9" r="2" />
+                                                                                <path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2s1.79-2 4-2s4 .895 4 2Z" />
+                                                                                <path
+                                                                                    d="M2 12c0-3.771 0-5.657 1.172-6.828S6.229 4 10 4h4c3.771 0 5.657 0 6.828 1.172S22 8.229 22 12s0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12Z" />
+                                                                                <path stroke-linecap="round" d="M19 12h-4m4-3h-5m5 6h-3" />
+                                                                            </g>
+                                                                        </svg>
+                                                                    </span>
+                                                                    <span class="hide-menu">Absensi</span>
 
-                                                            </a>
-                                                        </li> -->
+                                                                </a>
+                                                            </li> -->
                     <li class="sidebar-item">
                         <a class="sidebar-link {{ request()->routeIs('teacher.journals.index') || request()->routeIs('teacher.journals.create') || request()->routeIs('teacher.journals.show') || request()->routeIs('teacher.journals.edit') ? 'active' : '' }}"
                             href="{{ route('teacher.journals.index') }}" aria-expanded="false">
@@ -159,7 +159,7 @@
                             // Get first classroom (wali kelas biasanya hanya 1 kelas)
                             $classroom = $teacherClassrooms->first();
                         @endphp
-                        @if($classroom)
+                        @if ($classroom)
                             <li class="sidebar-item">
                                 <a class="sidebar-link has-arrow {{ request()->routeIs('teacher.list-student-class.*') || request()->routeIs('teacher.classroom-attendance.*') || request()->routeIs('teacher.classroom-permission.*') ? 'active' : '' }}"
                                     href="javascript:void(0)" aria-expanded="false">
@@ -212,7 +212,7 @@
                             // Get first extracurricular (pembina ekskul biasanya hanya 1)
                             $extracurricular = $teacherExtracurriculars->first();
                         @endphp
-                        @if($extracurricular)
+                        @if ($extracurricular)
                             <li class="sidebar-item">
                                 <a class="sidebar-link has-arrow {{ request()->routeIs('teacher.extracurricular-students.*') || request()->routeIs('teacher.extracurricular-attendance.*') || request()->routeIs('teacher.extracurricular-permission.*') ? 'active' : '' }}"
                                     href="javascript:void(0)" aria-expanded="false">
@@ -224,7 +224,7 @@
                                                 fill="#0896D1" />
                                         </svg>
                                     </span>
-                                    <span class="hide-menu">Ekskul</span>
+                                    <span class="hide-menu">Extrakulikuler</span>
                                 </a>
                                 <ul aria-expanded="false"
                                     class="collapse first-level {{ request()->routeIs('teacher.extracurricular-*') ? 'in' : '' }}">
@@ -244,35 +244,35 @@
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-students.index', ['extracurricular' => $extracurricular->id]) }}"
-                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-students.*') ? 'active' : '' }}">
+                                                    class="sidebar-link {{ request()->routeIs('teacher.extracurricular-students.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Daftar Siswa</span>
                                                 </a>
                                             </li>
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-attendance.index', ['extracurricular' => $extracurricular->id]) }}"
-                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-attendance.*') ? 'active' : '' }}">
+                                                    class="sidebar-link {{ request()->routeIs('teacher.extracurricular-attendance.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Absensi Siswa</span>
                                                 </a>
                                             </li>
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-permission.index', ['extracurricular' => $extracurricular->id]) }}"
-                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-permission.*') ? 'active' : '' }}">
+                                                    class="sidebar-link {{ request()->routeIs('teacher.extracurricular-permission.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Perizinan</span>
                                                 </a>
                                             </li>
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-schedule.index', ['extracurricular' => $extracurricular->id]) }}"
-                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-schedule.*') ? 'active' : '' }}">
+                                                    class="sidebar-link {{ request()->routeIs('teacher.extracurricular-schedule.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Jadwal</span>
                                                 </a>
                                             </li>
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('teacher.extracurricular-journal.index', ['extracurricular' => $extracurricular->id]) }}"
-                                                class="sidebar-link {{ request()->routeIs('teacher.extracurricular-journal.*') ? 'active' : '' }}">
+                                                    class="sidebar-link {{ request()->routeIs('teacher.extracurricular-journal.*') ? 'active' : '' }}">
                                                     <span class="hide-menu">Jurnal</span>
                                                 </a>
                                             </li>
@@ -284,103 +284,103 @@
                     @endif
 
                     <!-- <li class="sidebar-item">
-                                                        <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                                            <span class="d-flex">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                                                    <path fill="none" stroke="currentColor" stroke-linecap="round"
-                                                                        stroke-linejoin="round" stroke-width="2"
-                                                                        d="M2 6s1.5-2 5-2s5 2 5 2v14s-1.5-1-5-1s-5 1-5 1zm10 0s1.5-2 5-2s5 2 5 2v14s-1.5-1-5-1s-5 1-5 1z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span class="hide-menu">E - Learning</span>
-                                                        </a>
-                                                        <ul aria-expanded="false" class="collapse first-level">
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">E - Learning</span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Kelas</span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Daftar Tugas</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
+                                                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                                                <span class="d-flex">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M2 6s1.5-2 5-2s5 2 5 2v14s-1.5-1-5-1s-5 1-5 1zm10 0s1.5-2 5-2s5 2 5 2v14s-1.5-1-5-1s-5 1-5 1z" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="hide-menu">E - Learning</span>
+                                                            </a>
+                                                            <ul aria-expanded="false" class="collapse first-level">
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">E - Learning</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Kelas</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Daftar Tugas</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
 
-                                                    <li class="sidebar-item">
-                                                        <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                                            <span class="d-flex">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                                                    <path fill="currentColor"
-                                                                        d="M13 14H9a1 1 0 0 0 0 2h4a1 1 0 0 0 0-2m4-10h-1.18A3 3 0 0 0 13 2h-2a3 3 0 0 0-2.82 2H7a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3m-7 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1h-4Zm8 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1v1a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6h1a1 1 0 0 1 1 1Zm-3-9H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2" />
-                                                                </svg>
-                                                            </span>
-                                                            <span class="hide-menu">Rapor</span>
-                                                        </a>
-                                                        <ul aria-expanded="false" class="collapse first-level">
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Input Nilai</span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Deskripsi Karakter</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="sidebar-item">
-                                                        <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                                            <span class="d-flex">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path fill="currentColor"
-                                                                        d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5A2.5 2.5 0 0 0 10.5 1A2.5 2.5 0 0 0 8 3.5V5H4a2 2 0 0 0-2 2v3.8h1.5c1.5 0 2.7 1.2 2.7 2.7S5 16.2 3.5 16.2H2V20a2 2 0 0 0 2 2h3.8v-1.5c0-1.5 1.2-2.7 2.7-2.7s2.7 1.2 2.7 2.7V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5" />
-                                                                </svg>
-                                                            </span>
-                                                            <span class="hide-menu">Ujian</span>
-                                                        </a>
-                                                        <ul aria-expanded="false" class="collapse first-level">
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Input Nilai</span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="sidebar-item">
-                                                                <a href="javascript:void(0)" class="sidebar-link">
-                                                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                                                        <i class="ti ti-circle"></i>
-                                                                    </div>
-                                                                    <span class="hide-menu">Deskripsi Karakter</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li> -->
+                                                        <li class="sidebar-item">
+                                                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                                                <span class="d-flex">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                                                        <path fill="currentColor"
+                                                                            d="M13 14H9a1 1 0 0 0 0 2h4a1 1 0 0 0 0-2m4-10h-1.18A3 3 0 0 0 13 2h-2a3 3 0 0 0-2.82 2H7a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3m-7 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1h-4Zm8 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1v1a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6h1a1 1 0 0 1 1 1Zm-3-9H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="hide-menu">Rapor</span>
+                                                            </a>
+                                                            <ul aria-expanded="false" class="collapse first-level">
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Input Nilai</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Deskripsi Karakter</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li class="sidebar-item">
+                                                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                                                <span class="d-flex">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path fill="currentColor"
+                                                                            d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5A2.5 2.5 0 0 0 10.5 1A2.5 2.5 0 0 0 8 3.5V5H4a2 2 0 0 0-2 2v3.8h1.5c1.5 0 2.7 1.2 2.7 2.7S5 16.2 3.5 16.2H2V20a2 2 0 0 0 2 2h3.8v-1.5c0-1.5 1.2-2.7 2.7-2.7s2.7 1.2 2.7 2.7V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="hide-menu">Ujian</span>
+                                                            </a>
+                                                            <ul aria-expanded="false" class="collapse first-level">
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Input Nilai</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="sidebar-item">
+                                                                    <a href="javascript:void(0)" class="sidebar-link">
+                                                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                                                            <i class="ti ti-circle"></i>
+                                                                        </div>
+                                                                        <span class="hide-menu">Deskripsi Karakter</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li> -->
                 </ul>
             @endrole
 
