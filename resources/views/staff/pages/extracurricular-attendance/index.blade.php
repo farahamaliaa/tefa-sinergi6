@@ -84,66 +84,125 @@
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <div class="card summary-card" style="background-color: #D1FAE5;">
-                <h3 class="fw-bold mb-0" style="color: #059669;">{{ $summary['hadir'] ?? 0 }}</h3>
-                <small class="fw-semibold" style="color: #059669;">Hadir</small>
+    <div class="d-flex align-items-center mb-4 mt-4">
+        <h4 class="fw-semibold mb-0">Absensi Hari Ini / </h4>
+        <span class="ms-2 px-3 py-1 rounded-2 fw-semibold bg-light-primary" style="color: #098FC6;">
+            <i class="ti ti-calendar me-1"></i> {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+        </span>
+    </div>
+
+    <div class="row g-2 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-success"></div>
+                        <div class="ms-3">
+                            <h4>Hadir</h4>
+                            <h4 class="text-success">
+                                <b>{{ $summary['hadir'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card summary-card" style="background-color: #FEF3C7;">
-                <h3 class="fw-bold mb-0" style="color: #D97706;">{{ $summary['sakit'] ?? 0 }}</h3>
-                <small class="fw-semibold" style="color: #D97706;">Sakit</small>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border" style="border-color: #0D93CA !important;"></div>
+                        <div class="ms-3">
+                            <h4>Izin</h4>
+                            <h4 style="color: #0D93CA;">
+                                <b>{{ $summary['izin'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card summary-card" style="background-color: #DBEAFE;">
-                <h3 class="fw-bold mb-0" style="color: #2563EB;">{{ $summary['izin'] ?? 0 }}</h3>
-                <small class="fw-semibold" style="color: #2563EB;">Izin</small>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-warning"></div>
+                        <div class="ms-3">
+                            <h4>Sakit</h4>
+                            <h4 class="text-warning">
+                                <b>{{ $summary['sakit'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card summary-card" style="background-color: #FEE2E2;">
-                <h3 class="fw-bold mb-0" style="color: #DC2626;">{{ $summary['alpha'] ?? 0 }}</h3>
-                <small class="fw-semibold" style="color: #DC2626;">Alpha</small>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-danger"></div>
+                        <div class="ms-3">
+                            <h4>Alpha</h4>
+                            <h4 class="text-danger">
+                                <b>{{ $summary['alpha'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     {{-- Filter --}}
-    <div class="card mt-3">
-        <div class="card-body">
-            <form method="GET" class="d-flex flex-wrap gap-3 align-items-end">
+    <div class="card card-body mt-3">
+        <h4><b>Daftar Absensi</b></h4>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-4 gap-3">
+            <form class="d-flex gap-2 align-items-center" method="GET" action="{{ url()->current() }}">
                 <input type="hidden" name="extracurricular" value="{{ $extracurricular->id }}">
+                <input type="hidden" name="date" value="{{ request('date', now()->format('Y-m-d')) }}">
+                <div class="position-relative">
+                    <input type="text" name="search" class="form-control search-chat py-2 px-4 ps-5" id="search-name"
+                        placeholder="Cari Siswa" value="{{ old('search', request('search')) }}">
+                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                </div>
                 <div>
-                    <label class="form-label">Tanggal</label>
-                    <input type="date" name="date" class="form-control"
+                    <select name="status" class="form-select py-2" id="search-status" style="min-width: 120px;">
+                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua Status</option>
+                        <option value="hadir" {{ request('status') == 'hadir' ? 'selected' : '' }}>Hadir</option>
+                        <option value="izin" {{ request('status') == 'izin' ? 'selected' : '' }}>Izin</option>
+                        <option value="sakit" {{ request('status') == 'sakit' ? 'selected' : '' }}>Sakit</option>
+                        <option value="alpha" {{ request('status') == 'alpha' ? 'selected' : '' }}>Alpha</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn text-white px-4" style="background-color: #098FC6;">Filter</button>
+            </form>
+
+            <form class="d-flex gap-2 align-items-center" method="GET" action="{{ url()->current() }}">
+                <input type="hidden" name="extracurricular" value="{{ $extracurricular->id }}">
+                @if (request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                @if (request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+                <div class="position-relative">
+                    <input type="date" name="date" class="form-control search-chat py-2 px-2 ps-3" id="search-date"
                         value="{{ request('date', now()->format('Y-m-d')) }}">
                 </div>
-                <div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="ti ti-filter me-1"></i>Filter
-                    </button>
-                </div>
+                <button type="submit" class="btn text-white px-4" style="background-color: #098FC6;">Cari</button>
             </form>
-        </div>
-    </div>
-
-    <div class="card card-body mt-3">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Daftar Absensi - {{ Carbon::parse(request('date', now()))->translatedFormat('d F Y') }}</h4>
         </div>
 
         <div class="table-responsive rounded-3 mb-4">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="fs-4 table-header-custom">
+                <thead class="fs-4">
                     <tr>
-                        <th class="text-white">No</th>
-                        <th class="text-white">Nama</th>
-                        <th class="text-white">Kelas</th>
-                        <th class="text-white">Status</th>
-                        <th class="text-white">Waktu Absen</th>
+                        <th class="text-white" style="background-color: #098FC6;">No</th>
+                        <th class="text-white" style="background-color: #098FC6;">Nama</th>
+                        <th class="text-white" style="background-color: #098FC6;">Kelas</th>
+                        <th class="text-white" style="background-color: #098FC6;">Status</th>
+                        <th class="text-white" style="background-color: #098FC6;">Waktu Absen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -165,12 +224,13 @@
                             </td>
                             <td>{{ $esStudent->student->classroomStudents->first()?->classroom?->name ?? 'N/A' }}</td>
                             <td>
-                                <span class="badge badge-{{ $status }} px-3 py-2">
+                                <span
+                                    class="badge {{ $status == 'hadir' ? 'bg-success' : ($status == 'sakit' ? 'bg-warning' : ($status == 'izin' ? 'bg-info' : ($status == 'alpha' ? 'bg-danger' : 'bg-light text-dark'))) }} px-3 py-2">
                                     {{ ucfirst($status == 'belum' ? 'Belum Absen' : $status) }}
                                 </span>
                             </td>
                             <td>
-                                @if($attendance)
+                                @if ($attendance)
                                     {{ $attendance->created_at->format('H:i') }}
                                 @else
                                     <span class="text-muted">-</span>
@@ -181,7 +241,8 @@
                         <tr>
                             <td colspan="5" class="text-center align-middle">
                                 <div class="d-flex flex-column justify-content-center align-items-center py-4">
-                                    <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="200px">
+                                    <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                        width="200px">
                                     <p class="fs-5 text-dark text-center mt-2">Belum ada siswa terdaftar</p>
                                 </div>
                             </td>
