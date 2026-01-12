@@ -164,7 +164,7 @@
             {{-- <div class="d-flex justify-content-between mt-3">
                 <a href="{{ route('student.extracurricular.index') }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-1"></i> Kembali
-                </a>
+                </a> 
             </div> --}}
         </div>
     </div>
