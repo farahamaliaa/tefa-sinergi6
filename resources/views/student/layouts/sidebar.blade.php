@@ -111,7 +111,8 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/student/attendance" aria-expanded="false">
+                    <a class="sidebar-link {{ request()->routeIs('student.lesson-schedule') ? 'active' : '' }}"
+                        href="{{ route('student.lesson-schedule') }}" aria-expanded="false">
                         <span>
                             <svg width="22" height="17" viewBox="0 0 22 17" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -165,7 +166,8 @@
                                         <ul aria-expanded="false" class="collapse two-level">
                                             <!-- Jadwal Ekskul -->
                                             <li class="sidebar-item">
-                                                <a href="#" class="sidebar-link">
+                                                <a href="{{ route('student.extracurricular.schedule', ['extracurricular' => $studentExtracurricular->extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('student.extracurricular.schedule') && request()->route('extracurricular') == $studentExtracurricular->extracurricular->id ? 'active' : '' }}">
                                                     <div
                                                         class="round-16 d-flex align-items-center justify-content-center">
                                                     </div>

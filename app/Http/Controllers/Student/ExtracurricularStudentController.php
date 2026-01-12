@@ -79,6 +79,39 @@ class ExtracurricularStudentController extends Controller
     }
 
     /**
+     * Display schedule page for a specific extracurricular.
+     */
+    public function schedulePage(Extracurricular $extracurricular)
+    {
+        $user = auth()->user();
+        $student = $user->student;
+
+        if (!$student) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Data siswa tidak ditemukan');
+        }
+
+        // Check if student is enrolled in this extracurricular
+        $enrollment = ExtracurricularStudent::where('student_id', $student->id)
+            ->where('extracurricular_id', $extracurricular->id)
+            ->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.extracurricular.index')
+                ->with('error', 'Anda tidak terdaftar di ekstrakurikuler ini');
+        }
+
+        // Get all schedules for this extracurricular
+        $schedules = $extracurricular->schedules()->orderBy('day')->get();
+
+        return view('student.pages.extracurricular.schedule', compact(
+            'extracurricular',
+            'enrollment',
+            'schedules'
+        ));
+    }
+
+    /**
      * Store attendance with location verification.
      */
     public function storeAttendance(Request $request, Extracurricular $extracurricular)
