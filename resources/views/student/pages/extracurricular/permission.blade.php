@@ -231,12 +231,21 @@
 
     @if ($permissions->count() > 0)
         <div class="card mt-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="ti ti-history me-2"></i>Riwayat Pengajuan</h5>
-            </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
+                <div class="d-flex align-items-center mb-2 gap-2">
+                    <svg class="mb-2 width="24" height="24" viewBox="0 0 30 30" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" class="me-2">
+                        <path
+                            d="M19.25 4.125V9.625C19.25 9.98967 19.3949 10.3394 19.6527 10.5973C19.9106 10.8551 20.2603 11 20.625 11H26.125"
+                            stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M12.375 12.375H13.75M12.375 17.875H20.625M12.375 23.375H20.625M23.375 28.875H9.625C8.89565 28.875 8.19618 28.5853 7.68046 28.0695C7.16473 27.5538 6.875 26.8543 6.875 26.125V6.875C6.875 6.14565 7.16473 5.44618 7.68046 4.93046C8.19618 4.41473 8.89565 4.125 9.625 4.125H19.25L26.125 11V26.125C26.125 26.8543 25.8353 27.5538 25.3195 28.0695C24.8038 28.5853 24.1043 28.875 23.375 28.875Z"
+                            stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <h4>Riwayat Pengajuan</h4>
+                </div>
+                <div class="table-responsive rounded-2 mt-3" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table border text-nowrap customize-table mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th>No</th>
