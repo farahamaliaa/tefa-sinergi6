@@ -29,6 +29,7 @@ Route::middleware('auth')->prefix('student')->name('student.')->group(function (
         Route::post('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'storeAttendance'])->name('attendance.store');
         Route::get('/{extracurricular}/schedule', [ExtracurricularStudentController::class, 'schedulePage'])->name('schedule');
         Route::get('/{extracurricular}/permission', [ExtracurricularStudentController::class, 'permissionPage'])->name('permission');
+        Route::get('/{extracurricular}/permission/create', [ExtracurricularStudentController::class, 'createPermission'])->name('permission.create');
         Route::post('/{extracurricular}/permission', [ExtracurricularStudentController::class, 'storePermission'])->name('permission.store');
     });
 });

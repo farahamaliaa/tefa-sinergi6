@@ -273,6 +273,38 @@ class ExtracurricularStudentController extends Controller
     }
 
     /**
+     * Display create permission page for a specific extracurricular.
+     */
+    public function createPermission(Extracurricular $extracurricular)
+    {
+        $user = auth()->user();
+        $student = $user->student;
+
+        if (!$student) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Data siswa tidak ditemukan');
+        }
+
+        $enrollment = ExtracurricularStudent::where('student_id', $student->id)
+            ->where('extracurricular_id', $extracurricular->id)
+            ->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.extracurricular.index')
+                ->with('error', 'Anda tidak terdaftar di ekstrakurikuler ini');
+        }
+
+        // Get schedules
+        $schedules = $extracurricular->schedules;
+
+        return view('student.pages.extracurricular.create-permission', compact(
+            'extracurricular',
+            'enrollment',
+            'schedules'
+        ));
+    }
+
+    /**
      * Store a new permission request.
      */
     public function storePermission(Request $request, Extracurricular $extracurricular)
@@ -323,6 +355,6 @@ class ExtracurricularStudentController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Pengajuan izin berhasil dikirim');
+        return redirect()->route('student.extracurricular.permission', $extracurricular->id)->with('success', 'Pengajuan izin berhasil dikirim');
     }
 }
