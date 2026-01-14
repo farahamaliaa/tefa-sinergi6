@@ -41,6 +41,6 @@
         }]
     };
 
-    var chart = new ApexCharts(document.querySelector("#chart-student"), options);
-    chart.render();
+    window.studentStatisticChart = new ApexCharts(document.querySelector("#chart-student"), options);
+    window.studentStatisticChart.render();
 </script>

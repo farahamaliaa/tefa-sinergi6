@@ -88,6 +88,7 @@
         .bg-izin { background-color: #0EA5E9; }
         .bg-alfa { background-color: #EF4444; }
 
+        /* Modified Bar Chart to handle dynamic heights better */
         .bar-chart-container {
             height: 250px;
             display: flex;
@@ -116,30 +117,32 @@
             gap: 12px;
             z-index: 1;
             position: relative;
+            flex: 1; 
         }
         .bars {
             display: flex;
             align-items: flex-end;
-            gap: 8px;
+            gap: 4px;
+            height: 100%;
+            justify-content: center;
         }
         .bar {
             width: 8px;
             border-radius: 10px 10px 10px 10px;
             transition: height 0.3s ease;
+            min-height: 0px; 
+            max-height: 200px;
         }
         
-        .donut-chart {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: conic-gradient(
-                #0EA5E9 0% 65%,
-                #EF4444 65% 90%,
-                #10B981 90% 100%
-            );
-            position: relative;
-            margin: 0 auto;
-        }
+       .donut-chart {
+           width: 220px;
+           height: 220px;
+           border-radius: 50%;
+           /* Dynamic gradient will be set inline */
+           position: relative;
+           margin: 0 auto;
+       }
+        
         .donut-inner {
             width: 160px;
             height: 160px;
@@ -150,6 +153,10 @@
             left: 50%;
             transform: translate(-50%, -50%);
             box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
 
         .custom-table-header {
@@ -158,6 +165,7 @@
         }
         .custom-table-header th {
             background-color: #00A3CE !important;
+            color: white !important;
             color: white !important;
             font-weight: 500;
             border: none;
@@ -241,7 +249,7 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <form class="d-flex justify-content-between align-items-center mb-4" method="GET">
         <div class="d-flex align-items-center gap-3">
             <div class="icon-box">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0896D1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -254,21 +262,16 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle bg-white" type="button" id="eskulDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid #E5E7EB;">
-                    Ekstrakulikuler
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="eskulDropdown">
-                    @foreach($extracurriculars as $eskul)
-                        <li><a class="dropdown-item" href="#">{{ $eskul->name ?? 'Pramuka' }}</a></li>
-                    @endforeach
-                    @if(count($extracurriculars) == 0)
-                        <li><a class="dropdown-item" href="#">Pramuka</a></li>
-                        <li><a class="dropdown-item" href="#">Futsal</a></li>
-                    @endif
-                </ul>
-            </div>
-            <button class="print-btn">
+            <input type="date" name="date" class="form-control" value="{{ $date }}" onchange="this.form.submit()">
+            <select name="extracurricular_id" class="form-select" onchange="this.form.submit()">
+                <option value="">Semua Ekskul</option>
+                @foreach($extracurriculars as $eskul)
+                    <option value="{{ $eskul->id }}" {{ isset($selectedExtracurricular) && $selectedExtracurricular->id == $eskul->id ? 'selected' : '' }}>
+                        {{ $eskul->name }}
+                    </option>
+                @endforeach
+            </select>
+            <button class="print-btn" type="button" onclick="window.print()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 9V2h12v7"></path>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -277,70 +280,54 @@
                 Cetak Absensi
             </button>
         </div>
-    </div>
+    </form>
 
     <div class="row">
         <div class="col-lg-8">
             <div class="card stat-card h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="section-title">Statistik Absensi Siswa Ekskul</h5>
+                    <h5 class="section-title">Statistik Absensi Siswa Ekskul (Bulanan)</h5>
                     <div class="dropdown">
                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Juni
+                            {{ \Carbon\Carbon::now()->format('F') }}
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Juni</a></li>
-                        </ul>
                     </div>
                 </div>
 
                 <div class="chart-legend">
                     <div class="legend-item"><div class="dot bg-masuk"></div> Masuk</div>
-                    <div class="legend-item"><div class="dot bg-izin"></div> Izin/sakit</div>
-                    <div class="legend-item"><div class="dot bg-alfa"></div> Alfa</div>
+                    <div class="legend-item"><div class="dot bg-izin"></div> Izin</div>
+                    <div class="legend-item"><div class="dot bg-alfa"></div> Sakit/Alfa</div>
                 </div>
 
                 <div class="bar-chart-container">
-                    <div class="bar-group">
-                        <div class="bars">
-                            <div class="bar bg-masuk" style="height: 120px;"></div>
-                            <div class="bar bg-izin" style="height: 40px;"></div>
-                            <div class="bar bg-alfa" style="height: 30px;"></div>
+                    @php
+                        $maxHeight = 150; // max px height for bars
+                        // Calculate max total to normalize heights, avoid division by zero
+                        $maxTotal = 1; 
+                        foreach($weeklyStats as $week) {
+                             $total = $week['present'] + $week['sick'] + $week['alpha'] + $week['permit'];
+                             if ($total > $maxTotal) $maxTotal = $total;
+                        }
+                    @endphp
+                    @foreach($weeklyStats as $weekNum => $stats)
+                        @php
+                            // Just simple scaling for demo, 1 unit = 10px? No, lets use percentage of max
+                            // Actually pure pixel mapped to count might be easier if counts are small.
+                            // Let's use simple scaling: (count / maxTotal) * maxHeight
+                            $hPresent = ($stats['present'] / $maxTotal) * $maxHeight;
+                            $hPermit = ($stats['permit'] / $maxTotal) * $maxHeight;
+                            $hSickAlfa = (($stats['sick'] + $stats['alpha']) / $maxTotal) * $maxHeight;
+                        @endphp
+                        <div class="bar-group">
+                            <div class="bars">
+                                <div class="bar bg-masuk" style="height: {{ max($hPresent, 2) }}px;" title="Masuk: {{ $stats['present'] }}"></div>
+                                <div class="bar bg-izin" style="height: {{ max($hPermit, 2) }}px;" title="Izin: {{ $stats['permit'] }}"></div>
+                                <div class="bar bg-alfa" style="height: {{ max($hSickAlfa, 2) }}px;" title="Sakit/Alfa: {{ $stats['sick'] + $stats['alpha'] }}"></div>
+                            </div>
+                            <small class="text-muted mt-2">Minggu {{ $weekNum }}</small>
                         </div>
-                        <small class="text-muted mt-2">Minggu 1</small>
-                    </div>
-                    <div class="bar-group">
-                        <div class="bars">
-                            <div class="bar bg-masuk" style="height: 140px;"></div>
-                            <div class="bar bg-izin" style="height: 50px;"></div>
-                            <div class="bar bg-alfa" style="height: 20px;"></div>
-                        </div>
-                        <small class="text-muted mt-2">Minggu 2</small>
-                    </div>
-                    <div class="bar-group">
-                        <div class="bars">
-                            <div class="bar bg-masuk" style="height: 60px;"></div>
-                            <div class="bar bg-izin" style="height: 20px;"></div>
-                            <div class="bar bg-alfa" style="height: 10px;"></div>
-                        </div>
-                        <small class="text-muted mt-2">Minggu 3</small>
-                    </div>
-                    <div class="bar-group">
-                        <div class="bars">
-                            <div class="bar bg-masuk" style="height: 130px;"></div>
-                            <div class="bar bg-izin" style="height: 30px;"></div>
-                            <div class="bar bg-alfa" style="height: 45px;"></div>
-                        </div>
-                        <small class="text-muted mt-2">Minggu 4</small>
-                    </div>
-                    <div class="bar-group">
-                        <div class="bars">
-                            <div class="bar bg-masuk" style="height: 135px;"></div>
-                            <div class="bar bg-izin" style="height: 45px;"></div>
-                            <div class="bar bg-alfa" style="height: 40px;"></div>
-                        </div>
-                        <small class="text-muted mt-2">Minggu 5</small>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -348,17 +335,40 @@
         <div class="col-lg-4">
             <div class="card stat-card h-100">
                 <h5 class="section-title mb-1">Statistik Absensi Siswa</h5>
-                <p class="text-muted small mb-4">Hari Ini</p>
+                <p class="text-muted small mb-4">Hari Ini ({{ \Carbon\Carbon::parse($date)->format('d M Y') }})</p>
 
                 <div class="d-flex flex-column align-items-center justify-content-center h-75">
-                    <div class="donut-chart mb-4">
-                        <div class="donut-inner"></div>
+                    @php
+                        $totalToday = $dailyStats['present'] + $dailyStats['sick'] + $dailyStats['alpha'] + $dailyStats['permit'];
+                        $degPresent = 0; $degPermit = 0; $degSickA = 0;
+                        if($totalToday > 0) {
+                            $degPresent = ($dailyStats['present'] / $totalToday) * 360;
+                            $degPermit = ($dailyStats['permit'] / $totalToday) * 360;
+                            $degSickA = (($dailyStats['sick'] + $dailyStats['alpha']) / $totalToday) * 360;
+                        }
+                        // Conic gradient logic
+                        // P1: 0 to degPresent
+                        // P2: degPresent to degPresent+degPermit
+                        // P3: degPresent+degPermit to 360
+                        $p1 = $degPresent;
+                        $p2 = $degPresent + $degPermit;
+                        $p3 = $p2 + $degSickA;
+                    @endphp
+                    <div class="donut-chart mb-4" style="background: conic-gradient(
+                        #10B981 0deg {{ $p1 }}deg,
+                        #0EA5E9 {{ $p1 }}deg {{ $p2 }}deg,
+                        #EF4444 {{ $p2 }}deg 360deg
+                    );">
+                        <div class="donut-inner">
+                            <h3 class="fw-bold mb-0">{{ $totalToday }}</h3>
+                            <small class="text-muted">Total Siswa</small>
+                        </div>
                     </div>
                     
                     <div class="d-flex gap-3 justify-content-center w-100 px-3">
-                         <div class="legend-item"><div class="dot bg-masuk"></div> Masuk</div>
-                         <div class="legend-item"><div class="dot bg-izin"></div> Izin/sakit</div>
-                         <div class="legend-item"><div class="dot bg-alfa"></div> Alfa</div>
+                         <div class="legend-item"><div class="dot bg-masuk"></div> Masuk ({{ $dailyStats['present'] }})</div>
+                         <div class="legend-item"><div class="dot bg-izin"></div> Izin ({{ $dailyStats['permit'] }})</div>
+                         <div class="legend-item"><div class="dot bg-alfa"></div> Alfa ({{ $dailyStats['sick'] + $dailyStats['alpha'] }})</div>
                     </div>
                 </div>
             </div>
@@ -376,7 +386,7 @@
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                <span style="font-size: 14px; font-weight: 500;">08 Desember 2025</span>
+                <span style="font-size: 14px; font-weight: 500;">{{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y') }}</span>
             </div>
         </div>
 
@@ -388,52 +398,43 @@
                         <th>Nama Siswa</th>
                         <th>Ekstrakulikuler</th>
                         <th>Kelas</th>
-                        <th>Total Hadir</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for($i=1; $i<=4; $i++)
+                    @forelse($attendances as $attendance)
                     <tr class="table-row">
-                        <td class="align-middle">{{ $i }}.</td>
+                        <td class="align-middle">{{ $loop->iteration + ($attendances->currentPage() - 1) * $attendances->perPage() }}.</td>
                         <td class="align-middle">
                             <div class="d-flex align-items-center">
                                 <div style="width: 32px; height: 32px; background-color: #E5E7EB; border-radius: 50%; margin-right: 12px; overflow: hidden;">
-                                    <img src="{{ asset('assets/') }}" alt="" class="w-100 h-100 object-fit-cover" onerror="this.src='{{ asset('assets/') }}'">
+                                    <img src="{{ $attendance->extracurricularStudent->student->user->image ? asset('storage/'.$attendance->extracurricularStudent->student->user->image) : asset('assets/images/profile/user-1.jpg') }}" alt="" class="w-100 h-100 object-fit-cover">
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">Maulana Rizki R</div>
-                                    <div class="text-muted small">XI RPL 1</div>
+                                    <div class="fw-bold text-dark">{{ $attendance->extracurricularStudent->student->user->name ?? 'Siswa' }}</div>
+                                    <div class="text-muted small">{{ $attendance->extracurricularStudent->student->classroomStudents->first()?->classroom?->name ?? '-' }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="align-middle text-muted">Pramuka</td>
-                        <td class="align-middle text-muted">XI RPL 1</td>
+                        <td class="align-middle text-muted">{{ $attendance->extracurricular->name ?? '-' }}</td>
+                        <td class="align-middle text-muted">{{ $attendance->extracurricularStudent->student->classroomStudents->first()?->classroom?->name ?? '-' }}</td>
                         <td class="align-middle">
-                            <span class="badge-pertemuan">10 Pertemuan</span>
+                            <span class="badge {{ $attendance->status == 'hadir' ? 'bg-success' : ($attendance->status == 'izin' ? 'bg-info' : 'bg-danger') }}">
+                                {{ ucfirst($attendance->status) }}
+                            </span>
                         </td>
                     </tr>
-                    @endfor
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-4">Tidak ada data absensi untuk tanggal ini.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-         <div class="d-flex justify-content-between align-items-center mt-3">
-            <div class="text-muted small">
-            Menampilkan 1 dari 12 halaman
-            </div>
-            <div class="pagination-mock">
-                <div class="page-item-mock">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                </div>
-                <div class="page-item-mock active">1</div>
-                <div class="page-item-mock">2</div>
-                <div class="page-item-mock">3</div>
-                <div class="d-flex align-items-end px-1 pb-2">...</div>
-                <div class="page-item-mock">12</div>
-                <div class="page-item-mock">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                </div>
-            </div>
+         <div class="d-flex justify-content-end align-items-center mt-3">
+            {{ $attendances->appends(request()->input())->links() }}
         </div>
     </div>
 @endsection

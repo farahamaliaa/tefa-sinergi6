@@ -153,7 +153,60 @@ class ExtracurricularController extends Controller
     public function statistic(Request $request)
     {
         $extracurriculars = $this->extracurricular->extracurricularGet($request);
-        return view('school.pages.statistic-presence.extracurricular', compact('extracurriculars'));
+
+        // Filter by specific extracurricular if selected
+        $selectedExtracurricularId = $request->input('extracurricular_id');
+        $selectedExtracurricular = $selectedExtracurricularId ? Extracurricular::find($selectedExtracurricularId) : null;
+        $date = $request->input('date', now()->format('Y-m-d'));
+
+        // Base query for attendance
+        $query = \App\Models\ExtracurricularAttendance::with(['extracurricularStudent.student.user', 'extracurricularStudent.student.classroomStudents.classroom', 'extracurricular'])
+            ->whereDate('created_at', $date);
+
+        if ($selectedExtracurricularId) {
+            $query->whereHas('extracurricular', function($q) use ($selectedExtracurricularId) {
+                $q->where('id', $selectedExtracurricularId);
+            });
+        }
+        
+        $attendances = $query->paginate(10);
+
+        // For the Donut chart (Daily stats):
+        // Note: Status is a string (hadir, sakit, izin, alpha)
+        $dailyStats = [
+            'present' => (clone $query)->where('status', 'hadir')->count(),
+            'sick' => (clone $query)->where('status', 'sakit')->count(),
+            'alpha' => (clone $query)->where('status', 'alpha')->count(),
+            'permit' => (clone $query)->where('status', 'izin')->count(),
+        ];
+
+        // For Bar Chart (Weekly/Monthly)
+        $monthStart = \Carbon\Carbon::now()->startOfMonth();
+        $monthEnd = \Carbon\Carbon::now()->endOfMonth();
+        
+        $monthlyQuery = \App\Models\ExtracurricularAttendance::whereBetween('created_at', [$monthStart, $monthEnd]);
+        if ($selectedExtracurricularId) {
+            $monthlyQuery->whereHas('journal', function($q) use ($selectedExtracurricularId) {
+                $q->where('extracurricular_id', $selectedExtracurricularId);
+            });
+        }
+
+        $monthlyData = $monthlyQuery->get()->groupBy(function($date) {
+            return \Carbon\Carbon::parse($date->created_at)->weekOfMonth;
+        });
+
+        $weeklyStats = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $weekData = $monthlyData->get($i, collect());
+            $weeklyStats[$i] = [
+                'present' => $weekData->where('status', 'hadir')->count(),
+                'sick' => $weekData->where('status', 'sakit')->count(),
+                'alpha' => $weekData->where('status', 'alpha')->count(),
+                'permit' => $weekData->where('status', 'izin')->count(),
+            ];
+        }
+
+        return view('school.pages.statistic-presence.extracurricular', compact('extracurriculars', 'attendances', 'dailyStats', 'weeklyStats', 'selectedExtracurricular', 'date'));
     }
 
     /**

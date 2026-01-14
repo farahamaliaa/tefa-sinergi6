@@ -306,7 +306,8 @@
                     theme: "dark",
                 },
             };
-            new ApexCharts(document.querySelector("#investments"), investments).render();
+            window.attendanceChart = new ApexCharts(document.querySelector("#investments"), investments);
+            window.attendanceChart.render();
         });
     </script>
 
@@ -318,7 +319,7 @@
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 foreColor: '#adb0bb',
             },
-            series: [38, 40],
+            series: [{{ $fill->count() }}, {{ $notfill->count() }}], // Updated to use real data initially
             labels: ['Mengisi', 'Tidak Mengisi'],
             plotOptions: {
                 pie: {
@@ -329,7 +330,7 @@
                     },
                 },
             },
-            colors: ['var(--bs-primary)', '#ecf2ff', '#F9F9FD'],
+            colors: ['#13deb9', '#fa896b'], // Green for filled, Red for not filled
             stroke: {
                 show: false,
             },
@@ -353,7 +354,101 @@
             },
         };
 
-        var chart = new ApexCharts(document.querySelector('#jurnal'), breakupOptions);
-        chart.render();
+        window.journalChart = new ApexCharts(document.querySelector('#jurnal'), breakupOptions);
+        window.journalChart.render();
+    </script>
+    <script>
+        setInterval(function() {
+            fetch("{{ route('school.realtime-data') }}")
+                .then(response => response.json())
+                .then(data => {
+                    // Update Counts
+                    if (data.counts) {
+                        // Student
+                        if(document.getElementById('student-late-count')) document.getElementById('student-late-count').innerText = data.counts.student_late + " Siswa";
+                        if(document.getElementById('student-permit-count')) document.getElementById('student-permit-count').innerText = data.counts.student_permit + " Siswa";
+                        if(document.getElementById('student-alpha-count')) document.getElementById('student-alpha-count').innerText = data.counts.student_alpha + " Siswa";
+                        
+                        // Employee
+                        if(document.getElementById('employee-late-count')) document.getElementById('employee-late-count').innerText = data.counts.employee_late + " Staff";
+                        if(document.getElementById('employee-permit-count')) document.getElementById('employee-permit-count').innerText = data.counts.employee_permit + " Guru";
+                        if(document.getElementById('employee-alpha-count')) document.getElementById('employee-alpha-count').innerText = data.counts.employee_alpha + " Guru";
+
+                        // Extra (re-using employee data as per current implementation)
+                        if(document.getElementById('extra-late-count')) document.getElementById('extra-late-count').innerText = data.counts.employee_late + " Pembina";
+                        if(document.getElementById('extra-permit-count')) document.getElementById('extra-permit-count').innerText = data.counts.employee_permit + " Pembina";
+                        if(document.getElementById('extra-alpha-count')) document.getElementById('extra-alpha-count').innerText = data.counts.employee_alpha + " Pembina";
+                    }
+
+                    // Update Panes/Tables
+                    if (data.panes) {
+                        // Student Tables
+                        if(document.getElementById('student-late-table')) document.getElementById('student-late-table').innerHTML = data.panes.student_late;
+                        if(document.getElementById('student-permit-table')) document.getElementById('student-permit-table').innerHTML = data.panes.student_permit;
+                        if(document.getElementById('student-alpha-table')) document.getElementById('student-alpha-table').innerHTML = data.panes.student_alpha;
+
+                        // Employee Tables
+                        if(document.getElementById('employee-late-table')) document.getElementById('employee-late-table').innerHTML = data.panes.employee_late;
+                        if(document.getElementById('employee-permit-table')) document.getElementById('employee-permit-table').innerHTML = data.panes.employee_permit;
+                        if(document.getElementById('employee-alpha-table')) document.getElementById('employee-alpha-table').innerHTML = data.panes.employee_alpha;
+
+                        // Extra Tables (re-using Student data as per current implementation mirror)
+                        if(document.getElementById('extra-late-table')) document.getElementById('extra-late-table').innerHTML = data.panes.student_late;
+                        if(document.getElementById('extra-permit-table')) document.getElementById('extra-permit-table').innerHTML = data.panes.student_permit;
+                        if(document.getElementById('extra-alpha-table')) document.getElementById('extra-alpha-table').innerHTML = data.panes.student_alpha;
+
+                        // Journal Panes
+                        if(document.getElementById('staff-journal-container')) document.getElementById('staff-journal-container').innerHTML = data.panes.staff_journal;
+                        if(document.getElementById('teacher-journal-container')) document.getElementById('teacher-journal-container').innerHTML = data.panes.teacher_journal;
+                        if(document.getElementById('extra-teacher-journal-container')) document.getElementById('extra-teacher-journal-container').innerHTML = data.panes.teacher_journal;
+                    }
+
+                    // Update Charts
+                    if (data.charts) {
+                        // Attendance Chart
+                        if (window.attendanceChart && data.charts.attendance) {
+                             var attData = data.charts.attendance;
+                             var data1 = attData.map(item => item.attendance_present);
+                             var data2 = attData.map(item => item.attendance_permit);
+                             var data3 = attData.map(item => item.attendance_sick);
+                             var data4 = attData.map(item => item.attendance_alpha);
+                             
+                             window.attendanceChart.updateSeries([
+                                { name: "Masuk", data: data1 },
+                                { name: "Izin", data: data2 },
+                                { name: "Sakit", data: data3 },
+                                { name: "Alpha", data: data4 }
+                             ]);
+                        }
+
+                        // Student Statistic Chart (Donut)
+                        if (window.studentStatisticChart && data.charts.student) {
+                            var stuData = data.charts.student;
+                            window.studentStatisticChart.updateSeries([
+                                stuData.chartLate, 
+                                stuData.chartSick, 
+                                stuData.chartAlpha
+                            ]);
+                        }
+
+                        // Violation Chart (Line)
+                        if (window.violationChart && data.charts.violation) {
+                            var vioData = data.charts.violation.map(item => item.violation);
+                             window.violationChart.updateSeries([{
+                                data: vioData
+                            }]);
+                        }
+                        
+                         // Journal Chart (Donut)
+                        if (window.journalChart && data.charts.journal) {
+                            window.journalChart.updateSeries([
+                                data.charts.journal.fill,
+                                data.charts.journal.notfill
+                            ]);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching realtime data:', error));
+        }, 5000); // Update every 5 seconds
     </script>
 @endsection

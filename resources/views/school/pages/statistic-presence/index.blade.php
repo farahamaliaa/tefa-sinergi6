@@ -137,4 +137,58 @@
 @section('script')
 @include('school.pages.statistic-presence.script.chart')
 @include('school.pages.statistic-presence.script.tab')
+
+<script>
+    setInterval(function() {
+        // preserve current search params if possible or just use current date
+        // For simplicity, we fetch default or current date if input present
+        // But the controller method reads 'date' input. 
+        // We really should grab the date value from the input if it exists (but it was commented out in the view).
+        // Let's assume default date (today) or reuse URL params? 
+        // The view $date variable is rendered from server.
+        // Let's just fetch without params to get today's data, or use window.location.search if present.
+        
+        let url = "{{ route('school.statistic-presence.realtime') }}" + window.location.search;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Update Table
+                if(document.getElementById('statistic-presence-table-body') && data.table) {
+                    document.getElementById('statistic-presence-table-body').innerHTML = data.table;
+                }
+
+                // Update Chart
+                if(window.chartStudent && data.chart) {
+                    var attData = data.chart;
+                    var presentData = attData.map(item => item.data.present);
+                    var permitData = attData.map(item => item.data.permit);
+                    var sickData = attData.map(item => item.data.sick);
+                    var alphaData = attData.map(item => item.data.alpha);
+                    var categories = attData.map(item => item.classroom);
+
+                    window.chartStudent.updateOptions({
+                        xaxis: {
+                            categories: categories
+                        }
+                    });
+                    
+                    window.chartStudent.updateSeries([{
+                        name: 'Masuk',
+                        data: presentData
+                    }, {
+                        name: 'Izin',
+                        data: permitData
+                    }, {
+                        name: 'Sakit',
+                        data: sickData
+                    }, {
+                        name: 'Alfa',
+                        data: alphaData
+                    }]);
+                }
+            })
+            .catch(error => console.error('Error fetching realtime presence:', error));
+    }, 5000);
+</script>
 @endsection

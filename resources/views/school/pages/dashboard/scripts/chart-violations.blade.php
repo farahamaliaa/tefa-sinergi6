@@ -59,9 +59,9 @@
         },
     };
 
-    var chart_line_basic = new ApexCharts(
+    window.violationChart = new ApexCharts(
         document.querySelector("#chart-line-basic"),
         options_line
     );
-    chart_line_basic.render();
+    window.violationChart.render();
 </script>
