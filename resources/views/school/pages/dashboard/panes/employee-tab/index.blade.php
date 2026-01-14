@@ -111,7 +111,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Staff Telat</div>
-                <div class="stat-badge bg-primary-soft">{{ $lates_teacher->count() }} Staff</div>
+                <div class="stat-badge bg-primary-soft" id="employee-late-count">{{ $lates_teacher->count() }} Staff</div>
             </div>
             <div class="icon-box bg-primary-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -133,7 +133,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Staff Izin/Sakit</div>
-                <div class="stat-badge bg-warning-soft">{{ $totalPermit_teacher }} Guru</div>
+                <div class="stat-badge bg-warning-soft" id="employee-permit-count">{{ $totalPermit_teacher }} Guru</div>
             </div>
             <div class="icon-box bg-warning-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,7 +148,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Guru Alfa</div>
-                <div class="stat-badge bg-danger-soft">{{ $alpha_teacher->count() }} Guru</div>
+                <div class="stat-badge bg-danger-soft" id="employee-alpha-count">{{ $alpha_teacher->count() }} Guru</div>
             </div>
             <div class="icon-box bg-danger-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +193,7 @@
                 <div class="tab-content">
                     <div id="late-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="employee-late-table">
                                 @include('school.pages.dashboard.panes.employee-sub-tab.late-tab')
                             </div>
                         </div>
@@ -201,7 +201,7 @@
 
                     <div id="permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="employee-permit-table">
                                 @include('school.pages.dashboard.panes.employee-sub-tab.permission-tab')
                             </div>
                         </div>
@@ -209,7 +209,7 @@
 
                     <div id="alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="employee-alpha-table">
                                 @include('school.pages.dashboard.panes.employee-sub-tab.alpha-tab')
                             </div>
                         </div>
@@ -239,7 +239,9 @@
     </span>
 </h4>
 
+<div id="staff-journal-container">
 @include('school.pages.dashboard.panes.staff-journal')
+</div>
 
 <h4 class="mb-4"><b>Data Jurnal Guru Hari Ini / </b>
     <span class="mb-1 badge font-medium bg-light-primary text-primary" style="font-size: ">
@@ -247,7 +249,9 @@
     </span>
 </h4>
 
+<div id="teacher-journal-container">
 @include('school.pages.dashboard.panes.teacher-journal')
+</div>
 
 
 <script>

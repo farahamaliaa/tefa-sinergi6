@@ -49,6 +49,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->group(function () {
     Route::get('', [SchoolDashboardController::class, 'index'])->name('index');
+    Route::get('realtime-data', [SchoolDashboardController::class, 'getRealtimeData'])->name('realtime-data');
 
     // setting informasi
     Route::prefix('information')->group(function () {
@@ -121,6 +122,7 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
 
     //parent
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
+    Route::post('parents', [ParentController::class, 'store'])->name('parent.store');
     Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
     Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
     Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
@@ -204,6 +206,7 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::put('add-to-rfid/{role}/{id}', [ModelHasRfidController::class, 'update'])->name('add-to-rfid.update');
 
     //statistic presence
+    Route::get('statistic-presence/realtime', [SchoolsAttendanceStudentController::class, 'getRealtimeStatistics'])->name('statistic-presence.realtime');
     Route::get('statistic-presence', [SchoolsAttendanceStudentController::class, 'index'])->name('statistic-presence.index');
     Route::get('statistic-presence-employee', [AttendanceEmployeeController::class, 'index'])->name('statistic-presence-employee.index');
     Route::get('detail-presence-class/{classroom}', [SchoolsAttendanceStudentController::class, 'show'])->name('detail-presence-class.index');

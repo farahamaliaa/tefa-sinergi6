@@ -111,7 +111,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Pembina Telat</div>
-                <div class="stat-badge bg-primary-soft">{{ $lates_teacher->count() }} Pembina</div>
+                <div class="stat-badge bg-primary-soft" id="extra-late-count">{{ $lates_teacher->count() }} Pembina</div>
             </div>
             <div class="icon-box bg-primary-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -133,7 +133,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Pembina Izin/Sakit</div>
-                <div class="stat-badge bg-warning-soft">{{ $totalPermit_teacher }} Pembina</div>
+                <div class="stat-badge bg-warning-soft" id="extra-permit-count">{{ $totalPermit_teacher }} Pembina</div>
             </div>
             <div class="icon-box bg-warning-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,7 +148,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Pembina Alfa</div>
-                <div class="stat-badge bg-danger-soft">{{ $alpha_teacher->count() }} Pembina</div>
+                <div class="stat-badge bg-danger-soft" id="extra-alpha-count">{{ $alpha_teacher->count() }} Pembina</div>
             </div>
             <div class="icon-box bg-danger-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +193,7 @@
                 <div class="tab-content">
                     <div id="late-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="extra-late-table">
                                 @include('school.pages.dashboard.panes.student-tab.late-tab')
                             </div>
                         </div>
@@ -201,7 +201,7 @@
 
                     <div id="permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="extra-permit-table">
                                 @include('school.pages.dashboard.panes.student-tab.permisson-tab')
                             </div>
                         </div>
@@ -209,7 +209,7 @@
 
                     <div id="alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="extra-alpha-table">
                                 @include('school.pages.dashboard.panes.student-tab.alpha-tab')
                             </div>
                         </div>
@@ -311,7 +311,9 @@
     </span>
 </h4>
 
+<div id="extra-teacher-journal-container">
 @include('school.pages.dashboard.panes.teacher-journal')
+</div>
 
 
 <script>

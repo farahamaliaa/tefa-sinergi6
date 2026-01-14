@@ -17,13 +17,67 @@ class ParentController extends Controller
     public function index(Request $request)
     {
         if (!$request->expectsJson()) {
-            return view('school.pages.parent.index');
+            $parents = Parents::with(['user', 'students.classroomStudents.classroom'])->get();
+            $students = \App\Models\Student::with('user')->get()->map(function($s) {
+                 return [
+                     'id' => $s->id,
+                     'name' => $s->user->name ?? $s->name,
+                     'classroom' => $s->classroomStudents->first()?->classroom?->name ?? 'No Class'
+                 ];
+            });
+            return view('school.pages.parent.index', compact('parents', 'students'));
         };
 
-        return Parents::with('students')->get();
+        return Parents::with(['user', 'students.classroomStudents.classroom'])->get();
     }
 
     //Get /api/parents{id}
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'gender' => 'required|in:male,female',
+            'phone_number' => 'required|string|max:20',
+            'students' => 'nullable|array',
+            'students.*' => 'exists:students,id',
+        ]);
+
+        $slug = \Illuminate\Support\Str::slug($request->name);
+        // Ensure unique slug
+        $count = User::where('slug', 'LIKE', "{$slug}%")->count();
+        if ($count > 0) {
+            $slug .= '-' . ($count + 1);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'slug' => $slug,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'parent',
+        ]);
+
+        $user->assignRole('parent'); 
+
+        $parent = Parents::create([
+            'user_id' => $user->id,
+            'name' => $request->name,
+            'phone_number' => $request->phone_number,
+        ]);
+
+        if($request->has('students')) {
+            $parent->students()->attach($request->students);
+        }
+
+        if ($request->expectsJson()) {
+             return response()->json(['message' => 'Berhasil menambahkan data orang tua', 'data' => $parent], 201);
+        }
+
+        return redirect()->back()->with('success', 'Berhasil menambahkan data orang tua');
+    }
+
     public function show($id, Request $request)
     {
         $parent = Parents::with('students')->findOrFail($id);

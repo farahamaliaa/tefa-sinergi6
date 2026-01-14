@@ -152,7 +152,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Telat Absen</div>
-                <div class="stat-badge bg-primary-soft">{{ $lates->count() }} Siswa</div>
+                <div class="stat-badge bg-primary-soft" id="student-late-count">{{ $lates->count() }} Siswa</div>
             </div>
             <div class="icon-box bg-primary-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,7 +174,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Izin</div>
-                <div class="stat-badge bg-warning-soft">{{ $totalPermit }} Siswa</div>
+                <div class="stat-badge bg-warning-soft" id="student-permit-count">{{ $totalPermit }} Siswa</div>
             </div>
             <div class="icon-box bg-warning-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +189,7 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Siswa Alfa</div>
-                <div class="stat-badge bg-danger-soft">{{ $alpha->count() }} Siswa</div>
+                <div class="stat-badge bg-danger-soft" id="student-alpha-count">{{ $alpha->count() }} Siswa</div>
             </div>
             <div class="icon-box bg-danger-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -234,7 +234,7 @@
                 <div class="tab-content">
                     <div id="late-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="student-late-table">
                                 @include('school.pages.dashboard.panes.student-tab.late-tab')
                             </div>
                         </div>
@@ -242,7 +242,7 @@
 
                     <div id="permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="student-permit-table">
                                 @include('school.pages.dashboard.panes.student-tab.permisson-tab')
                             </div>
                         </div>
@@ -250,7 +250,7 @@
 
                     <div id="alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12">
+                            <div class="col-12" id="student-alpha-table">
                                 @include('school.pages.dashboard.panes.student-tab.alpha-tab')
                             </div>
                         </div>
