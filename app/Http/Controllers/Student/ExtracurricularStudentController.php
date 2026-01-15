@@ -38,9 +38,84 @@ class ExtracurricularStudentController extends Controller
     }
 
     /**
-     * Display attendance page for a specific extracurricular.
+     * Display attendance history page for a specific extracurricular.
      */
-    public function attendancePage(Extracurricular $extracurricular)
+    public function historyPage(Request $request, Extracurricular $extracurricular)
+    {
+        $user = auth()->user();
+        $student = $user->student;
+
+        if (!$student) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Data siswa tidak ditemukan');
+        }
+
+        // Check if student is enrolled in this extracurricular
+        $enrollment = ExtracurricularStudent::where('student_id', $student->id)
+            ->where('extracurricular_id', $extracurricular->id)
+            ->first();
+
+        if (!$enrollment) {
+            return redirect()->route('student.extracurricular.index')
+                ->with('error', 'Anda tidak terdaftar di ekstrakurikuler ini');
+        }
+
+        // Get filter parameters
+        $date = $request->input('date');
+        $status = $request->input('status');
+        $search = $request->input('search');
+
+        // Query attendances
+        $query = ExtracurricularAttendance::with(['journal.schedule'])
+            ->where('extracurricular_student_id', $enrollment->id);
+
+        if ($date) {
+            $query->whereDate('created_at', $date);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        // Note: Search functionality might be limited since we don't have a direct name field on attendance, 
+        // but if requested, we could search schedule descriptions or similar. 
+        // For now, adhering to the standard filter pattern.
+
+        $attendances = $query->latest()->paginate(10);
+
+        // Check if there is a schedule today for the "Absen Sekarang" button logic
+        $today = strtolower(now()->locale('en')->dayName);
+        $todaySchedule = $extracurricular->schedules()
+            ->where('day', $today)
+            ->first();
+
+        $hasAttendedToday = false;
+        if ($todaySchedule) {
+            $todayJournal = $extracurricular->journals()
+                ->where('schedule_id', $todaySchedule->id)
+                ->whereDate('date', now()->toDateString())
+                ->first();
+
+            if ($todayJournal) {
+                $hasAttendedToday = ExtracurricularAttendance::where('extracurricular_journal_id', $todayJournal->id)
+                    ->where('extracurricular_student_id', $enrollment->id)
+                    ->exists();
+            }
+        }
+
+        return view('student.pages.extracurricular.attendance-history', compact(
+            'extracurricular',
+            'enrollment',
+            'attendances',
+            'todaySchedule',
+            'hasAttendedToday'
+        ));
+    }
+
+    /**
+     * Display attendance check-in page for a specific extracurricular.
+     */
+    public function createAttendance(Extracurricular $extracurricular)
     {
         $user = auth()->user();
         $student = $user->student;
@@ -67,7 +142,7 @@ class ExtracurricularStudentController extends Controller
             ->first();
 
         if (!$todaySchedule) {
-            return redirect()->route('student.extracurricular.index')
+            return redirect()->route('student.extracurricular.attendance', $extracurricular->id)
                 ->with('error', 'Tidak ada jadwal ekstrakurikuler hari ini');
         }
 

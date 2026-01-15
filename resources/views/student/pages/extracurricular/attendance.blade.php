@@ -161,11 +161,11 @@
                 </div>
             </div>
 
-            {{-- <div class="d-flex justify-content-between mt-3">
-                <a href="{{ route('student.extracurricular.index') }}" class="btn btn-secondary">
+            <div class="d-flex justify-content-between mt-3">
+                <a href="{{ route('student.extracurricular.attendance', $extracurricular->id) }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-1"></i> Kembali
-                </a> 
-            </div> --}}
+                </a>
+            </div>
         </div>
     </div>
 @endsection
@@ -321,7 +321,8 @@
                     .then(data => {
                         if (data.success) {
                             alert(data.message);
-                            window.location.href = '{{ route('student.extracurricular.index') }}';
+                            window.location.href =
+                                '{{ route('student.extracurricular.attendance', $extracurricular->id) }}';
                         } else {
                             alert(data.message);
                             btn.disabled = false;

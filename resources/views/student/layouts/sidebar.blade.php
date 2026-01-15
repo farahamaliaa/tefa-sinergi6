@@ -182,7 +182,7 @@
 
                                             <li class="sidebar-item">
                                                 <a href="{{ route('student.extracurricular.attendance', ['extracurricular' => $studentExtracurricular->extracurricular->id]) }}"
-                                                    class="sidebar-link {{ request()->routeIs('student.extracurricular.attendance') && request()->route('extracurricular') == $studentExtracurricular->extracurricular->id ? 'active' : '' }}">
+                                                    class="sidebar-link {{ (request()->routeIs('student.extracurricular.attendance') || request()->routeIs('student.extracurricular.attendance.create')) && request()->route('extracurricular') == $studentExtracurricular->extracurricular->id ? 'active' : '' }}">
                                                     <div
                                                         class="round-16 d-flex align-items-center justify-content-center">
                                                     </div>

@@ -25,7 +25,8 @@ Route::middleware('auth')->prefix('student')->name('student.')->group(function (
     // Ekstrakurikuler
     Route::prefix('extracurricular')->name('extracurricular.')->group(function () {
         Route::get('/', [ExtracurricularStudentController::class, 'index'])->name('index');
-        Route::get('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'attendancePage'])->name('attendance');
+        Route::get('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'historyPage'])->name('attendance');
+        Route::get('/{extracurricular}/attendance/create', [ExtracurricularStudentController::class, 'createAttendance'])->name('attendance.create');
         Route::post('/{extracurricular}/attendance', [ExtracurricularStudentController::class, 'storeAttendance'])->name('attendance.store');
         Route::get('/{extracurricular}/schedule', [ExtracurricularStudentController::class, 'schedulePage'])->name('schedule');
         Route::get('/{extracurricular}/permission', [ExtracurricularStudentController::class, 'permissionPage'])->name('permission');
