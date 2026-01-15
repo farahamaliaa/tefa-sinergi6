@@ -18,10 +18,16 @@ class AttendanceJournalResource extends JsonResource
         return [
             'id' => $this->classroomStudent->id,
             'student' => $this->classroomStudent->student->user->name,
+            'name' => $this->classroomStudent->student->user->name,
+            'student_name' => $this->classroomStudent->student->user->name,
             'nik' => $this->classroomStudent->student->nik,
             'nisn' => $this->classroomStudent->student->nisn,
             'gender' => $this->classroomStudent->student->gender->label(),
             'classroom' => $this->classroomStudent->classroom->name,
+            'image' => $this->classroomStudent->student->image 
+                ? asset('storage/' . $this->classroomStudent->student->image) 
+                : null,
+            'status' => $this->status == AttendanceEnum::SICK ? AttendanceEnum::SICK : ($this->status == AttendanceEnum::PRESENT ? AttendanceEnum::PRESENT : ($this->status == AttendanceEnum::LATE ? AttendanceEnum::LATE : ($this->status == AttendanceEnum::ALPHA ? AttendanceEnum::ALPHA : ($this->status == AttendanceEnum::PERMIT ? AttendanceEnum::PERMIT : '-')))),
             'attendance_status' => $this->status == AttendanceEnum::SICK ? AttendanceEnum::SICK : ($this->status == AttendanceEnum::PRESENT ? AttendanceEnum::PRESENT : ($this->status == AttendanceEnum::LATE ? AttendanceEnum::LATE : ($this->status == AttendanceEnum::ALPHA ? AttendanceEnum::ALPHA : ($this->status == AttendanceEnum::PERMIT ? AttendanceEnum::PERMIT : '-')))),
         ];
     }

@@ -102,6 +102,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('update-journal/{lessonSchedule}', [LessonScheduleApiController::class, 'update']);
     });
 
+    // Extracurricular Routes
+    Route::prefix('extracurricular')->group(function () {
+        Route::get('list', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'index']);
+        Route::get('{id}/students', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'students']);
+        Route::get('{id}/schedules', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'schedules']);
+        Route::get('{id}/attendance', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'attendance']);
+        Route::get('{id}/permissions', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'permissions']);
+        Route::post('permissions/{id}/status', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'updatePermissionStatus']);
+        Route::post('attendance', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeAttendance']);
+        Route::get('{id}/journals', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'journals']);
+        Route::get('journal/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'journalDetail']);
+        Route::post('journal', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeJournal']);
+        Route::put('journal/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'updateJournal']);
+        Route::post('schedule', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeSchedule']);
+        Route::delete('schedule/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'deleteSchedule']);
+    });
+
     // Permission Routes
     Route::get('/permissions', [StudentPermissionController::class, 'index']);
     Route::post('/students/{student_id}/permissions', [StudentPermissionController::class, 'store']);

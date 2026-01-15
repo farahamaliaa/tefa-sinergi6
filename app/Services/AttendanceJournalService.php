@@ -75,17 +75,18 @@ class AttendanceJournalService
             $attendanceJournal = $this->attendanceJournal->getByClassroomStudent($key);
             $rule = $this->attendance->getClassroomStudent($key);
 
+            if (!$attendanceJournal) {
+                continue;
+            }
+
             if ($attendanceJournal->status->value != $value) {
-                if ($value == 'present') {
-                    $data['status'] = $value == 'present' ? AttendanceEnum::PRESENT->value : ($value == 'permit' ? AttendanceEnum::PERMIT->value : ($value == 'sick' ? AttendanceEnum::SICK->value : ($value == 'alpha' ? AttendanceEnum::ALPHA->value : '')));
-                    $this->attendanceJournal->updateByClassroomStudent($key, $data);
+                $data['status'] = $value == 'present' ? AttendanceEnum::PRESENT->value : ($value == 'permit' ? AttendanceEnum::PERMIT->value : ($value == 'sick' ? AttendanceEnum::SICK->value : ($value == 'alpha' ? AttendanceEnum::ALPHA->value : '')));
+                $this->attendanceJournal->updateByClassroomStudent($key, $data);
 
-                    $this->attendance->update($rule->id, ['point' => $rule->point + $min]);
-                } else {
-                    $data['status'] = $value == 'present' ? AttendanceEnum::PRESENT->value : ($value == 'permit' ? AttendanceEnum::PERMIT->value : ($value == 'sick' ? AttendanceEnum::SICK->value : ($value == 'alpha' ? AttendanceEnum::ALPHA->value : '')));
-                    $this->attendanceJournal->updateByClassroomStudent($key, $data);
-
-                    if ($rule && $attendanceJournal->status->value == 'present') {
+                if ($rule) {
+                    if ($value == 'present' && $attendanceJournal->status->value != 'present') {
+                        $this->attendance->update($rule->id, ['point' => $rule->point + $min]);
+                    } elseif ($value != 'present' && $attendanceJournal->status->value == 'present') {
                         $this->attendance->update($rule->id, ['point' => $rule->point - $min]);
                     }
                 }
