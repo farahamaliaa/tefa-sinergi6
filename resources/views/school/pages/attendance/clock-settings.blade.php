@@ -300,14 +300,22 @@
                                         <input type="time" class="form-control" id="waktu-masuk-${day}-${role}" name="checkin_start" value="${data.start_time || ''}">
                                     </div>
                                     <div class="col-lg-12 mb-3">
-                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
+                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Masuk Selesai<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-selesai-${day}-${role}" name="checkin_end" value="${data.end_time || ''}">
+                                    </div>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-pulang-awal-${day}-${role}" class="mb-2">Jam Pulang Mulai<span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" id="waktu-pulang-awal-${day}-${role}" name="checkout_start" value="${data.leave_start || ''}">
+                                    </div>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-pulang-akhir-${day}-${role}" class="mb-2">Jam Pulang Selesai<span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" id="waktu-pulang-akhir-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
                                     </div>
                                     <div class="d-flex justify-content-end mt-4 mb-3">
                                         <button class="btn btn-primary custom-btn">Simpan</button>
                                     </div>
                                 </div>
-                            <form>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -330,8 +338,16 @@
                                         <input type="time" class="form-control" id="waktu-masuk-${day}-${role}" name="checkin_start" value="${data.start_time || ''}">
                                     </div>
                                     <div class="col-lg-12 mb-3">
-                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Pulang Sekolah<span class="text-danger">*</span></label>
+                                        <label for="waktu-selesai-${day}-${role}" class="mb-2">Jam Masuk Selesai<span class="text-danger">*</span></label>
                                         <input type="time" class="form-control" id="waktu-selesai-${day}-${role}" name="checkin_end" value="${data.end_time || ''}">
+                                    </div>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-pulang-awal-${day}-${role}" class="mb-2">Jam Pulang Mulai<span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" id="waktu-pulang-awal-${day}-${role}" name="checkout_start" value="${data.leave_start || ''}">
+                                    </div>
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="waktu-pulang-akhir-${day}-${role}" class="mb-2">Jam Pulang Selesai<span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" id="waktu-pulang-akhir-${day}-${role}" name="checkout_end" value="${data.leave_end || ''}">
                                     </div>
                                     <div class="d-flex justify-content-end mt-4 mb-3">
                                         <button class="btn btn-primary custom-btn">Simpan</button>
