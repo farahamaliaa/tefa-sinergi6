@@ -206,6 +206,7 @@ class ExtracurricularStudentController extends Controller
             ->first();
 
         if (!$enrollment) {
+            session()->flash('error', 'Anda tidak terdaftar di ekstrakurikuler ini');
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak terdaftar di ekstrakurikuler ini'
@@ -216,6 +217,7 @@ class ExtracurricularStudentController extends Controller
         $schedule = $extracurricular->schedules()->find($request->schedule_id);
 
         if (!$schedule || !$schedule->latitude || !$schedule->longitude) {
+            session()->flash('error', 'Jadwal tidak valid atau lokasi belum ditentukan');
             return response()->json([
                 'success' => false,
                 'message' => 'Jadwal tidak valid atau lokasi belum ditentukan'
@@ -233,9 +235,11 @@ class ExtracurricularStudentController extends Controller
         $radius = $schedule->radius ?? 100;
 
         if ($distance > $radius) {
+            $errorMessage = "Anda berada di luar jangkauan lokasi absensi. Jarak Anda: " . round($distance) . "m, Radius: {$radius}m";
+            session()->flash('error', $errorMessage);
             return response()->json([
                 'success' => false,
-                'message' => "Anda berada di luar jangkauan lokasi absensi. Jarak Anda: " . round($distance) . "m, Radius: {$radius}m"
+                'message' => $errorMessage
             ], 400);
         }
 
@@ -252,6 +256,7 @@ class ExtracurricularStudentController extends Controller
                 ->first();
 
             if ($existingAttendance && $existingAttendance->status === 'hadir') {
+                session()->flash('warning', 'Anda sudah melakukan absensi hari ini');
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda sudah melakukan absensi hari ini'
@@ -284,9 +289,12 @@ class ExtracurricularStudentController extends Controller
             ]);
         }
 
+        $successMessage = 'Absensi berhasil dicatat! Jarak Anda: ' . round($distance) . 'm';
+        session()->flash('success', $successMessage);
+        
         return response()->json([
             'success' => true,
-            'message' => 'Absensi berhasil dicatat! Jarak Anda: ' . round($distance) . 'm'
+            'message' => $successMessage
         ]);
     }
 

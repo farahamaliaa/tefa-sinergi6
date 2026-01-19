@@ -70,6 +70,12 @@
             padding: 15px 30px;
             border-radius: 12px;
         }
+
+        .btn-primary {
+            background-color: #0896d1 !important;
+            border-color: #0896d1 !important;
+            border-radius: 12px !important;
+        }
     </style>
 @endsection
 
@@ -162,7 +168,7 @@
             </div>
 
             <div class="d-flex justify-content-between mt-3">
-                <a href="{{ route('student.extracurricular.attendance', $extracurricular->id) }}" class="btn btn-secondary">
+                <a href="{{ route('student.extracurricular.attendance', $extracurricular->id) }}" class="btn btn-primary">
                     <i class="ti ti-arrow-left me-1"></i> Kembali
                 </a>
             </div>
@@ -297,7 +303,11 @@
             // Attendance button handler
             document.getElementById('attendanceBtn').addEventListener('click', function() {
                 if (!userLat || !userLng) {
-                    alert('Lokasi Anda belum terdeteksi');
+                    // Show inline warning if location not detected
+                    const statusEl = document.getElementById('locationStatus');
+                    statusEl.className = 'location-status error';
+                    statusEl.innerHTML =
+                        '<i class="ti ti-alert-circle me-2"></i>Lokasi belum terdeteksi. Pastikan GPS aktif.';
                     return;
                 }
 
@@ -319,20 +329,18 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            alert(data.message);
-                            window.location.href =
-                                '{{ route('student.extracurricular.attendance', $extracurricular->id) }}';
-                        } else {
-                            alert(data.message);
-                            btn.disabled = false;
-                            btn.innerHTML = '<i class="ti ti-check me-2"></i>Absen Sekarang';
-                        }
+                        // Redirect to attendance history page - toast will show from session flash
+                        window.location.href =
+                            '{{ route('student.extracurricular.attendance', $extracurricular->id) }}';
                     })
                     .catch(error => {
-                        alert('Terjadi kesalahan. Silakan coba lagi.');
                         btn.disabled = false;
                         btn.innerHTML = '<i class="ti ti-check me-2"></i>Absen Sekarang';
+                        // Show error inline
+                        const statusEl = document.getElementById('locationStatus');
+                        statusEl.className = 'location-status error';
+                        statusEl.innerHTML =
+                            '<i class="ti ti-alert-circle me-2"></i>Terjadi kesalahan. Silakan coba lagi.';
                     });
             });
         });
