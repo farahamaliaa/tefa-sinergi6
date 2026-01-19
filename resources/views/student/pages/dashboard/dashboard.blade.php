@@ -136,7 +136,7 @@
                                 <h4 class="mb-3"><b>Absensi Hari Ini:</b></h4>
                                 <h4>~</h4>
                             </div>
-                            <div class="badge {{ $single_attendance ? ($single_attendance->status == 'present' ? 'bg-light-success text-success' : ($single_attendance->status == 'sick' ? 'bg-light-warning text-warning' : 'bg-light-danger text-danger')) : 'bg-light-danger text-danger' }} fs-5 text-nowrap py-3 px-2 rounded-3 w-100 w-lg-auto"
+                            <div class="badge {{ $single_attendance ? ($single_attendance->status->value == 'present' ? 'bg-light-success text-success' : ($single_attendance->status->value == 'sick' || $single_attendance->status->value == 'permit' ? 'bg-light-warning text-warning' : 'bg-light-danger text-danger')) : 'bg-light-danger text-danger' }} fs-5 text-nowrap py-3 px-2 rounded-3 w-100 w-lg-auto"
                                 style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
                                 {{ $single_attendance ? $single_attendance->status->label() : 'Belum Absen' }}
                             </div>
