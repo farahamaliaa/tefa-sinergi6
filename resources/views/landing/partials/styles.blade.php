@@ -10,14 +10,15 @@
         --text: #334155;
     }
 
-    body, .page_wrapper {
+    body,
+    .page_wrapper {
         font-family: 'Outfit', sans-serif !important;
         color: var(--text);
         background-color: #ffffff !important;
         background-image: none !important;
         overflow-x: hidden;
     }
-    
+
     .top_home_wraper {
         background: transparent !important;
     }
@@ -34,15 +35,15 @@
     .shape-1 {
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
         top: -200px;
         right: -100px;
     }
-    
+
     .shape-2 {
         width: 500px;
         height: 500px;
-        background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
         top: 200px;
         left: -150px;
     }
@@ -81,12 +82,12 @@
     }
 
     .btn-glow {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        background: #0896D1 !important;
         color: white !important;
         padding: 15px 35px;
         border-radius: 50px;
         font-weight: 600;
-        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+        /* box-shadow: 0 10px 25px -5px rgba(8, 150, 209, 0.4); */
         transition: all 0.3s ease;
         border: none;
         display: inline-block;
@@ -94,7 +95,7 @@
 
     .btn-glow:hover {
         transform: translateY(-2px);
-        box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+        box-shadow: 0 15px 30px -5px rgba(8, 150, 209, 0.5);
     }
 
     .btn-video {
@@ -105,14 +106,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         color: var(--primary);
         font-size: 1.2rem;
         margin-left: 20px;
         transition: all 0.3s;
         border: 1px solid #e2e8f0;
     }
-    
+
     .btn-video:hover {
         transform: scale(1.1);
         color: var(--primary);
@@ -125,17 +126,16 @@
         margin-left: auto;
         margin-right: auto;
     }
-    
+
     .section-title {
         font-weight: 800;
         color: var(--dark);
         font-size: 2.5rem;
         margin-bottom: 15px;
     }
-    
+
     .section-desc {
         color: #64748b;
         font-size: 1.1rem;
     }
-
 </style>

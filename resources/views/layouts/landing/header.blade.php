@@ -48,33 +48,34 @@
 
     .nav-link-dynamic:hover,
     .nav-link-dynamic.active {
-        color: #2563eb !important;
-        background: rgba(37, 99, 235, 0.05);
+        color: #0896D1 !important;
+        background: #E0F0F7;
     }
 
     .btn-login-dynamic {
-        background: #2563eb;
+        background: #0896D1;
         color: white !important;
         padding: 10px 24px !important;
         border-radius: 50px;
         font-weight: 600;
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        /* box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); */
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: none;
     }
 
     .btn-login-dynamic:hover {
-        background: #1d4ed8;
+        /* background: #1d4ed8; */
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+        /* box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); */
     }
-    
+
     @media (max-width: 991px) {
         .navbar-dynamic {
             top: 0;
             padding: 0;
             max-width: 100%;
         }
+
         .navbar-pill {
             border-radius: 0;
             padding: 15px 20px;
@@ -82,14 +83,17 @@
             border: none;
             border-bottom: 1px solid #f1f5f9;
         }
+
         .navbar-dynamic.scrolled {
             max-width: 100%;
             top: 0;
         }
+
         .navbar-collapse {
             margin-top: 15px;
             padding-bottom: 20px;
         }
+
         .btn-login-dynamic {
             width: 100%;
             margin-top: 10px;
@@ -103,7 +107,7 @@
         <a class="navbar-brand" href="{{ url('/') }}">
             <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Sinergi6">
         </a>
-        
+
         <button class="navbar-toggler border-0 p-0" type="button" data-toggle="collapse" data-target="#landingNavbar">
             <span class="navbar-toggler-icon" style="background-image: url('data:image/svg+xml,...');">
                 <i class="icofont-navigation-menu text-dark" style="font-size: 24px;"></i>
@@ -113,13 +117,16 @@
         <div class="collapse navbar-collapse" id="landingNavbar">
             <ul class="navbar-nav ml-auto align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('beranda') ? 'active' : '' }}" href="{{ route('beranda') }}">Beranda</a>
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('beranda') ? 'active' : '' }}"
+                        href="{{ route('beranda') }}">Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('about-us') ? 'active' : '' }}" href="{{ route('about-us') }}">Tentang Kami</a>
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('about-us') ? 'active' : '' }}"
+                        href="{{ route('about-us') }}">Tentang Kami</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('contact-us') ? 'active' : '' }}" href="{{ route('contact-us') }}">Kontak</a>
+                    <a class="nav-link nav-link-dynamic {{ request()->routeIs('contact-us') ? 'active' : '' }}"
+                        href="{{ route('contact-us') }}">Kontak</a>
                 </li>
                 <li class="nav-item ml-lg-2">
                     <a class="nav-link btn-login-dynamic" href="/login">
