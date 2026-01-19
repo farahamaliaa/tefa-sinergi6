@@ -36,21 +36,60 @@
             color: white !important;
         }
 
+
         .nav-pills .nav-link {
             color: #0B95D0 !important;
         }
 
+        /* Notification Stack Styles */
+        .notification-stack {
+            display: grid;
+            grid-template-columns: 1fr;
+            margin-bottom: 3rem;
+            /* Space for the stack effect */
+            cursor: pointer;
+            user-select: none;
+            perspective: 1000px;
+        }
+
+        .notification-card {
+            grid-column: 1;
+            grid-row: 1;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: #fff3cd;
+            /* Ensure consistent background matching alert-warning */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
     </style>
 @endsection
 
 @section('content')
 
     @if (!empty($notifications))
-        @foreach ($notifications as $notification)
-            <div class="alert alert-warning">
-                {{ $notification }}
-            </div>
-        @endforeach
+        <div class="notification-stack" id="notificationStack">
+            @foreach ($notifications as $notification)
+                <div class="alert alert-warning notification-card mb-0 border-0">
+                    <div class="d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-alert-circle me-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div class="fw-bold">
+                            {{ $notification }}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+            @if (count($notifications) > 1)
+                <div class="text-center w-100 position-absolute"
+                    style="bottom: -40px; font-size: 0.75rem; color: #999; left: 0;">
+                    Klik untuk melihat notifikasi berikutnya
+                </div>
+            @endif
+        </div>
     @endif
 
     <div class="row">
@@ -60,26 +99,26 @@
     </div>
 
     <!-- <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body d-flex justify-content-between">
-                    <div class="">
-                        <h4 class="mb-3">Absensi Hari Ini:</h4>
-                        @if ($todayAttendance != null)
-                            <h4>{{ $todayAttendance->created_at->format('d M Y') }} - {{ $todayAttendance->checkin }}</h4>
-                        @else
-                            <p class="badge bg-light-danger text-danger">Anda belum absen hari ini</p>
-                        @endif
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-between">
+                                <div class="">
+                                    <h4 class="mb-3">Absensi Hari Ini:</h4>
+                                    @if ($todayAttendance != null)
+    <h4>{{ $todayAttendance->created_at->format('d M Y') }} - {{ $todayAttendance->checkin }}</h4>
+@else
+    <p class="badge bg-light-danger text-danger">Anda belum absen hari ini</p>
+    @endif
+                                </div>
+                                @if ($todayAttendance != null)
+    <div
+                                        class="badge bg-light-{{ $todayAttendance->status->color() }} text-{{ $todayAttendance->status->color() }} fs-6 pt-4 px-5">
+                                        {{ $todayAttendance->status->label() }}</div>
+    @endif
+                            </div>
+                        </div>
                     </div>
-                    @if ($todayAttendance != null)
-                        <div
-                            class="badge bg-light-{{ $todayAttendance->status->color() }} text-{{ $todayAttendance->status->color() }} fs-6 pt-4 px-5">
-                            {{ $todayAttendance->status->label() }}</div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div> -->
+                </div> -->
 
     <div class="card card-body">
         <h4 class="mb-4 fw-bolder">Jadwal Mengajar Hari Ini</h4>
@@ -149,19 +188,19 @@
     </div>
 
     <!-- <div class="row">
-        <div class="col-lg-12">
-            @include('teacher.pages.dashboard.panes.absence-history')
-        </div>
-    </div> -->
+                    <div class="col-lg-12">
+                        @include('teacher.pages.dashboard.panes.absence-history')
+                    </div>
+                </div> -->
 
     <h4 style="font-size: 30px;" class="fw-bold">Riwayat Jurnal</h4>
     <h6 class="mb-4">Daftar jurnal guru setelah berkegiatan mengajar</h6>
 
-   <div class="row">
-    <div class="col-lg-12">
-         @include('teacher.pages.dashboard.panes.journal-history')
+    <div class="row">
+        <div class="col-lg-12">
+            @include('teacher.pages.dashboard.panes.journal-history')
+        </div>
     </div>
-   </div>
 
     @if ($teacherJournals->count() > 3)
         <a class="btn mb-5 waves-effect waves-light btn-outline-info w-100"
@@ -176,4 +215,51 @@
 
 @section('script')
     @include('teacher.pages.dashboard.scripts.donut-chart')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stackContainer = document.getElementById('notificationStack');
+            if (stackContainer) {
+                // Get all cards
+                let cards = Array.from(stackContainer.querySelectorAll('.notification-card'));
+
+                // Function to update visual state of the stack
+                function updateStack() {
+                    cards.forEach((card, index) => {
+                        if (index === 0) {
+                            card.style.transform = 'translateY(0) scale(1)';
+                            card.style.zIndex = '10';
+                            card.style.opacity = '1';
+                        } else if (index === 1) {
+                            card.style.transform = 'translateY(10px) scale(0.98)';
+                            card.style.zIndex = '9';
+                            card.style.opacity = '0.8';
+                        } else if (index === 2) {
+                            card.style.transform = 'translateY(20px) scale(0.96)';
+                            card.style.zIndex = '8';
+                            card.style.opacity = '0.6';
+                        } else {
+                            // Hide others
+                            card.style.transform = 'translateY(30px) scale(0.94)';
+                            card.style.zIndex = '7';
+                            card.style.opacity = '0';
+                        }
+                    });
+                }
+
+                // Handle click to cycle
+                stackContainer.addEventListener('click', function() {
+                    if (cards.length > 1) {
+                        // Move top card to bottom
+                        const topCard = cards.shift();
+                        cards.push(topCard);
+                        updateStack();
+                    }
+                });
+
+                // Initialize
+                updateStack();
+            }
+        });
+    </script>
 @endsection
