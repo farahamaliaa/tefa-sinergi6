@@ -392,4 +392,13 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
             ->latest()
             ->paginate(10);
     }
+
+    public function getEmployeeAttendanceByWeek(int $month, int $year): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', 'App\Models\Employee')
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->get();
+    }
 }
