@@ -1,17 +1,17 @@
 <div class="row d-flex">
     <div class="col-lg-9 col-md-12">
-        <div class="card border shadow">
+        <div class="card border">
             <div class="card-body">
                 <h5 class="mb-4"><b>Daftar Guru Tidak Mengisi Jurnal</b></h5>
-                <div class="table-responsive rounded-2 mb-4">
+                <div class="table-responsive rounded-3 mb-4">
                     <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
                         <thead class="text-dark fs-4">
                             <tr>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">No</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Nama Guru</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Tanggal</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Kelas - Mapel</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Status</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">No</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama Guru</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Tanggal</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Kelas - Mapel</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,7 +44,7 @@
 
     <div class="col-lg-3 col-md-12 mb-3">
         <div class="statistik-container">
-            <h4><b>Statistik</b></h4>
+            <h4><b>Total Jurnal</b></h4>
             <div class="line">
                 <div class="small-line"></div>
                 <div class="smaller-line"></div>
@@ -52,26 +52,26 @@
         </div>
 
         <div class="row">
-            <div class="col-12">
-                <div class="card border shadow rounded-4 p-0 card-body-with-line">
+            {{-- <div class="col-12">
+                <div class="card border rounded-4 p-0 card-body-with-line">
                     <div class="card-body">
                         <h5><b>Jumlah Guru</b></h5>
                         <h3 class="text-primary">{{ $teachers }} Guru</h3>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-12">
-                <div class="card border shadow rounded-4 p-0 card-body-with-line2">
+                <div class="card border rounded-4 p-0 card-body-with-line2">
                     <div class="card-body">
-                        <h5><b>Guru Mengisi Jurnal</b></h5>
+                        <h5><b>Journal Diisi</b></h5>
                         <h3 class="text-success">{{ $fill->count() }} Guru</h3>
                     </div>
                 </div>
             </div>
             <div class="col-12">
-                <div class="card border shadow rounded-4 p-0 card-body-with-line3">
+                <div class="card border rounded-4 p-0 card-body-with-line3">
                     <div class="card-body">
-                        <h5><b>Guru Tidak Mengisi Jurnal</b></h5>
+                        <h5><b>Journal Tidak Diisi</b></h5>
                         <h3 class="text-danger">{{ $notfill->count() }} Guru</h3>
                     </div>
                 </div>

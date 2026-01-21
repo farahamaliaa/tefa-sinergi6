@@ -67,27 +67,58 @@ class AttendanceController extends Controller
 
         $failedStore = [];
         $updatedCount = 0;
-        $data = $this->service->insert(json_decode($request->getContent()), $rule, $date);
-        // dd($data);
+        // Support both JSON body and form-encoded requests. Prefer decoded JSON, fallback to request input.
+        $raw = $request->getContent();
+        $payload = null;
+        if ($raw && $decoded = json_decode($raw)) {
+            $payload = $decoded;
+        } else {
+            // convert array to object to keep service expectation of ->attendances
+            $payload = (object) $request->all();
+        }
+
+        // Validate that attendances array is present
+        if (!isset($payload->attendances) || empty($payload->attendances)) {
+            return ResponseHelper::jsonResponse('error', 'Field "attendances" diperlukan dan tidak boleh kosong. Format yang diharapkan: {"date": "YYYY-MM-DD", "attendances": [{"id": "rfid", "time": "HH:MM:SS", "type": "student|teacher"}]}', null, 400);
+        }
+
+        $data = $this->service->insert($payload, $rule, $date);
+        $successData = [];
         try {
             if (!empty($data)) {
                 foreach ($data->toArray() as $attendance) {
                     if (isset($attendance['invalid'])) {
                         if ($attendance['invalid']) {
-                            $failedStore[] = $attendance['model_id'];
+                            $failedStore[] = [
+                                'rfid' => $attendance['rfid'] ?? null,
+                                'name' => $attendance['name'] ?? 'Unknown'
+                            ];
                         }
                     } else {
                         $updated = $this->attendance->updateWithAttribute(['model_id' => $attendance['model_id'], 'model_type' => $attendance['model_type'], 'created_at' => $request->date], $attendance);     
-                        // dd($updated);
                         if (!$updated) {
-                            $failedStore[] = $attendance['model_id'];
+                            $failedStore[] = [
+                                'model_id' => $attendance['model_id'],
+                                'name' => $attendance['name'] ?? 'Unknown'
+                            ];
                         } else {
                             $updatedCount += 1;
+                            $successData[] = [
+                                'name' => $attendance['name'] ?? 'Unknown',
+                                'status' => $attendance['status'] ?? 'checkout',
+                                'time' => $attendance['checkin'] ?? $attendance['checkout'] ?? null
+                            ];
                         }
                     }
                 }
             }
-            return response()->json(['status' => 'sukses', 'message' => 'Data kehadiran berhasil dimasukkan. ' . $updatedCount . ' Berhasil, ' . count($failedStore) . ' Gagal', 'invalid' => empty($failedStore) ? null : $failedStore, 'code' => 200], 200);
+            return response()->json([
+                'status' => 'sukses', 
+                'message' => 'Data kehadiran berhasil dimasukkan. ' . $updatedCount . ' Berhasil, ' . count($failedStore) . ' Gagal', 
+                'success' => $successData,
+                'invalid' => empty($failedStore) ? null : $failedStore, 
+                'code' => 200
+            ], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Gagal memasukkan data kehadiran', 'error' => $e->getMessage(), 'code' => 500], 500);
         }

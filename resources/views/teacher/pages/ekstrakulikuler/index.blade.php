@@ -31,34 +31,49 @@
 </div>
 
 <h4 class="fw-semibold">Daftar Ekstrakurikuler</h4>
-<form action="" class="d-flex gap-2 mt-4">
+<form action="{{ route('teacher.extracurricular.index') }}" method="GET" class="d-flex gap-2 mt-4">
     <div class="position-relative">
         <div class="">
-            <input type="text" name="search" class="form-control search-chat py-2 px-5 ps-5" id="search-name" placeholder="Cari">
+            <input type="text" name="search" value="{{ request('search') }}" class="form-control search-chat py-2 px-5 ps-5" id="search-name" placeholder="Cari ekstrakurikuler">
             <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
         </div>
     </div>
+    <button type="submit" class="btn btn-primary">Cari</button>
 </form>
 
-<div class="row">
-    <div class="col-lg-6 col-md-12">
-        <div class="card bg-ekstra">
-            <div class="p-3">
-                <div class="d-flex justify-content-between">
-                    <h5 class="text-primary">Sepak Bola</h5>
-                    <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="30" height="30" viewBox="0 0 24 24"><path fill="currentColor" d="M16.175 13H4v-2h12.175l-5.6-5.6L12 4l8 8l-8 8l-1.425-1.4z"/></svg>
+<div class="row mt-4">
+    @forelse ($extracurriculars as $extracurricular)
+        <div class="col-lg-6 col-md-12 mb-3">
+            <div class="card bg-ekstra border shadow-none">
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="text-primary fw-bold mb-2">{{ $extracurricular->name }}</h5>
+                            <p class="text-primary mb-0">
+                                <i class="ti ti-users fs-5 me-1"></i>
+                                {{ $extracurricular->extracurricularStudents->count() }} Siswa
+                            </p>
+                        </div>
+                        <div>
+                            <a href="#" class="text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="30" height="30" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M16.175 13H4v-2h12.175l-5.6-5.6L12 4l8 8l-8 8l-1.425-1.4z"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <p class="text-primary">
-                    
+            </div>
+        </div>
+    @empty
+        <div class="col-12">
+            <div class="text-center py-5">
+                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
+                <p class="fs-5 text-dark text-center mt-2">
+                    Belum ada ekstrakurikuler yang ditugaskan
                 </p>
             </div>
         </div>
-    </div>
-
-    <div class="col-lg-6 col-md-12">
-
-    </div>
+    @endforelse
 </div>
 @endsection

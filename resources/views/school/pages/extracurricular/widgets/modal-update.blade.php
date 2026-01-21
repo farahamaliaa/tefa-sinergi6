@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importPegawai">Edit Ekstrakurikuler</h5>
+                <h5 class="modal-title text-white" id="importPegawai">Edit Ekstrakurikuler</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="form-update" method="POST" enctype="multipart/form-data">
@@ -12,7 +12,8 @@
                     <div class="mb-3">
                         <div class="form-group">
                             <label for="" class="mb-2">Nama Ekstrakurikuler</label>
-                            <input type="text" class="form-control" id="name-update" name="name" value="{{ old('name') }}">
+                            <input type="text" class="form-control" id="name-update" name="name"
+                                value="{{ old('name') }}">
                             @error('name', 'edit')
                                 <span class="text-danger error-edit">{{ $message }}</span>
                             @enderror
@@ -20,13 +21,22 @@
                         <div class="form-group">
                             <label for="" class="mb-2 pt-3">Pengajar</label>
                             <select id="employee-update" class="form-control form-select select2 select2-edit"
-                                name="employee_id">
+                                name="user_id">
                                 <option value="">Pilih Pengajar</option>
-                                @forelse ($employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
+                                @forelse ($employees as $user)
+                                    <option value="{{ $user->id }}" data-has-employee="{{ $user->employee ? '1' : '0' }}"
+                                        data-employee-id="{{ $user->employee?->id }}">
+                                        {{ $user->name }} ({{ ucfirst($user->roles->first()?->name ?? '-') }})
+                                        @if(!$user->employee)
+                                            - Pembina Baru
+                                        @endif
+                                    </option>
                                 @empty
                                 @endforelse
                             </select>
+                            @error('user_id', 'edit')
+                                <span class="text-danger error-edit">{{ $message }}</span>
+                            @enderror
                             @error('employee_id', 'edit')
                                 <span class="text-danger error-edit">{{ $message }}</span>
                             @enderror
@@ -34,7 +44,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-rounded btn-light" data-bs-dismiss="modal">Tutup</button>
+                    <!-- <button type="button" class="btn btn-rounded btn-light" data-bs-dismiss="modal">Tutup</button> -->
                     <button type="submit" class="btn btn-rounded btn-primary">Simpan</button>
                 </div>
             </form>

@@ -2,97 +2,83 @@
 
 @section('style')
 <style>
-    .category-selector .dropdown-menu {
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .card.header-wave {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }    
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
         position: absolute;
-        z-index: 1050;
-        transform: translate3d(0, 0, 0);
-    }
-
-    .select2 {
-        width: 100% !important;
-    }
-
-    .select2-selection__rendered {
+        bottom: 0;
+        left: 0;
         width: 100%;
-        height: 36px;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    .select2-selection {
-        height: fit-content !important;
-        color: #555 !important;
-        background-color: #fff !important;
-        background-image: none !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
-    }
-</style>
-
-<style>
-    .category-selector .dropdown-menu {
-        position: absolute;
-        z-index: 1050;
-        transform: translate3d(0, 0, 0);
-    }
-
-    .select2-create-walikelas {
-        width: 100% !important;
-    }
-
-    .select2-create-walikelas-selection__rendered {
-        width: 100%;
-        height: 36px;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    .select2-create-walikelas-selection {
-        height: fit-content !important;
-        color: #555 !important;
-        background-color: #fff !important;
-        background-image: none !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
     }
 </style>
 @endsection
 
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden text-light">
+
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
-                <div class="col-8 col-md-9">
-                    <h4 class="fw-semibold mb-2 text-light">Kelas</h4>
+                <div class="col-9">
+                    <h4 class="fw-semibold text-white mb-8">Kelas</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" aria-current="page">Atur kelas dan tingkatan kelas di sini</li>
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Atur kelas dan tingkatan kelas di sini
+                                </a>
+                            </li>
                         </ol>
                     </nav>
                 </div>
-                <div class="col-4 col-md-3 text-center mb-n5">
-                    <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                        class="img-fluid mb-n4">
+                <div class="col-3">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="container-fluid note-has-grid">
-        <!-- Navigation Tabs -->
-        <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row flex-wrap" id="nav-tab" role="tablist">
+        <ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row" id="pills-tab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link note-link d-flex align-items-center justify-content-center px-3 text-body-color"
                     id="teacher-tab" data-bs-toggle="pill" href="#teacher-content" role="tab"
@@ -120,17 +106,6 @@
                     </svg>
                     <span class="d-none d-md-block font-weight-medium">Tingkatan Kelas</span>
                 </a>
-            </li>
-            <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0" id="guru-buttons">
-                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-class">
-                    Tambah Kelas
-                </button>
-            </li>
-
-            <li class="nav-item d-flex align-items-center ms-auto mt-2 mt-md-0 d-none" id="pegawai-buttons">
-                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#create-level">
-                    Tambah Tingkatan Kelas
-                </button>
             </li>
         </ul>
 

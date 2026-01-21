@@ -63,10 +63,16 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
 
     public function updateWithAttribute(array $attribute, array $data): mixed
     {
-        // dd($attribute);
-        // dd($this->model->query()->where('model_id', $attribute['model_id'])->get());
-        // dd($attribute);
-        return $this->model->query()->where('model_type', $attribute['model_type'])->where('model_id', $attribute['model_id'])->whereDate('created_at', $attribute['created_at'])->firstOrFail()->update($data);
+        // Use updateOrCreate to handle both new and existing attendance records
+        // This will create a new record if not found, or update the existing one
+        return $this->model->query()->updateOrCreate(
+            [
+                'model_type' => $attribute['model_type'],
+                'model_id' => $attribute['model_id'],
+                'created_at' => $attribute['created_at']
+            ],
+            $data
+        );
     }
 
     public function delete(mixed $id): mixed
@@ -96,7 +102,14 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
 
     public function whereClassroom(mixed $id): mixed
     {
-        return $this->model->query()->whereRelation('classroomStudent', 'classroom_id', $id)->paginate(10);
+        return $this->model->query()
+            ->where('model_type', 'App\Models\ClassroomStudent')
+            ->whereHas('model', function ($query) use ($id) {
+                $query->where('classroom_id', $id);
+            })
+            ->with('model.student.user', 'model.classroom')
+            ->latest()
+            ->paginate(10);
     }
 
     public function whereClassroomCount(mixed $id, mixed $day, mixed $status): mixed
@@ -180,6 +193,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function AttendanceDasboard(mixed $model, mixed $query, Request $request): mixed
     {
         $result = $this->model->query();
+        $result->with('model.user');
         $result->where('model_type', $model);
         $result->where('status', $query);
         $request->date ? $result->whereDate('created_at', $request->date) : $result->whereDate('created_at', now());
@@ -316,6 +330,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function whereModelAndNow(mixed $model, Request $request): mixed
     {
         $query = $this->model->query()
+            ->with('model.user')
             ->where('model_type', $model);
 
         if ($request->has(['start_date', 'end_date'])) {
@@ -338,5 +353,52 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
                 $query->whereDate('created_at', $request->date);
             })
             ->latest()->paginate(10);
+    }
+
+    public function whereClassroomFiltered(mixed $id, Request $request): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', 'App\Models\ClassroomStudent')
+            ->whereHas('model', function ($query) use ($id) {
+                $query->where('classroom_id', $id);
+            })
+            ->when($request->search, function ($query) use ($request) {
+                $query->whereHas('model.student.user', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                });
+            })
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when($request->date, function ($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
+            ->with('model.student.user', 'model.classroom')
+            ->latest()
+            ->paginate(10);
+    }
+
+    public function whereUserFiltered(mixed $id, mixed $model, Request $request): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', $model)
+            ->where('model_id', $id)
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when($request->date, function ($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
+            ->latest()
+            ->paginate(10);
+    }
+
+    public function getEmployeeAttendanceByWeek(int $month, int $year): mixed
+    {
+        return $this->model->query()
+            ->where('model_type', 'App\Models\Employee')
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->get();
     }
 }

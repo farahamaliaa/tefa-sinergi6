@@ -79,6 +79,6 @@
         colors: ['#13DEB9', '#5D87FF', '#FFAE1F', '#FA896B']
     };
 
-    var chartStudent = new ApexCharts(document.querySelector("#chart-student"), optionsStudent);
-    chartStudent.render();
+    window.chartStudent = new ApexCharts(document.querySelector("#chart-student"), optionsStudent);
+    window.chartStudent.render();
 </script>

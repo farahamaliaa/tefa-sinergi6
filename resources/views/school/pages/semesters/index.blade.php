@@ -12,14 +12,17 @@
 @section('style')
     <style>
         .btn-primary.toggle-btn.active {
-            background-color: #5D87FF;
-            border: none;
+            background-color: #169ed7 !important;
+            border-color: #169ed7 !important;
+            color: white !important;
         }
 
         .btn-primary.toggle-btn:not(.active) {
-            background-color: transparent;
-            color: #5D87FF;
+            background-color: transparent !important;
+            color: #169ed7 !important;
+            border: 1px solid #169ed7 !important;
         }
+
     </style>
 @endsection
 
@@ -57,7 +60,7 @@
                         <thead class="text-dark fs-4">
                             <tr class="">
                                 <th class="fs-4 fw-semibold mb-0">Semester</th>
-                                <th class="fs-4 fw-semibold mb-0">Tanggal diubah</th>
+                                <th class="fs-4 fw-semibold mb-0">Tanggal semester berubah</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">

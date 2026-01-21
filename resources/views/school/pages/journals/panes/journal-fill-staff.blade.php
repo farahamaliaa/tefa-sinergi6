@@ -1,28 +1,52 @@
+<style>
+    .btn-primary {
+        background-color: #0896D1 !important;
+        border-color: #0896D1 !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #067aa7 !important;
+        border-color: #067aa7 !important;
+    }
+
+    .btn-import {
+        background-color: #1EB196 !important;
+        border-color: #1EB196 !important;
+        color: #fff !important;
+    }
+
+    .btn-import:hover {
+        background-color: #1e9c87 !important;
+        border-color: #1e9c87 !important;
+    }
+</style>
 <div class="card">
     <div class="card-body">
+        <h4 class="fw-semibold mb-4">Daftar Jurnal Staff - Selesai</h4>
 
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-            <form class="row g-2 w-100" method="GET">
-                <div class="col-12 col-md-auto mb-2 mb-md-0 me-md-3">
-                    <input type="text" name="name" class="form-control" placeholder="Cari..."
+            <form class="d-flex flex-wrap gap-2 align-items-center" method="GET">
+                <div class="position-relative">
+                    <i class="ti ti-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" name="name" class="form-control ps-5" placeholder="Cari" style="min-width: 250px;"
                         value="{{ old('name', request()->input('name')) }}">
                 </div>
-                <div class="col-12 col-md-auto">
-                    <button type="submit" class="btn btn-primary w-100 w-md-auto">Cari</button>
+                <div>
+                    <button type="submit" class="btn btn-primary">Filter</button>
                 </div>
             </form>
         </div>
 
         <div class="table-responsive rounded-2">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="text-dark fs-s4">
-                    <tr class="">
-                        <th>No</th>
-                        <th>Nama Staff</th>
-                        <th>Tanggal</th>
-                        <th>Status</th>
-                        <th>Deskripsi</th>
-                        <th>Aksi</th>
+                <thead>
+                    <tr>
+                        <th style="background-color: #0896D1;" class="text-white">No</th>
+                        <th style="background-color: #0896D1;" class="text-white">Nama Staff</th>
+                        <th style="background-color: #0896D1;" class="text-white">Tanggal</th>
+                        <th style="background-color: #0896D1;" class="text-white">Status</th>
+                        <th style="background-color: #0896D1;" class="text-white">Deskripsi</th>
+                        <th style="background-color: #0896D1;" class="text-white">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,29 +73,21 @@
                                 </span>
                             </td>
                             <td>{{ \Illuminate\Support\Str::limit($journal->description, 65, '...') }}</td>
-                            </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <a type="button" class="text-primary btn-detail-journal"
+                                    <a type="button" class="text-secondary btn-detail-journal"
                                         data-author="{{ $journal->employee->user->name }}"
                                         data-title="{{ $journal->title }}"
                                         data-date="{{ \Carbon\Carbon::parse($journal->created_at)->translatedFormat('d F Y') }}"
                                         data-description="{{ $journal->description }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24">
-                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="1.5">
-                                                <path d="M3 13c3.6-8 14.4-8 18 0" />
-                                                <path d="M12 17a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
-                                            </g>
-                                        </svg>
+                                        Lihat Detail
                                     </a>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center align-middle">
+                            <td colspan="6" class="text-center align-middle">
                                 <div class="d-flex flex-column justify-content-center align-items-center">
                                     <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
                                         width="300px">
@@ -85,8 +101,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination justify-content-end mb-0">
-            <x-paginate-component :paginator="$completedJournals->appends(request()->input())" />
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Menampilkan {{ $completedJournals->currentPage() }} dari {{ $completedJournals->lastPage() }} halaman
+            </div>
+            <div>
+                <x-paginate-component :paginator="$completedJournals->appends(request()->input())" />
+            </div>
         </div>
     </div>
 </div>

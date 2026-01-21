@@ -1,4 +1,4 @@
-<div class="row d-flex align-items-stretch">
+{{-- <div class="row d-flex align-items-stretch">
     <div class="col-lg-3">
         <div class="card shadow-none position-relative overflow-hidden h-75"
             style="background: linear-gradient(to bottom, #5D87FF, #5D87FF);">
@@ -45,9 +45,9 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
-<div class="row">
+{{-- <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
@@ -56,25 +56,25 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
-<div class="card border shadow">
+<div class="card border">
     <div class="card-body">
         <h5 class="mb-4"><b>Daftar Siswa Melanggar Baru - baru ini</b></h5>
-        <div class="table-responsive rounded-2 mb-4">
+        <div class="table-responsive rounded-3 mb-4">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
                 <thead class="text-dark fs-4">
                     <tr class="">
-                        <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Nama Siswa
+                        <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama Siswa
                         </th>
-                        <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Tanggal
+                        <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Tanggal
                         </th>
-                        <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Jenis
+                        <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Jenis
                             Pelanggaran
                         </th>
-                        <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Point
+                        <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Point
                         </th>
-                        <th class="fs-4 fw-semibold mb-0" style="background-color: #5D87FF; color: white">Aksi
+                        <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Aksi
                         </th>
                     </tr>
                 </thead>

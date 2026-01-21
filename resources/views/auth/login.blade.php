@@ -1,215 +1,282 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
-    <!--  Title -->
-    <title>Sinergi6 | Login</title>
-    <!--  Required Meta Tag -->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="handheldfriendly" content="true">
-    <meta name="MobileOptimized" content="width">
-    <meta name="description" content="Mordenize">
-    <meta name="author" content="">
-    <meta name="keywords" content="Mordenize">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!--  Favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}">
-    <!-- Core Css -->
-    <style>
+    <title>Sinergi6 Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/png" href="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" />
 
+    <link rel="stylesheet" href="https://school.mischool.id/assets/dist/css/app.css" />
+    <link id="themeColors" rel="stylesheet" href="{{ asset('admin_assets/dist/css/style.min.css') }}" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+    <style>
+        .bg-custom {
+            background-color: #0896d1;
+        }
+
+        .welcome-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: left;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .custom-input {
+            padding-right: 50px !important;
+            height: 55px;
+            font-size: 1.1rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background-color: #0896d1 !important;
+            border-color: #0896d1 !important;
+            border-radius: 12px !important;
+        }
+
+        #loginSection {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decoration {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .decoration-left {
+            top: -10px;
+            left: -40px;
+            width: 200px;
+            transform: rotate(-40deg);
+        }
+
+        .decoration-right {
+            top: 30px;
+            right: -5px;
+            width: 170px;
+        }
+
+        #welcomeText {
+            white-space: nowrap;
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #welcomeText span {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 576px) {
+            #welcomeText {
+                font-size: 1.2rem !important;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .welcome-title {
+                font-size: 1.7rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .bg-custom {
+                display: none !important;
+            }
+
+            #loginSection {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .custom-input {
+                height: 50px;
+                font-size: 1rem;
+            }
+
+            .decoration-left,
+            .decoration-right {
+                display: none;
+            }
+
+            form.fs-5 {
+                font-size: 1rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #loginSection {
+                padding: 20px;
+            }
+
+            img[alt="Logo"] {
+                width: 250px !important;
+                margin: auto;
+                display: block;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="https://school.mischool.id/assets/dist/css/app.css">
-    <link id="themeColors" rel="stylesheet" href="{{ asset('admin_assets/dist/css/style.min.css') }}">
 </head>
+
 <body>
-    <!--  Body Wrapper -->
-    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical">
         <div class="position-relative overflow-hidden radial-gradient min-vh-100">
             <div class="position-relative z-index-5">
-                <div class="row">
-                    <div class="col-xl-7 col-xxl-8">
-                        <a href="javascript:void(0)" class="text-nowrap logo-img d-block px-4 py-9 w-100">
-                            <img src="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" width="8%" alt="">
-                        </a>
-                        <div class="d-none d-xl-flex align-items-center justify-content-center" style="height: calc(89vh - 80px);">
-                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/backgrounds/login-security.svg" alt="" class="img-fluid" width="500">
-                        </div>
+                <div class="row g-0">
+
+                    <div class="col-xl-7 col-xxl-8 d-none d-xl-flex align-items-center justify-content-center bg-custom p-5">
+                        <img src="{{ asset('assets/images/frame.png') }}" alt="" class="img-fluid" width="600" />
                     </div>
-                    <div class="col-xl-5 col-xxl-4">
-                        <div class="authentication-login min-vh-100 bg-body row justify-content-center align-items-center p-4">
-                            <div class="col-sm-8 col-md-6 col-xl-9">
-                                <h2 class="mb-3 fs-7 fw-bolder">Selamat Datang di Sinergi6</h2>
-                                <form method="POST" action="{{ route('login') }}">
-                                    @method('post')
+
+                    <div class="col-12 col-xl-5 col-xxl-4" id="loginSection"
+                        style="opacity: 0; transform: translateX(100px); transition: all 0.8s ease;">
+
+                        <div class="authentication-login min-vh-100 bg-body d-flex justify-content-center align-items-center p-5 position-relative">
+
+                            <img src="{{ asset('assets/images/rectangle1.png') }}" class="decoration decoration-left">
+                            <img src="{{ asset('assets/images/rectangle2.png') }}" class="decoration decoration-right">
+
+                            <div class="col-sm-10 col-md-8 col-xl-10">
+
+                                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Logo" width="300"
+                                    class="mb-4" />
+
+                                <h2 id="welcomeText" class="welcome-title"></h2>
+
+                                <p class="text-start">Akses dashboard sekolah Anda dengan login di bawah ini.</p>
+
+                                <form method="POST" action="{{ route('login') }}" class="fs-5">
                                     @csrf
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
+                                    <div class="mb-4">
+                                        <div class="input-wrapper">
+                                            <input id="email" type="email" class="form-control custom-input @error('email') is-invalid @enderror"
+                                                name="email" placeholder="Masukkan email" value="{{ old('email') }}" required />
+                                            <i class="bi bi-envelope input-icon"></i>
+                                        </div>
                                         @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                        <span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>
                                         @enderror
+                                    </div>
 
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Password</label>
-                                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required autocomplete="current-password" id="password">
+                                    <div class="mb-4">
+                                        <div class="input-wrapper">
+                                            <input id="password" type="password" class="form-control custom-input @error('password') is-invalid @enderror"
+                                                name="password" placeholder="Masukkan password" required />
+                                            <i class="bi bi-eye-slash input-icon" id="togglePassword"></i>
+                                        </div>
                                         @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                        <span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>
                                         @enderror
                                     </div>
+
+                                    <div class="form-check mb-4">
+                                        <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                                            {{ old('remember') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="remember"> Remember me </label>
+                                    </div>
+
                                     <div id="failed-login" class="text-center error-text mb-3"></div>
 
-                                    <div class="mb-3">
-                                        <input type="checkbox" id="show">
-                                        <label for="show" class="">Tampilkan Password</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100 py-8 mb-4 rounded-2">Masuk</button>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-semibold">
+                                        Masuk
+                                    </button>
                                 </form>
-                                {{-- <form method="POST" id="save-token" class="hidden" action="https://school.mischool.id/login">
-                                    <input type="hidden" name="_token" value="lUfDHDTYzWukOghImBrnfOh2IC7hpLUUXwIdWCOz" autocomplete="off"> <input id="token" type="hidden" name="bearer">
-                                </form> --}}
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-    <script src="{{ asset('admin_assets/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('admin_assets/dist/libs/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('admin_assets/dist/libs/simplebar/dist/simplebar.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $('#show').click(function() {
-                var passwordInput = $('#password');
-                var passwordConfirmationInput = $('#password_confirmation');
-                if (passwordInput.attr('type') === 'password') {
-                    passwordInput.attr('type', 'text');
-                    passwordConfirmationInput.attr('type', 'text');
-                } else {
-                    passwordInput.attr('type', 'password');
-                    passwordConfirmationInput.attr('type', 'password');
-                }
-            });
-        });
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById("togglePassword");
+            const passwordInput = document.getElementById("password");
+
+            toggle.addEventListener("click", () => {
+                const isText = passwordInput.type === "text";
+                passwordInput.type = isText ? "password" : "text";
+
+                toggle.classList.toggle("bi-eye");
+                toggle.classList.toggle("bi-eye-slash");
+            });
+
+            const text = "Welcome To School Portal";
+            const container = document.getElementById("welcomeText");
+            const loginSection = document.getElementById("loginSection");
+
+            setTimeout(() => {
+                loginSection.style.opacity = "1";
+                loginSection.style.transform = "translateX(0)";
+            }, 200);
+
+            setTimeout(() => {
+                const words = text.split(" ");
+                let delay = 0;
+
+                words.forEach(word => {
+                    const spanWord = document.createElement("span");
+                    spanWord.style.marginRight = "0.5rem";
+                    container.appendChild(spanWord);
+
+                    [...word].forEach(char => {
+                        const charSpan = document.createElement("span");
+                        charSpan.textContent = char;
+                        charSpan.style.opacity = 0;
+                        charSpan.style.display = "inline-block";
+                        charSpan.style.transform = "translateY(10px)";
+                        charSpan.style.transition = "all 0.3s ease";
+                        spanWord.appendChild(charSpan);
+
+                        setTimeout(() => {
+                            charSpan.style.opacity = 1;
+                            charSpan.style.transform = "translateY(0)";
+                        }, delay);
+
+                        delay += 60;
+                    });
+                });
+            }, 1000);
+        });
     </script>
 
-</body>
-</html>
-
-{{-- @section('script')
     <script src="{{ asset('admin_assets/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('admin_assets/dist/libs/jquery/dist/jquery.min.js') }}"></script>
 
-<script src="{{ asset('admin_assets/dist/libs/jquery/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('admin_assets/dist/libs/simplebar/dist/simplebar.min.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        $('#show').click(function() {
-            var passwordInput = $('#password');
-            var passwordConfirmationInput = $('#password_confirmation');
-            if (passwordInput.attr('type') === 'password') {
-                passwordInput.attr('type', 'text');
-                passwordConfirmationInput.attr('type', 'text');
-            } else {
-                passwordInput.attr('type', 'password');
-                passwordConfirmationInput.attr('type', 'password');
-            }
-        });
-    });
+</body>
 
-</script>
-<!--  core files -->
-<script>
-    $(document).ready(function() {
-        const token = localStorage.getItem('token')
-        $.ajax({
-            url: "https://dev.mischool.id/api/user"
-            , type: 'GET'
-            , headers: {
-                'Accept': 'application/json'
-                , 'Authorization': 'Bearer ' + token
-            , }
-            , dataType: "JSON"
-            , success: function(response) {
-                if (response.data.role == 'head master') {
-                    window.location.href = "https://school.mischool.id/dashboard"
-                } else {
-                    window.location.href = "https://school.mischool.id/login"
-                }
-            }
-            , error: function(err) {
-                $('.preloader').fadeOut()
-            }
-        })
-        $('#form-login').submit(function(e) {
-            e.preventDefault();
-            $('.preloader').show()
-            $.ajax({
-                url: "https://dev.mischool.id/api/login"
-                , type: "POST"
-                , headers: {
-                    'Accept': 'application/json'
-                , }
-                , data: $(this).serialize()
-                , success: function(response) {
-                    $('.preloader').fadeOut()
-                    console.log(response.data.user.role);
-                    if (response.data.user.role === 'head master' ||
-                        response.data.user.role === 'admin school') {
-                        localStorage.setItem('token', response.data.token)
-                        $('#token').val(response.data.token)
-                        $('#save-token').submit()
-                    } else {
-                        $('#failed-login').html('Email Atau Password Tidak Sesuai')
-                        $('#password').val('');
-                        $('.preloader').fadeOut()
-                    }
-                }
-                , error: function(response) {
-                    $('.preloader').fadeOut()
-                    var response = response.responseJSON
-                    var status = response.meta.code
-                    if (status == 422) {
-                        handleValidate(response.data)
-                        $('#password').val('');
-                    } else if (status == 400) {
-                        $('#failed-login').html(response.meta.message)
-                        $('#password').val('');
-                    } else if (status == 403) {
-                        $('#failed-login').html(response.meta.message)
-                        $('#password').val('');
-                    } else {
-                        $('#failed-login').html('Error tidak diketahui')
-                    }
-
-                }
-            })
-        })
-    })
-
-    function handleValidate(messages) {
-        const keys = Object.keys(messages);
-        for (const key of keys) {
-            const text = messages[key];
-            var ErrorList = $('<li>').text(text[0])
-            let inputElement = $(`#${key}`)
-            inputElement.addClass('error')
-            inputElement.next('ul').prepend(ErrorList)
-        }
-
-        $('.error').change(function() {
-            $(this).removeClass('error')
-            $(this).next('ul').html('')
-        })
-    }
-
-</script>
-@endsection --}}
+</html>

@@ -3,7 +3,7 @@
         @forelse ($employeeJournals as $employeeJournal)
             <div class="col-md-12 d-flex align-items-stretch">
                 <div class="card w-100">
-                    <div class="card-header bg-primary" style="border-radius: 0.50rem;">
+                    <div class="card-header" style="border-radius: 0.50rem; background-color: #0896D1;">
                         <h4 class="mb-0 text-white card-title">
                             {{ $employeeJournal->title }}
                         </h4>
@@ -22,25 +22,33 @@
                         </div>
                     </div>
 
-                    <div class="card-body">
-                        <div class="row pb-2" style="border-bottom: 1px solid #ffffff">
-                            <div class="col-lg-12" style="border-right: 1px solid #ffffff;">
-                                <div class="pe-3">
-                                    <h5 class="card-title mb-4">Deskripsi:</h5>
-                                    <p>{{ \Illuminate\Support\Str::limit($employeeJournal->description, 200) }}</p>
-                                </div>
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-lg-9 col-md-8 position-relative">
+                                <h5 class="fw-bold mb-3 text-dark">Deskripsi</h5>
+                                <p class="text-muted mb-0" style="color: #6c757d; line-height: 1.6;">
+                                    {{ \Illuminate\Support\Str::limit($employeeJournal->description, 200) }}
+                                </p>
+                                <!-- Vertical Divider for Desktop -->
+                                <div class="d-none d-md-block position-absolute opacity-25"
+                                    style="top: 0; right: 0; bottom: 0; border-right: 2px solid #ccc;"></div>
                             </div>
-                        </div>
-
-                        <div>
-                            <a href="{{ route('employee.journal.detail', ['employeeJournal' => $employeeJournal->id]) }}" class="btn btn-primary mt-3">
-                                Lihat Detail Jurnal
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="mb-1"
-                                    viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M17.92 11.62a1 1 0 0 0-.21-.33l-5-5a1 1 0 0 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76" />
-                                </svg>
-                            </a>
+                            <div
+                                class="col-lg-3 col-md-4 mt-3 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                                <button type="button"
+                                    class="btn btn-detail-journal text-white fw-bold d-inline-flex align-items-center py-2 px-3"
+                                    style="background-color: #0896d1; border-radius: 6px;"
+                                    data-title="{{ $employeeJournal->title }}"
+                                    data-description="{{ $employeeJournal->description }}">
+                                    Lihat Detail Jurnal
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="ms-2"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,8 +65,10 @@
         @endforelse
 
         @if ($employeeJournals->count() < 0)
-            <a href="{{ route('employee.journal.index') }}" class="btn mb-1 waves-effect waves-light btn-outline-primary w-100">Lihat Selengkapnya
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="mb-1" viewBox="0 0 24 24">
+            <a href="{{ route('employee.journal.index') }}"
+                class="btn mb-1 waves-effect waves-light btn-outline-primary w-100">Lihat Selengkapnya
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="mb-1"
+                    viewBox="0 0 24 24">
                     <path fill="currentColor"
                         d="M17.92 11.62a1 1 0 0 0-.21-.33l-5-5a1 1 0 0 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76" />
                 </svg>
@@ -67,3 +77,6 @@
 
     </div>
 </div>
+
+<!-- Include Modal Detail Jurnal -->
+@include('staff.pages.journal.widget.modal-detail')

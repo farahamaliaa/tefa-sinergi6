@@ -25,7 +25,19 @@ class TeacherStudentController extends Controller
     {
         $classroom = $this->classroom->whereEmployeeId(auth()->user()->employee->id);
         $classroomStudents = $this->classroomStudent->where($classroom->id, $request);
-        return view('teacher.pages.teacher-student.index', compact('classroomStudents', 'classroom'));
+        
+        // Get all classrooms for filter dropdown
+        $classrooms = $this->classroom->get();
+        
+        // Get lesson schedules for this classroom
+        $lessonSchedules = $classroom->lessonSchedule()
+            ->with('teacherSubject.subject', 'teacherSubject.employee.user', 'start', 'end')
+            ->orderBy('day')
+            ->orderBy('lesson_hour_start')
+            ->get()
+            ->groupBy('day');
+        
+        return view('teacher.pages.teacher-student.index', compact('classroomStudents', 'classroom', 'classrooms', 'lessonSchedules'));
     }
 
     /**

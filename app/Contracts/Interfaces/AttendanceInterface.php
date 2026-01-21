@@ -41,4 +41,7 @@ interface AttendanceInterface extends GetInterface, StoreInterface, UpdateInterf
     public function whereClassroomCount(mixed $id, mixed $day, mixed $status): mixed;
     public function getSickAndPermit(Request $request, array $status) : mixed;
     public function allStudentWithPagination(Request $request): mixed;
+    public function whereClassroomFiltered(mixed $id, Request $request): mixed;
+    public function whereUserFiltered(mixed $id, mixed $model, Request $request): mixed;
+    public function getEmployeeAttendanceByWeek(int $month, int $year): mixed;
 }

@@ -15,16 +15,23 @@ class LandingController extends Controller
             $column = 'null';
             $query = 'null';
 
-            $responseSchool = Http::get('https://mischool.mijurnal.com/api/schools');
-            $responseNews = Http::get('https://mischool.mijurnal.com/api/news' . '/' . $condition . '/' . $column . '/' . $query);
-            $responseFaq = Http::get('https://mischool.mijurnal.com/api/faq');
-            $schools = $responseSchool->json();
-            $newses = $responseNews->json('news');
-            $faqs = $responseFaq->json();
+            $schools = \Illuminate\Support\Facades\Cache::remember('landing_schools', 3600, function () {
+                $response = Http::get('https://mischool.mijurnal.com/api/schools');
+                return $response->json();
+            });
+
+            $newses = \Illuminate\Support\Facades\Cache::remember('landing_news', 3600, function () use ($condition, $column, $query) {
+                $response = Http::get('https://mischool.mijurnal.com/api/news' . '/' . $condition . '/' . $column . '/' . $query);
+                return $response->json('news');
+            });
+
+            $faqs = \Illuminate\Support\Facades\Cache::remember('landing_faqs', 3600, function () {
+                $response = Http::get('https://mischool.mijurnal.com/api/faq');
+                return $response->json();
+            });
 
             return view('welcome', compact('schools', 'newses', 'faqs'));
         } catch (\Exception $e) {
-            // return redirect()->back()->with('error', 'Terjadi kesalahan pada server');  anomali njir kalo yg error di / loop
             return view('welcome', [
                 'schools' => [],
                 'newses' => [],

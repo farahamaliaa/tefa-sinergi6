@@ -7,43 +7,89 @@
             overflow-x: auto;
         }
 
-        /* Customize scrollbar for WebKit browsers (Chrome, Safari) */
         .scroll-container::-webkit-scrollbar {
             height: 6px;
-            /* Change height for horizontal scrollbar */
         }
 
         .scroll-container::-webkit-scrollbar-thumb {
             background-color: #888;
-            /* Color of the scrollbar */
             border-radius: 10px;
-            /* Rounded corners */
         }
 
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background-color: #555;
-            /* Color when hovered */
         }
 
-        /* Firefox (using scrollbar-width) */
         .scroll-container {
             scrollbar-width: thin;
-            /* Reduce scrollbar size in Firefox */
             scrollbar-color: #888 #f0f0f0;
-            /* Thumb and track colors */
+
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+
+        .nav-pills .nav-link {
+            color: #0B95D0 !important;
+        }
+
+        /* Notification Stack Styles */
+        .notification-stack {
+            display: grid;
+            grid-template-columns: 1fr;
+            margin-bottom: 3rem;
+            /* Space for the stack effect */
+            cursor: pointer;
+            user-select: none;
+            perspective: 1000px;
+        }
+
+        .notification-card {
+            grid-column: 1;
+            grid-row: 1;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: #fff3cd;
+            /* Ensure consistent background matching alert-warning */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
-
 @endsection
 
 @section('content')
 
     @if (!empty($notifications))
-        @foreach ($notifications as $notification)
-            <div class="alert alert-warning">
-                {{ $notification }}
-            </div>
-        @endforeach
+        <div class="notification-stack" id="notificationStack">
+            @foreach ($notifications as $notification)
+                <div class="alert alert-warning notification-card mb-0 border-0">
+                    <div class="d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-alert-circle me-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div class="fw-bold">
+                            {{ $notification }}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+            @if (count($notifications) > 1)
+                <div class="text-center w-100 position-absolute"
+                    style="bottom: -40px; font-size: 0.75rem; color: #999; left: 0;">
+                    Klik untuk melihat notifikasi berikutnya
+                </div>
+            @endif
+        </div>
     @endif
 
     <div class="row">
@@ -52,74 +98,69 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body d-flex justify-content-between">
-                    <div class="">
-                        <h4 class="mb-3">Absensi Hari Ini:</h4>
-                        @if ($todayAttendance != null)
-                            <h4>{{ $todayAttendance->created_at->format('d M Y') }} - {{ $todayAttendance->checkin }}</h4>
-                        @else
-                            <p class="badge bg-light-danger text-danger">Anda belum absen hari ini</p>
-                        @endif
+    <!-- <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-between">
+                                <div class="">
+                                    <h4 class="mb-3">Absensi Hari Ini:</h4>
+                                    @if ($todayAttendance != null)
+    <h4>{{ $todayAttendance->created_at->format('d M Y') }} - {{ $todayAttendance->checkin }}</h4>
+@else
+    <p class="badge bg-light-danger text-danger">Anda belum absen hari ini</p>
+    @endif
+                                </div>
+                                @if ($todayAttendance != null)
+    <div
+                                        class="badge bg-light-{{ $todayAttendance->status->color() }} text-{{ $todayAttendance->status->color() }} fs-6 pt-4 px-5">
+                                        {{ $todayAttendance->status->label() }}</div>
+    @endif
+                            </div>
+                        </div>
                     </div>
-                    @if ($todayAttendance != null)
-                        <div
-                            class="badge bg-light-{{ $todayAttendance->status->color() }} text-{{ $todayAttendance->status->color() }} fs-6 pt-4 px-5">
-                            {{ $todayAttendance->status->label() }}</div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
+                </div> -->
 
     <div class="card card-body">
-        <h4>Jadwal Mengajar</h4>
-        <ul class="nav nav-pills mt-3 rounded align-items-center flex-row" id="pills-tab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="pills-senin-tab" data-bs-toggle="pill" href="#pills-senin" role="tab"
-                    aria-controls="pills-senin" aria-selected="true">
-                    Senin
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-selasa-tab" data-bs-toggle="pill" href="#pills-selasa" role="tab"
-                    aria-controls="pills-selasa" aria-selected="false">
-                    Selasa
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-rabu-tab" data-bs-toggle="pill" href="#pills-rabu" role="tab"
-                    aria-controls="pills-rabu" aria-selected="false">
-                    Rabu
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-kamis-tab" data-bs-toggle="pill" href="#pills-kamis" role="tab"
-                    aria-controls="pills-kamis" aria-selected="false">
-                    Kamis
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-jumat-tab" data-bs-toggle="pill" href="#pills-jumat" role="tab"
-                    aria-controls="pills-jumat" aria-selected="false">
-                    Jumat
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-sabtu-tab" data-bs-toggle="pill" href="#pills-sabtu" role="tab"
-                    aria-controls="pills-sabtu" aria-selected="false">
-                    Sabtu
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-minggu-tab" data-bs-toggle="pill" href="#pills-minggu" role="tab"
-                    aria-controls="pills-minggu" aria-selected="false">
-                    Minggu
-                </a>
-            </li>
-        </ul>
+        <h4 class="mb-4 fw-bolder">Jadwal Mengajar Hari Ini</h4>
+        <div class="border rounded-pill p-1 d-inline-block w-100" style="max-width: 600px;">
+            <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill" id="pills-senin-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-senin" type="button" role="tab" aria-controls="pills-senin"
+                        aria-selected="true">
+                        Senin
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-selasa-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-selasa" type="button" role="tab" aria-controls="pills-selasa"
+                        aria-selected="false">
+                        Selasa
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-rabu-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-rabu" type="button" role="tab" aria-controls="pills-rabu"
+                        aria-selected="false">
+                        Rabu
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-kamis-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-kamis" type="button" role="tab" aria-controls="pills-kamis"
+                        aria-selected="false">
+                        Kamis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-jumat-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-jumat" type="button" role="tab" aria-controls="pills-jumat"
+                        aria-selected="false">
+                        Jumat
+                    </button>
+                </li>
+            </ul>
+        </div>
 
         <div class="tab-content mt-4" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-senin" role="tabpanel" aria-labelledby="pills-senin-tab">
@@ -146,20 +187,20 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            @include('teacher.pages.dashboard.panes.absence-history')
-        </div>
-    </div>
+    <!-- <div class="row">
+                    <div class="col-lg-12">
+                        @include('teacher.pages.dashboard.panes.absence-history')
+                    </div>
+                </div> -->
 
-    <h4>Riwayat Jurnal</h4>
+    <h4 style="font-size: 30px;" class="fw-bold">Riwayat Jurnal</h4>
     <h6 class="mb-4">Daftar jurnal guru setelah berkegiatan mengajar</h6>
 
-   <div class="row">
-    <div class="col-lg-12">
-         @include('teacher.pages.dashboard.panes.journal-history')
+    <div class="row">
+        <div class="col-lg-12">
+            @include('teacher.pages.dashboard.panes.journal-history')
+        </div>
     </div>
-   </div>
 
     @if ($teacherJournals->count() > 3)
         <a class="btn mb-5 waves-effect waves-light btn-outline-info w-100"
@@ -174,4 +215,51 @@
 
 @section('script')
     @include('teacher.pages.dashboard.scripts.donut-chart')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stackContainer = document.getElementById('notificationStack');
+            if (stackContainer) {
+                // Get all cards
+                let cards = Array.from(stackContainer.querySelectorAll('.notification-card'));
+
+                // Function to update visual state of the stack
+                function updateStack() {
+                    cards.forEach((card, index) => {
+                        if (index === 0) {
+                            card.style.transform = 'translateY(0) scale(1)';
+                            card.style.zIndex = '10';
+                            card.style.opacity = '1';
+                        } else if (index === 1) {
+                            card.style.transform = 'translateY(10px) scale(0.98)';
+                            card.style.zIndex = '9';
+                            card.style.opacity = '0.8';
+                        } else if (index === 2) {
+                            card.style.transform = 'translateY(20px) scale(0.96)';
+                            card.style.zIndex = '8';
+                            card.style.opacity = '0.6';
+                        } else {
+                            // Hide others
+                            card.style.transform = 'translateY(30px) scale(0.94)';
+                            card.style.zIndex = '7';
+                            card.style.opacity = '0';
+                        }
+                    });
+                }
+
+                // Handle click to cycle
+                stackContainer.addEventListener('click', function() {
+                    if (cards.length > 1) {
+                        // Move top card to bottom
+                        const topCard = cards.shift();
+                        cards.push(topCard);
+                        updateStack();
+                    }
+                });
+
+                // Initialize
+                updateStack();
+            }
+        });
+    </script>
 @endsection

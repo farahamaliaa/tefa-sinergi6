@@ -6,13 +6,13 @@
     var alpha = studentChartData.chartAlpha;
 
     var options = {
-        series: [late, sick, alpha], // Data numerik untuk 'Masuk', 'Izin', 'Alpha'
+        series: [sick, late, alpha], // Data numerik untuk 'Izin/Sakit', 'Telat', 'Alfa'
         chart: {
             type: 'donut',
             width: 450 // Perbesar chart
         },
-        labels: ['Telat', 'Izin', 'Alpha'], // Label keterangan
-        colors: ['#5D87FF', '#FFAE1F', '#FA896B'], // Custom warna chart
+        labels: ['Izin/Sakit', 'Telat', 'Alfa'], // Label keterangan
+        colors: ['#3ABFF8', '#FFAE1F', '#F73131'], // Custom warna chart: Cyan, Yellow, Red
         legend: {
             position: 'bottom', // Pindahkan keterangan ke bawah chart
             horizontalAlign: 'center', // Selaraskan secara horizontal
@@ -41,6 +41,6 @@
         }]
     };
 
-    var chart = new ApexCharts(document.querySelector("#chart-student"), options);
-    chart.render();
+    window.studentStatisticChart = new ApexCharts(document.querySelector("#chart-student"), options);
+    window.studentStatisticChart.render();
 </script>

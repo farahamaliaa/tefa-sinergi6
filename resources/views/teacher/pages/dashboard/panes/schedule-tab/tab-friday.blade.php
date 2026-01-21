@@ -1,12 +1,26 @@
+<style>
+    table thead tr th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    table thead tr th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    table thead th {
+        background-color: #0B97D1 !important;
+    }
+</style>
+
 <div class="table-responsive rounded-2">
     <table class="table border text-nowrap customize-table mb-0 align-middle">
         <thead>
             <tr>
-                <th class="text-white" style="background-color: #5D87FF;">No</th>
-                <th class="text-white" style="background-color: #5D87FF;">Mapel</th>
-                <th class="text-white" style="background-color: #5D87FF;">Waktu</th>
-                <th class="text-white" style="background-color: #5D87FF;">Jam</th>
-                <th class="text-white" style="background-color: #5D87FF;">Kelas</th>
+                <th class="text-white" style="background-color: #0B97D1;">No</th>
+                <th class="text-white" style="background-color: #0B97D1;">Mata Pelajaran</th>
+                <th class="text-white" style="background-color: #0B97D1;">Waktu</th>
+                <th class="text-white" style="background-color: #0B97D1;">Jam</th>
+                <th class="text-white" style="background-color: #0B97D1;">Kelas</th>
             </tr>
         </thead>
         <tbody>
@@ -16,9 +30,9 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $lessonSchedule->teacherSubject->subject->name }}</td>
                         <td>
-                            <span class="badge bg-light-primary text-primary">
-                                {{ \Carbon\Carbon::parse($lessonSchedule->start->start)->format('H:i') }} -
-                                {{ \Carbon\Carbon::parse($lessonSchedule->end->end)->format('H:i') }}
+                            <span class="">
+                                {{ \Carbon\Carbon::parse($lessonSchedule->start->start)->format('H.i') }} -
+                                {{ \Carbon\Carbon::parse($lessonSchedule->end->end)->format('H.i') }}
                             </span>
                             @php
                                 $lessonHours = App\Models\LessonHour::whereBetween('start', [
@@ -43,7 +57,7 @@
                 @endforeach
             @else
                 <tr>
-                    <td colspan="4" class="text-center align-middle">
+                    <td colspan="5" class="text-center align-middle">
                         <div class="d-flex flex-column justify-content-center align-items-center">
                             <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
                                 width="300px">

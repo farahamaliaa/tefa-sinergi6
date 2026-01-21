@@ -89,7 +89,7 @@ class ClassroomStudentController extends Controller
         return response()->json(['data' => $students]);
     }
 
-    /**
+    /**w
      * Show the form for editing the specified resource.
      */
     public function edit(ClassroomStudent $classroomStudent)

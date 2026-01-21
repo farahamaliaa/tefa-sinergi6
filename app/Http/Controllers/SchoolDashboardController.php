@@ -99,13 +99,14 @@ class SchoolDashboardController extends Controller
         $permit_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::PERMIT->value, $request);
 
         $merged_teacher = $sick_teacher->merge($permit_teacher);
-        $totalPermit_teacher = $merged->count();
+        $totalPermit_teacher = $merged_teacher->count();
 
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
 
         return view('school.pages.dashboard.dashboard', compact(
-            'lates', 'alpha', 'sick', 'permit', 'totalPermit','lates_teacher', 'alpha_teacher', 'sick_teacher', 'totalPermit_teacher','studentChart',
-            'fill','notfill','classrooms', 'violations',
+            'lates', 'alpha', 'sick', 'permit', 'totalPermit',
+            'lates_teacher', 'alpha_teacher', 'sick_teacher', 'permit_teacher', 'totalPermit_teacher',
+            'studentChart', 'fill', 'notfill', 'classrooms', 'violations',
             'schoolYear', 'semester',
             'attendanceChart', 'alumni',
             'teachers', 'employees', 'students',
@@ -124,5 +125,83 @@ class SchoolDashboardController extends Controller
     {
         $school = $this->school->showWithSlug(auth()->user()->slug);
         return view('school.pages.settings.update-information', compact('school'));
+    }
+
+    public function getRealtimeData(Request $request)
+    {
+        $lates = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::LATE->value, $request);
+        $alpha = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::ALPHA->value, $request);
+        $sick = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::SICK->value, $request);
+        $permit = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::PERMIT->value, $request);
+
+        $merged = $sick->merge($permit);
+        $totalPermit = $merged->count();
+
+        $lates_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::LATE->value, $request);
+        $alpha_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::ALPHA->value, $request);
+        $sick_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::SICK->value, $request);
+        $permit_teacher = $this->attendance->AttendanceDasboard('App\Models\Employee', AttendanceEnum::PERMIT->value, $request);
+
+        $merged_teacher = $sick_teacher->merge($permit_teacher);
+        $totalPermit_teacher = $merged_teacher->count();
+        
+        $teachers = $this->employee->where(RoleEnum::TEACHER->value);
+
+        $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
+        $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
+
+        $studentLateTable = view('school.pages.dashboard.panes.student-tab.late-tab', compact('lates'))->render();
+        // For permit, we need to combine sick and permit if that's what the view expects.
+        // The original controller passes 'sick' and 'permit' separately to dashboard.
+        // But the permission-tab include needs to be checked.
+        // In dashboard.blade.php: @include('school.pages.dashboard.panes.student-tab.permisson-tab')
+        // Let's check that file content? I haven't seen it yet. I saw 'late-tab.blade.php'.
+        // I will assume it uses $sick and $permit variables.
+        $studentPermitTable = view('school.pages.dashboard.panes.student-tab.permisson-tab', compact('sick', 'permit'))->render();
+        $studentAlphaTable = view('school.pages.dashboard.panes.student-tab.alpha-tab', compact('alpha'))->render();
+
+        $employeeLateTable = view('school.pages.dashboard.panes.employee-sub-tab.late-tab', ['lates' => $lates_teacher])->render();
+        $employeePermitTable = view('school.pages.dashboard.panes.employee-sub-tab.permission-tab', ['sick' => $sick_teacher, 'permit' => $permit_teacher])->render();
+        $employeeAlphaTable = view('school.pages.dashboard.panes.employee-sub-tab.alpha-tab', ['alpha' => $alpha_teacher])->render();
+
+        $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('teachers', 'fill', 'notfill'))->render();
+        $teacherJournalPane = view('school.pages.dashboard.panes.teacher-journal', compact('fill', 'notfill'))->render();
+        
+        // Charts Data
+        $attendanceChart = $this->schoolChart->ChartAttendance($this->attendance);
+        $violationChart = $this->schoolChart->ChartViolation($this->studentViolation);
+        $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
+
+        return response()->json([
+            'counts' => [
+                'student_late' => $lates->count(),
+                'student_permit' => $totalPermit,
+                'student_alpha' => $alpha->count(),
+                'employee_late' => $lates_teacher->count(),
+                'employee_permit' => $totalPermit_teacher,
+                'employee_alpha' => $alpha_teacher->count(),
+                'journal_fill' => $fill->count(),
+                'journal_notfill' => $notfill->count(),
+            ],
+            'panes' => [
+                'student_late' => $studentLateTable,
+                'student_permit' => $studentPermitTable,
+                'student_alpha' => $studentAlphaTable,
+                'employee_late' => $employeeLateTable,
+                'employee_permit' => $employeePermitTable,
+                'employee_alpha' => $employeeAlphaTable,
+                'staff_journal' => $staffJournalPane,
+                'teacher_journal' => $teacherJournalPane,
+            ],
+            'charts' => [
+                'attendance' => $attendanceChart,
+                'violation' => $violationChart,
+                'student' => $studentChart,
+                'journal' => [
+                    'fill' => $fill->count(),
+                    'notfill' => $notfill->count()
+                ]
+            ]
+        ]);
     }
 }

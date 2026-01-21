@@ -1,30 +1,53 @@
+<style>
+    .btn-primary {
+        background-color: #0896D1 !important;
+        border-color: #0896D1 !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #067aa7 !important;
+        border-color: #067aa7 !important;
+    }
+
+    .btn-import {
+        background-color: #1EB196 !important;
+        border-color: #1EB196 !important;
+        color: #fff !important;
+    }
+
+    .btn-import:hover {
+        background-color: #1e9c87 !important;
+        border-color: #1e9c87 !important;
+    }
+</style>
 <div class="card">
     <div class="card-body">
+        <h4 class="fw-semibold mb-4">Daftar Jurnal Guru - Tidak Mengisi</h4>
 
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-            <form class="row g-2 w-100" method="GET">
-                <div class="col-12 col-md-auto mb-3 mb-md-0 me-md-3">
-                    <input type="text" name="search_notfill" class="form-control" placeholder="Cari..."
+            <form class="d-flex flex-wrap gap-2 align-items-center" method="GET">
+                <div class="position-relative">
+                    <i class="ti ti-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" name="search_notfill" class="form-control ps-5" placeholder="Cari" style="min-width: 250px;"
                         value="{{ old('search_notfill', request()->input('search_notfill')) }}">
                 </div>
-                <div class="col-12 col-md-auto">
-                    <button type="submit" class="btn btn-primary w-100 w-md-auto">Cari</button>
+                <div>
+                    <button type="submit" class="btn btn-primary">Filter</button>
                 </div>
             </form>
         </div>
 
-
         <div class="table-responsive rounded-2">
             <table class="table border text-nowrap customize-table mb-0 align-middle">
-                <thead class="text-dark fs-s4">
-                    <tr class="">
-                        <th>No</th>
-                        <th>Nama Guru</th>
-                        <th>Tanggal</th>
-                        <th>Kelas</th>
-                        <th>Status</th>
-                        <th>Deskripsi</th>
-                        <th>Aksi</th>
+                <thead>
+                    <tr>
+                        <th style="background-color: #0896D1;" class="text-white">No</th>
+                        <th style="background-color: #0896D1;" class="text-white">Nama Guru</th>
+                        <th style="background-color: #0896D1;" class="text-white">Tanggal</th>
+                        <th style="background-color: #0896D1;" class="text-white">Kelas</th>
+                        <th style="background-color: #0896D1;" class="text-white">Status</th>
+                        <th style="background-color: #0896D1;" class="text-white">Deskripsi</th>
+                        <th style="background-color: #0896D1;" class="text-white">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,19 +78,12 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <a type="button" class="text-primary btn-detail-journal"
+                                    <a type="button" class="text-secondary btn-detail-journal"
                                         data-author="{{ $notfill_journal->teacherSubject->employee->user->name }}"
                                         data-date="{{ \Carbon\Carbon::parse($notfill_journal->created_at)->translatedFormat('d F Y') }}"
                                         data-description="{{ $notfill_journal->teacherJournals->first() ? $notfill_journal->teacherJournals->first()->description : 'kosong...' }}"
                                         data-classroom="{{ $notfill_journal->classroom->name }} - {{ $notfill_journal->teacherSubject->subject->name }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24">
-                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="1.5">
-                                                <path d="M3 13c3.6-8 14.4-8 18 0" />
-                                                <path d="M12 17a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
-                                            </g>
-                                        </svg>
+                                        Lihat Detail
                                     </a>
                                 </div>
                             </td>
@@ -88,8 +104,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination justify-content-end mb-0">
-            <x-paginate-component :paginator="$notfill_journals->appends(request()->input())" />
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Menampilkan {{ $notfill_journals->currentPage() }} dari {{ $notfill_journals->lastPage() }} halaman
+            </div>
+            <div>
+                <x-paginate-component :paginator="$notfill_journals->appends(request()->input())" />
+            </div>
         </div>
     </div>
 </div>

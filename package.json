@@ -1,7 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite",
+        "dev": "php artisan serve",
+        "dev:vite": "vite",
         "build": "vite build"
     },
     "devDependencies": {
@@ -13,6 +14,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@hotwired/turbo": "^8.0.20",
         "toastr": "^2.1.4"
     }
 }

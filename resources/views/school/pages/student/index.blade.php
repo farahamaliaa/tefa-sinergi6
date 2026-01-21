@@ -1,22 +1,75 @@
+<style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .card.header-wave {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }    
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+</style>
+
 @extends('school.layouts.app')
 
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
                     <h4 class="fw-semibold text-white mb-8">Siswa</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
-                                    href="javascript:void(0)">Daftar - daftar siswa dan alumni di Sekolah</a></li>
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Daftar - daftar siswa dan alumni di Sekolah
+                                </a>
+                            </li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                            class="img-fluid mb-n4">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
                     </div>
                 </div>
             </div>
@@ -25,7 +78,7 @@
 
     <div class="row">
         <div class="col-md-6 col-lg-6">
-            <div class="card rounded-3 card-hover border position-relative">
+            <div class="card rounded-3 card-hover position-relative">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="bg-light-success text-success d-inline-block px-3 py-3 rounded">
@@ -37,24 +90,24 @@
                         </div>
                         <div class="ms-4">
                             <h4 class="card-title text-dark"><b>Jumlah Siswa</b></h4>
-                            <h6 style="font-size: 25px; color: #13DEB9"><b>{{ $studentCount }}</b></h6>
+                            <h6 style="font-size: 25px; color: #2AB89D"><b>{{ $studentCount }}</b></h6>
                         </div>
                     </div>
                 </div>
-                <img src="{{ asset('assets/images/background/buble-2.png') }}" alt="Image"
+                <img src="{{ asset('assets/images/background/bub1.png') }}" alt="Image"
                     style="position: absolute; bottom: 0; right: 0; width: auto; height: 90px; border-bottom-right-radius: 13px;">
             </div>
         </div>
 
         <div class="col-md-6 col-lg-6">
-            <div class="card rounded-3 card-hover border position-relative">
+            <div class="card rounded-3 card-hover position-relative">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="bg-light-warning text-warning d-inline-block px-3 py-3 rounded">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 32 32">
-                                <path fill="currentColor"
-                                    d="m16 4.875l-.469.25l-13.5 7L.312 13L2 13.844v8.437c-.598.348-1 .98-1 1.719a1.999 1.999 0 1 0 4 0c0-.738-.402-1.371-1-1.719v-7.406l2 1.031V21c0 .441.203.84.438 1.094s.519.406.812.562c.59.309 1.29.528 2.156.719c1.735.387 4.047.625 6.594.625s4.86-.238 6.594-.625c.867-.191 1.566-.41 2.156-.719c.293-.156.578-.308.813-.562A1.66 1.66 0 0 0 26 21v-5.094l3.969-2.031L31.687 13l-1.718-.875l-13.5-7zm0 2.25L27.313 13l-1.782.906a3 3 0 0 0-.781-.562c-.586-.309-1.29-.528-2.156-.719C20.864 12.238 18.559 12 16 12s-4.863.238-6.594.625c-.867.191-1.57.41-2.156.719a3 3 0 0 0-.781.562L4.687 13zM16 14c2.441 0 4.637.223 6.156.563c.758.167 1.367.363 1.688.53c.101.055.117.095.156.126v3.812a11 11 0 0 0-1.406-.406C20.859 18.238 18.547 18 16 18s-4.86.238-6.594.625c-.531.117-.988.254-1.406.406V15.22c.04-.031.055-.07.156-.125c.32-.168.93-.364 1.688-.531C11.364 14.223 13.559 14 16 14m0 6c2.426 0 4.633.223 6.156.563a7 7 0 0 1 1.375.437a7 7 0 0 1-1.375.438c-1.523.34-3.73.562-6.156.562s-4.633-.223-6.156-.563A7 7 0 0 1 8.469 21a7 7 0 0 1 1.375-.438C11.367 20.223 13.574 20 16 20" />
-                            </svg>
+                        <svg width="45" height="45" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23.638 4.47806C25.1688 3.95393 26.8305 3.95393 28.3613 4.47806C30.5085 5.21147 34.48 6.64797 40.2747 9.06164C44.4455 10.8004 47.4041 12.1459 49.3964 13.1003C50.6953 13.7221 51.4406 14.9474 51.4406 16.2496C51.4406 17.5517 50.6953 18.777 49.3953 19.3988C47.4041 20.3521 44.4455 21.6987 40.2747 23.4375C34.48 25.8511 30.5085 27.2876 28.3613 28.02C26.8305 28.5441 25.1688 28.5441 23.638 28.02C21.4908 27.2876 17.5193 25.8511 11.7245 23.4375C10.1566 22.7852 8.59544 22.1167 7.0413 21.4322V38.7352C8.12401 39.1201 9.03608 39.8748 9.61668 40.8664C10.1973 41.858 10.4091 43.0228 10.2148 44.1553C10.0205 45.2879 9.43262 46.3154 8.55473 47.0569C7.67685 47.7983 6.56537 48.2059 5.4163 48.2079C4.26556 48.2089 3.15158 47.8028 2.27147 47.0614C1.39136 46.3201 0.801867 45.2913 0.607305 44.1571C0.412744 43.023 0.625658 41.8565 1.20837 40.8643C1.79108 39.872 2.70603 39.1178 3.7913 38.7352V19.9611C3.3623 19.761 2.96652 19.5736 2.60396 19.3988C1.30396 18.777 0.558629 17.5517 0.558629 16.2496C0.558629 14.9474 1.30396 13.7221 2.60396 13.1003C4.59513 12.1459 7.55371 10.8004 11.7256 9.06164C17.5193 6.64797 21.4908 5.21147 23.639 4.47914" fill="#FFAE1F"/>
+                            <path d="M22.589 30.5483C18.4373 29.1294 14.3356 27.5685 10.291 25.8683V26.1814C10.291 29.5852 10.4654 31.7649 10.6474 33.1147C10.863 34.7137 11.7947 36.1188 13.2658 36.889C15.3968 38.0038 19.5178 39.5421 25.9993 39.5421C32.4809 39.5421 36.6019 38.0038 38.7328 36.8879C40.204 36.1188 41.1368 34.7137 41.3513 33.1147C41.5333 31.7649 41.7077 29.5852 41.7077 26.1814V25.8672C37.6631 27.5674 33.5613 29.1283 29.4097 30.5472C27.199 31.3031 24.7997 31.3042 22.589 30.5483Z" fill="#FFAE1F"/>
+                        </svg>
                         </div>
                         <div class="ms-4">
                             <h4 class="card-title text-dark"><b>Jumlah Alumni</b></h4>
@@ -62,7 +115,7 @@
                         </div>
                     </div>
                 </div>
-                <img src="{{ asset('assets/images/background/buble-3.png') }}" alt="Image"
+                <img src="{{ asset('assets/images/background/bub2.png') }}" alt="Image"
                     style="position: absolute; bottom: 0; right: 0; width: auto; height: 90px; border-bottom-right-radius: 13px;">
             </div>
         </div>

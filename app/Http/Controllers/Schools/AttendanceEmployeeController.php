@@ -27,7 +27,29 @@ class AttendanceEmployeeController extends Controller
     {
         $attendanceEmployeeChart = $this->service->ChartAttendanceEmployee($this->attendance, $request);
         $attendances = $this->attendance->whereModelAndNow('App\Models\Employee', $request);
-        return view('school.pages.statistic-presence.employee', compact('attendances', 'attendanceEmployeeChart'));
+        
+        // Get selected month/year or use current
+        $selectedMonth = $request->month ?? now()->month;
+        $selectedYear = $request->year ?? now()->year;
+        
+        // Get weekly statistics
+        $weeklyStats = $this->service->getWeeklyStatistics((int)$selectedMonth, (int)$selectedYear);
+        
+        // Month names for dropdown
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        
+        return view('school.pages.statistic-presence.employee', compact(
+            'attendances', 
+            'attendanceEmployeeChart', 
+            'weeklyStats', 
+            'months', 
+            'selectedMonth',
+            'selectedYear'
+        ));
     }
 
     /**

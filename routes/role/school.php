@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\JadwalPelajaranExportNew;
+use App\Http\Controllers\Api\ParentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceMasterController;
 use App\Http\Controllers\AttendanceRuleController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\ClassroomStudentController;
 use App\Http\Controllers\EmployeeJournalController;
 use App\Http\Controllers\ExtracurricularController;
 use App\Http\Controllers\ExtracurricularStudentController;
+use App\Http\Controllers\Schools\ExtracurricularJournalController;
 use App\Http\Controllers\Imports\ImportController;
 use App\Http\Controllers\LessonHourController;
 use App\Http\Controllers\LessonScheduleController;
@@ -28,6 +30,7 @@ use App\Http\Controllers\Schools\AttendanceEmployeeController;
 use App\Http\Controllers\Schools\AttendanceStudentController as SchoolsAttendanceStudentController;
 use App\Http\Controllers\Schools\EmployeeController;
 use App\Http\Controllers\Schools\ExtracurricularController as SchoolsExtracurricularController;
+use App\Http\Controllers\Schools\ExtraInstructorController;
 use App\Http\Controllers\Schools\GuestBookController;
 use App\Http\Controllers\Schools\JournalTeacherController;
 use App\Http\Controllers\Schools\PermissionController;
@@ -46,6 +49,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->group(function () {
     Route::get('', [SchoolDashboardController::class, 'index'])->name('index');
+    Route::get('realtime-data', [SchoolDashboardController::class, 'getRealtimeData'])->name('realtime-data');
 
     // setting informasi
     Route::prefix('information')->group(function () {
@@ -58,7 +62,8 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('max-late', [MaxLateController::class, 'index'])->name('max-late.index');
     Route::patch('max-late/{maxLate}', [MaxLateController::class, 'update'])->name('max-late.update');
 
-    Route::get('clock-settings', [AttendanceRuleController::class, 'setting'])->name('clock-settings.index');    Route::get('get-clock-settings', [AttendanceRuleController::class, 'index'])->name('clock-settings.get');
+    Route::get('clock-settings', [AttendanceRuleController::class, 'setting'])->name('clock-settings.index');
+    Route::get('get-clock-settings', [AttendanceRuleController::class, 'index'])->name('clock-settings.get');
     Route::post('add-clock-settings/{day}/{role}', [AttendanceRuleController::class, 'store'])->name('clock-settings.store');
 
     Route::post('school-points', [SchoolPointController::class, 'store'])->name('school-points.store');
@@ -104,9 +109,23 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
 
     Route::resource('subject', SubjectController::class);
     Route::resource('school-years', SchoolYearController::class);
+    Route::delete('lesson-hours/bulk-delete', [LessonHourController::class, 'bulkDestroy'])->name('lesson-hours.bulk-destroy');
     Route::resource('lesson-hours', LessonHourController::class)->except(['store']);
     Route::post('lesson-hours/{day}', [LessonHourController::class, 'store'])->name('lesson-hours.store');
     Route::resource('extracurricular', SchoolsExtracurricularController::class);
+    Route::post('extracurricular-schedule/{extracurricular}', [SchoolsExtracurricularController::class, 'storeSchedule'])->name('extracurricular-schedule.store');
+    Route::delete('extracurricular-schedule/{schedule}', [SchoolsExtracurricularController::class, 'destroySchedule'])->name('extracurricular-schedule.destroy');
+    Route::get('extracurricular/{extracurricular}/journal/{journal}', [SchoolsExtracurricularController::class, 'journalShow'])->name('extracurricular.journal.show');
+
+    // Extra instructor page
+    Route::get('extra-instructor', [ExtraInstructorController::class, 'index'])->name('extra-instructor.index');
+
+    //parent
+    Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
+    Route::post('parents', [ParentController::class, 'store'])->name('parent.store');
+    Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
+    Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
+    Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
 
     // siswa ekstrakurikuler
     Route::post('extracurricular-students/{extracurricular}', [ExtracurricularStudentController::class, 'store'])->name('extracurricular-students.store');
@@ -169,6 +188,10 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('export-journal-staff/download', [EmployeeJournalController::class, 'downloadJournal'])->name('employee-journal.download');
     Route::get('journal-staff/export', [EmployeeJournalController::class, 'download_journal'])->name('export-journal-staff.export');
 
+    Route::get('journal-extracurricular', [ExtracurricularJournalController::class, 'show'])->name('extracurricular-journal.show');
+    Route::get('export-journal-extracurricular', [ExtracurricularJournalController::class, 'export'])->name('extracurricular-journal.export');
+    Route::get('export-journal-extracurricular/download', [ExtracurricularJournalController::class, 'downloadJournal'])->name('extracurricular-journal.download');
+
     // alumni
     Route::get('class-alumni', [ClassroomController::class, 'classroomAlumni'])->name('class-alumni.index');
     Route::get('alumni/{classroom}', [ClassroomController::class, 'studentAlumni'])->name('alumni.index');
@@ -183,33 +206,36 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::put('add-to-rfid/{role}/{id}', [ModelHasRfidController::class, 'update'])->name('add-to-rfid.update');
 
     //statistic presence
+    Route::get('statistic-presence/realtime', [SchoolsAttendanceStudentController::class, 'getRealtimeStatistics'])->name('statistic-presence.realtime');
     Route::get('statistic-presence', [SchoolsAttendanceStudentController::class, 'index'])->name('statistic-presence.index');
     Route::get('statistic-presence-employee', [AttendanceEmployeeController::class, 'index'])->name('statistic-presence-employee.index');
     Route::get('detail-presence-class/{classroom}', [SchoolsAttendanceStudentController::class, 'show'])->name('detail-presence-class.index');
     Route::get('detail-presence-class/{classroom}/export', [SchoolsAttendanceStudentController::class, 'exportPreview'])->name('detail-presence-class.export-preview');
+    Route::get('statistic-presence-extracurricular', [SchoolsExtracurricularController::class, 'statistic'])->name('statistic-presence-extracurricular.index');
 
     Route::get('student-feedback', [SchoolFeedbackController::class, 'index'])->name('feedback');
 
     Route::get('student-feedback/detail/{teacher}', [SchoolFeedbackController::class, 'show'])->name('feedback.detail');
 });
 
-//tes absensi
+// SECURITY: Routes for attendance hardware/device
+// These routes are intentionally public for RFID devices, but should be protected with API keys in production
 Route::post('attendance-create/{school_id}', [AttendanceStudentController::class, 'store'])->name('attendance.store');
 
-Route::get('menu-test', function () {
-    return view('school.pages.test.menu');
-})->name('menu-test.index');
+// Protected attendance list routes - require authentication
+Route::middleware(['auth'])->group(function () {
+    Route::get('list-attendance', [AttendanceStudentController::class, 'index'])->name('list-attendance.index');
+    Route::post('add-teacher-list-attendance', [AttendanceTeacherController::class, 'store'])->name('add-teacher-list-attendance.index');
+    Route::get('list-attendance-teacher', [AttendanceTeacherController::class, 'index'])->name('list-attendance-teacher.index');
+});
 
-// Route::get('user-list', function () {
-//     return view('school.pages.test.user-list');
-// })->name('user-list.index');
-
-// list absensi
-Route::get('list-attendance', [AttendanceStudentController::class, 'index'])->name('list-attendance.index');
-Route::post('add-teacher-list-attendance', [AttendanceTeacherController::class, 'store'])->name('add-teacher-list-attendance.index');
-
-// list absensi guru
-Route::get('list-attendance-teacher', [AttendanceTeacherController::class, 'index'])->name('list-attendance-teacher.index');
-Route::get('attendance-test', [AttendanceMasterController::class, 'index'])->name('attendance-test.index');
-Route::get('attendance-test-teacher', [AttendanceMasterController::class, 'index_teacher'])->name('attendance-test-teacher.index');
-Route::post('attendance-test-teacher', [AttendanceMasterController::class, 'check_teacher'])->name('attendance-test-teacher.check');
+// Attendance test routes - only available in local/development environment
+if (app()->environment('local', 'development')) {
+    Route::get('menu-test', function () {
+        return view('school.pages.test.menu');
+    })->name('menu-test.index');
+    
+    Route::get('attendance-test', [AttendanceMasterController::class, 'index'])->name('attendance-test.index');
+    Route::get('attendance-test-teacher', [AttendanceMasterController::class, 'index_teacher'])->name('attendance-test-teacher.index');
+    Route::post('attendance-test-teacher', [AttendanceMasterController::class, 'check_teacher'])->name('attendance-test-teacher.check');
+}

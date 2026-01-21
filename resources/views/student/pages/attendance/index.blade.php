@@ -1,75 +1,308 @@
 @extends('student.layouts.app')
+@section('style')
+    <style>
+        .card {
+            border: 1px solid #E0E6ED !important;
+            box-shadow: none !important;
+        }
+
+        .card-hover:hover {
+            border-color: #00A9D9 !important;
+            transition: .2s ease-in-out;
+        }
+
+        .card.header-wave {
+            border-radius: 14px !important;
+            overflow: hidden !important;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+
+        /* Custom Pagination Style */
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            border: 1px solid #EAEFF4;
+            color: #0896D1;
+            margin: 0 4px;
+            font-weight: 600;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            min-width: 35px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0896D1;
+            border-color: #0896D1;
+            color: #fff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #A5A5A5;
+            background-color: transparent;
+            border-color: #EAEFF4;
+        }
+
+        .pagination .page-item:first-child .page-link,
+        .pagination .page-item:last-child .page-link {
+            border-radius: 8px;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #EAEFF4;
+            color: #0896D1;
+        }
+
+        .pagination .page-item.active .page-link:hover {
+            background-color: #0896D1;
+            color: #fff;
+        }
+
+        .pagination .page-item .page-link.pagination-dots {
+            border: none;
+            padding-bottom: 12px;
+            background-color: transparent;
+            color: #000;
+            font-weight: 900;
+        }
+
+        .badge-hadir {
+            background-color: #D1FAE5;
+            color: #059669;
+        }
+
+        .badge-sakit {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+
+        .badge-izin {
+            background-color: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .badge-alpha {
+            background-color: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .badge-belum {
+            background-color: #F3F4F6;
+            color: #6B7280;
+        }
+    </style>
+@endsection
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden text-light">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
-                <div class="col-8 col-md-9">
-                    <h4 class="fw-semibold mb-2 text-light">Absensi</h4>
-                    <nav aria-label="breadcrumb">
+                <div class="col-9">
+                    <h4 class="text-white mt-2">{{ auth()->user()->name }}</h4>
+                    <h3 class="fw-semibold text-white mt-2">{{ $studentClasses->classroom->name }}</h3>
+                    {{-- <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" aria-current="page">Riwayat absensi harian siswa</li>
+                            <li class="breadcrumb-item"><a class="text-white text-decoration-none"
+                                    href="javascript:void(0)">{{ auth_user()->name }}</a></li>
                         </ol>
-                    </nav>
+                    </nav> --}}
                 </div>
-                <div class="col-4 col-md-3 text-center mb-n5">
-                    <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                        class="img-fluid mb-n4">
+                <div class="col-3">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-12">
-        <div class="card border">
-            <div class="card-body">
-                <div class="">
-                    <div class="table-responsive rounded-2 ">
-                        <table class="table border text-nowrap customize-table mb-0 align-middle">
-                            <thead class="text-dark fs-4">
-                                <tr>
-                                    <th class="text-white" style="background-color: #5D87FF;">No</th>
-                                    <th class="text-white" style="background-color: #5D87FF;">Hari</th>
-                                    <th class="text-white" style="background-color: #5D87FF;">Tanggal</th>
-                                    <th class="text-white" style="background-color: #5D87FF;">Masuk</th>
-                                    <th class="text-white" style="background-color: #5D87FF;">Pulang</th>
-                                    <th class="text-white" style="background-color: #5D87FF;">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($attendances as $attendance)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('l') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('d F Y') }}</td>
-                                        <td>{{ $attendance->checkin == null ? '-' : \Carbon\Carbon::parse($attendance->checkin)->format('H:i') }}</td>
-                                        <td>{{ $attendance->checkout == null ? '-' : \Carbon\Carbon::parse($attendance->checkout)->format('H:i') }}</td>
-                                        <td>
-                                            <span class="badge {{ $attendance->status->color() }}">
-                                                {{ $attendance->status->label() }}
-                                            </span>
-                                        </td>
+    <div class="d-flex align-items-center mb-4 mt-4">
+        <h4 class="fw-semibold mb-0">Absensi Hari Ini / </h4>
+        <span class="ms-2 px-3 py-1 rounded-2 fw-semibold bg-light-primary" style="color: #098FC6;">
+            <i class="ti ti-calendar me-1"></i> {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+        </span>
+    </div>
 
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center align-middle">
-                                            <div class="d-flex flex-column justify-content-center align-items-center">
-                                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
-                                                    alt="" width="300px">
-                                                <p class="fs-5 text-dark text-center mt-2">
-                                                    Belum ada data
-                                                </p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="pagination justify-content-end mt-2 mb-0">
-                        {{-- <x-paginate-component :paginator="$teachers" /> --}}
+    <div class="row g-2 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-success"></div>
+                        <div class="ms-3">
+                            <h4>Hadir</h4>
+                            <h4 class="text-success">
+                                <b>{{ $summary['hadir'] ?? 0 }}</b>
+                            </h4>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border" style="border-color: #0D93CA !important;"></div>
+                        <div class="ms-3">
+                            <h4>Izin</h4>
+                            <h4 style="color: #0D93CA;">
+                                <b>{{ $summary['izin'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-warning"></div>
+                        <div class="ms-3">
+                            <h4>Sakit</h4>
+                            <h4 class="text-warning">
+                                <b>{{ $summary['sakit'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100 mb-0">
+                <div class="card-body py-3">
+                    <div class="d-flex">
+                        <div class="border border-danger"></div>
+                        <div class="ms-3">
+                            <h4>Alpha</h4>
+                            <h4 class="text-danger">
+                                <b>{{ $summary['alpha'] ?? 0 }}</b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <h4><b>Riwayat Absensi</b></h4>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-4 gap-3">
+            <form class="d-flex gap-2 align-items-center" method="GET" action="{{ url()->current() }}">
+                <div class="position-relative">
+                    <input type="text" name="search" class="form-control search-chat py-2 px-4 ps-5" id="search-name"
+                        placeholder="Cari" value="{{ old('search', request('search')) }}">
+                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                </div>
+                <div>
+                    <select name="status" class="form-select py-2" id="search-status" style="min-width: 120px;">
+                        <option value="" {{ old('status', request('status')) == '' ? 'selected' : '' }}>Semua
+                        </option>
+                        <option value="present" {{ old('status', request('status')) == 'present' ? 'selected' : '' }}>Masuk
+                        </option>
+                        <option value="permit" {{ old('status', request('status')) == 'permit' ? 'selected' : '' }}>Izin
+                        </option>
+                        <option value="sick" {{ old('status', request('status')) == 'sick' ? 'selected' : '' }}>Sakit
+                        </option>
+                        <option value="alpha" {{ old('status', request('status')) == 'alpha' ? 'selected' : '' }}>Alfa
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn text-white px-4" style="background-color: #098FC6;">Filter</button>
+            </form>
+
+            <form class="d-flex gap-2 align-items-center" method="GET" action="{{ url()->current() }}">
+                <div class="position-relative">
+                    <input type="date" name="date" class="form-control search-chat py-2 px-2 ps-3" id="search-date"
+                        value="{{ old('date', request('date')) }}">
+                </div>
+                <button type="submit" class="btn text-white px-4" style="background-color: #098FC6;">Cari</button>
+            </form>
+        </div>
+        <div class="">
+            <div class="table-responsive rounded-2 mb-4">
+                <table class="table border text-nowrap customize-table mb-0 align-middle">
+                    <thead class="text-dark fs-4">
+                        <tr>
+                            <th class="text-white" style="background-color: #098FC6;">No</th>
+                            <th class="text-white" style="background-color: #098FC6;">Hari</th>
+                            <th class="text-white" style="background-color: #098FC6;">Tanggal</th>
+                            <th class="text-white" style="background-color: #098FC6;">Masuk</th>
+                            <th class="text-white" style="background-color: #098FC6;">Pulang</th>
+                            <th class="text-white" style="background-color: #098FC6;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($attendances as $attendance)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('l') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('d F Y') }}
+                                </td>
+                                <td>{{ $attendance->checkin == null ? '-' : \Carbon\Carbon::parse($attendance->checkin)->format('H:i') }}
+                                </td>
+                                <td>{{ $attendance->checkout == null ? '-' : \Carbon\Carbon::parse($attendance->checkout)->format('H:i') }}
+                                </td>
+                                <td>
+                                    <span class="badge {{ $attendance->status->color() }}">
+                                        {{ $attendance->status->label() }}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center align-middle">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
+                                            alt="" width="300px">
+                                        <p class="fs-5 text-dark text-center mt-2">
+                                            Belum ada data
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination justify-content-end mt-2 mb-0">
+                {{ $attendances->appends(request()->query())->links() }}
             </div>
         </div>
     </div>

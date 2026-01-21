@@ -12,9 +12,11 @@
         var name = $(this).data('name');
         var employee = $(this).data('employee');
         var level = $(this).data('level');
+        var whatsapp = $(this).data('whatsapp') || '';
         $('#name-edit').val(name);
         $('#employee-edit').val(employee).trigger('change');
         $('#class-level').val(level).trigger('change');
+        $('#whatsapp-group-edit').val(whatsapp);
         $('#edit-class-form').attr('action', '{{ route('school.classroom.update', '') }}/' + id);
         $('#update-class').modal('show');
     });

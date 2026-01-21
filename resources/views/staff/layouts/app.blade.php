@@ -28,14 +28,15 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" style="width:100px" alt="loader" class="lds-ripple" />
+        <img src="{{ asset('landing_assets/images/logo/smkn-6-jember.png') }}" style="width:100px" alt="loader"
+            class="lds-ripple" />
     </div>
 
     <!--  Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-theme="blue_theme" data-layout="vertical" data-sidebartype="full"
         data-sidebar-position="fixed" data-header-position="fixed">
         <!-- Sidebar Start -->
-        @include('teacher.layouts.sidebar')
+        @include('staff.layouts.sidebar')
         <!--  Sidebar End -->
 
         <!--  Main wrapper -->

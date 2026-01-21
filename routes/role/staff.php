@@ -4,23 +4,76 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeJournalController;
 use App\Http\Controllers\Staff\StaffViolationController;
 use App\Http\Controllers\Staff\StudentRepairController;
+use App\Http\Controllers\Staff\StaffAttendanceController;
+use App\Http\Controllers\Staff\StaffExtracurricularController;
 use App\Http\Controllers\StudentViolationController;
 use App\Http\Controllers\GuestBookController;
 use App\Http\Controllers\ModelHasRfidController;
 use App\Http\Controllers\Staff\DashboardStaffController;
+use App\Http\Controllers\Staff\StaffApprovalController;
+use App\Http\Controllers\Staff\StaffPermissionController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'role:staff'])->prefix('employee')->name('employee.')->group(function () {
+Route::middleware(['auth', 'role:staff|teacher'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [DashboardStaffController::class, 'index'])->name('dashboard');
+
+    // Staff Permissions (Staff Biasa)
+    Route::resource('permission', StaffPermissionController::class);
+
+    // Staff Approval (Ketua TU)
+    Route::prefix('approval')->name('approval.')->group(function () {
+        Route::get('/', [StaffApprovalController::class, 'index'])->name('index');
+        Route::post('/permission/approve/{id}', [StaffApprovalController::class, 'approve'])->name('permission.approve');
+        Route::post('/permission/reject/{id}', [StaffApprovalController::class, 'reject'])->name('permission.reject');
+    });
+
+    // Manual Attendance (Staff Biasa)
+    Route::post('attendance/check-in', [StaffAttendanceController::class, 'checkIn'])->name('attendance.check-in');
+    Route::post('attendance/check-out', [StaffAttendanceController::class, 'checkOut'])->name('attendance.check-out');
+    Route::post('attendance/permission', [StaffAttendanceController::class, 'storePermission'])->name('attendance.permission');
     // fitur buku tamu
     Route::resource('guestbook', GuestBookController::class);
     // fitur jurnal
     Route::resource('journal', EmployeeJournalController::class)->except('show');
     Route::get('journal/detail/{employeeJournal}', [EmployeeJournalController::class, 'detail'])->name('journal.detail');
 
-    Route::get('permission',[DashboardStaffController::class, 'permission'])->name('permission');
-    Route::post('store-permission', [AttendanceController::class, 'proof'])->name('store.permission');
-    Route::delete('delete-permission/{attendance}', [Attendancecontroller::class, 'delete_proof'])->name('delete.permission');
+    // fitur absensi
+    Route::get('attendance', [StaffAttendanceController::class, 'index'])->name('attendance.index');
+
+    // Extracurricular Students
+    Route::prefix('extracurricular-students')->name('extracurricular-students.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'studentsIndex'])->name('index');
+    });
+
+    // Extracurricular Attendance
+    Route::prefix('extracurricular-attendance')->name('extracurricular-attendance.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'attendanceIndex'])->name('index');
+    });
+
+    // Extracurricular Permission
+    Route::prefix('extracurricular-permission')->name('extracurricular-permission.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'permissionIndex'])->name('index');
+        Route::post('/approve/{id}', [StaffExtracurricularController::class, 'permissionApprove'])->name('approve');
+        Route::post('/reject/{id}', [StaffExtracurricularController::class, 'permissionReject'])->name('reject');
+    });
+
+    // Extracurricular Journal
+    Route::prefix('extracurricular-journal')->name('extracurricular-journal.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'journalIndex'])->name('index');
+        Route::get('/create', [StaffExtracurricularController::class, 'journalCreate'])->name('create');
+        Route::post('/store', [StaffExtracurricularController::class, 'journalStore'])->name('store');
+        Route::get('/detail/{id}', [StaffExtracurricularController::class, 'journalShow'])->name('show');
+        Route::get('/edit/{id}', [StaffExtracurricularController::class, 'journalEdit'])->name('edit');
+        Route::put('/update/{id}', [StaffExtracurricularController::class, 'journalUpdate'])->name('update');
+        Route::delete('/destroy/{id}', [StaffExtracurricularController::class, 'journalDestroy'])->name('destroy');
+    });
+
+    // Extracurricular Schedule
+    Route::prefix('extracurricular-schedule')->name('extracurricular-schedule.')->group(function () {
+        Route::get('/', [StaffExtracurricularController::class, 'scheduleIndex'])->name('index');
+        Route::post('/store', [StaffExtracurricularController::class, 'scheduleStore'])->name('store');
+        Route::delete('/destroy/{id}', [StaffExtracurricularController::class, 'scheduleDestroy'])->name('destroy');
+    });
 });
 
 Route::middleware(['auth', 'role:staff|teacher', 'permission:view_violation'])->prefix('employee')->name('employee.')->group(function () {

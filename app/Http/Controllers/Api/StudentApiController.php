@@ -80,6 +80,9 @@ class StudentApiController extends Controller
      */
     public function index(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
         $lessonSchedule = $this->lessonSchedule->whereDayApi($studentClasses->classroom->id);
@@ -157,6 +160,9 @@ class StudentApiController extends Controller
 
     public function history_attendance(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
         $history_attendance = $this->attendance->whereUser($studentClasses->id, 'App\Models\ClassroomStudent');
@@ -168,6 +174,9 @@ class StudentApiController extends Controller
 
     public function lessonSchedule(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
         $lessonSchedule = $this->lessonSchedule->whereClassroom($studentClasses->classroom->id, 'day');
@@ -196,6 +205,9 @@ class StudentApiController extends Controller
 
     public function violation(User $user, Request $request)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $studentViolations = $this->studentViolation->whereStudent($student->id, $request);
 
@@ -206,6 +218,9 @@ class StudentApiController extends Controller
 
     public function repair(User $user, Request $request)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $repairs = $this->studentRepair->whereStudent($student->id, $request);
 
@@ -216,6 +231,9 @@ class StudentApiController extends Controller
 
     public function class_student(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
 
@@ -226,12 +244,18 @@ class StudentApiController extends Controller
 
     public function point_student(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         return response()->json(['status' => 'success', 'message' => "Berhasil mengirim bukti perbaikan",'code' => 200, 'point' => $student->point]);
     }
 
     public function get_detail_profile(User $user)
     {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $student = $this->student->whereUserId($user->id);
         $repairs = $this->studentRepair->count_repair($student->id);
         $violations = $this->studentViolation->count_violation($student->id);

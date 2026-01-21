@@ -1,183 +1,286 @@
 @extends('staff.layouts.app')
 @section('style')
     <style>
-        .category-selector .dropdown-menu {
-            position: absolute;
-            z-index: 1050;
-            transform: translate3d(0, 0, 0);
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .select2 {
-            width: 100% !important;
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .select2-selection__rendered {
-            width: 100%;
-            height: 36px;
-            padding: 6px 12px;
-            font-size: 14px;
-            line-height: 1.42857143;
-            color: #555;
-            background-color: #fff;
-            background-image: none;
-            border: 1px solid #ccc;
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
             border-radius: 4px;
         }
 
-        .select2-selection {
-            height: fit-content !important;
-            color: #555 !important;
-            background-color: #fff !important;
-            background-image: none !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .card {
+            border: 1px solid #E0E6ED !important;
+            box-shadow: none !important;
+        }
+
+        .card-hover:hover {
+            border-color: #00A9D9 !important;
+            transition: .2s ease-in-out;
+        }
+
+        .card.header-wave {
+            border-radius: 14px !important;
+            overflow: hidden !important;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #098FC6 !important;
+            color: #fff !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #098FC6;
+            border-radius: 8px;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0A8ABF20;
+            color: #098FC6;
+        }
+
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background-color: #0896D1 !important;
+            border-color: #0896D1 !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #067aa7 !important;
+            border-color: #067aa7 !important;
         }
     </style>
 @endsection
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden">
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold text-white mb-8">Izin dan Sakit Siswa</h4>
+                    <h4 class="fw-semibold text-white mb-8">Perizinan Staff</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                    Kelola perizinan siswa terkait kehadiran, baik karena izin maupun sakit. Pastikan data
-                                    yang diinput sesuai kebutuhan.
-                                </a>
-                            </li>
+                            <li class="breadcrumb-item text-white" aria-current="page">Daftar Perizinan Staff</li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                            class="img-fluid mb-n4">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-12 mb-3">
-        <div class="d-flex justify-content-between align-items-start">
-            <form class="d-flex flex-column flex-md-row gap-2 flex-grow-5">
-                <div class="position-relative flex-grow-1">
-                    <input type="text" name="search" class="form-control product-search ps-5" id="input-search"
-                        placeholder="Cari..." value="{{ old('search', request('search')) }}">
-                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-                </div>
-                <div class="d-flex flex-column flex-md-row gap-2">
-                    <select name="classroom" class="form-select">
-                        <option value="">Semua Kelas</option>
-                        <option value="">kelas</option>
-                    </select>
-                    <select name="status" class="form-select">
-                        <option value="">Semua Status</option>
-                        <option value="sick">Sakit</option>
-                        <option value="permit">Izin</option>
-                    </select>
-                    <div>
-                        <button type="submit" class="btn btn-primary btn-md w-100 w-md-auto">Filter</button>
-                    </div>
-                </div>
-            </form>
+    <div class="card">
 
-            <div class="d-flex justify-content-end ms-auto">
-                <button class="btn btn-success btn-md w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#modal-create"
-                    type="button">Tambah</button>
+        {{-- <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Perizinan Staff</h5>
+            <a href="{{ route('employee.permission.create') }}" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i> Buat Izin
+            </a>
+        </div> --}}
+        <div class="card-body">
+            <h4>Perizinan Staff</h4>
+            <div class="row">
+                <div class="col-12 col-lg-5 mt-3 mb-4">
+                    <form class="d-flex gap-2 flex-column flex-lg-row align-items-stretch align-items-lg-center"
+                        method="GET" action="{{ url()->current() }}">
+                        <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
+                            <input type="text" name="search" class="form-control search-chat py-2 px-4 ps-5"
+                                id="search-name" placeholder="Cari..." value="{{ request('search') }}">
+                            <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <select name="status" class="form-select" id="search-status">
+                                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Pilih</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
+                                </option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui
+                                </option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak
+                                </option>
+                            </select>
+                        </div>
+                        <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
+                            <input type="date" name="search" class="form-control search-chat" id="search-name"
+                                placeholder="Cari..." value="{{ request('search') }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
+                    </form>
+                </div>
+                <div class="col-12 col-lg-7 mt-3 mb-4 d-flex flex-wrap justify-content-lg-end gap-2">
+                    <a href="{{ route('employee.permission.create') }}" class="btn btn-primary w-lg-auto">
+                        <i class="ti ti-plus me-1"></i> Buat Izin
+                    </a>
+                </div>
             </div>
-        </div>
-    </div>
-
-
-
-
-    <div class="table-responsive rounded-2 mb-4">
-        <table class="table border text-nowrap customize-table mb-0 align-middle">
-            <thead class="text-dark fs-4">
-                <tr class="">
-                    <th>No</th>
-                    <th>NISN</th>
-                    <th>Nama</th>
-                    <th>Kelas</th>
-                    <th>Izin Pada Tanggal</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($data as $items)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $items->model->student->nisn }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('assets/images/default-user.jpeg') }}"
-                                    class="rounded-circle me-2 user-profile" style="object-fit: cover" width="40"
-                                    height="40" alt="" />
-                                <div class="ms-3">
-                                    <h6 class="fs-4 fw-semibold mb-0 text-start">{{ $items->model->student->user->name }}</h6>
-                                    <span class="fw-normal">{{ $items->model->student->gender->label() }}</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ $items->model->classroom->name }}</td>
-                        <td>{{ \Carbon\Carbon::parse($items->created_at)->translatedFormat('d F Y') }}</td>
-                        <td>
-                            <span class="mb-1 badge font-medium {{ $items->status->value == 'permit' ? 'bg-light-warning text-warning' : 'bg-light-danger text-danger'}}">{{ $items->status->value == 'permit' ? 'Izin' : 'Sakit'}}</span>
-                        </td>
-                        <td>
-                            <div class="dropdown dropstart">
-                                <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    <div class="category">
-                                        <div class="category-business"></div>
-                                        <div class="category-social"></div>
-                                        <span class="more-options text-dark">
-                                            <i class="ti ti-dots-vertical fs-5"></i>
-                                        </span>
+            <div class="table-wrapper rounded-2">
+                <table class="table border text-nowrap customize-table mb-0 align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th class="text-white" style="background-color: #0896D1;">No</th>
+                            <th class="text-white" style="background-color: #0896D1;">Tanggal</th>
+                            <th class="text-white" style="background-color: #0896D1;">Jenis Izin</th>
+                            <th class="text-white" style="background-color: #0896D1;">Keterangan</th>
+                            {{-- <th class="text-white" style="background-color: #0896D1;">Bukti</th> --}}
+                            <th class="text-white" style="background-color: #0896D1;">Status</th>
+                            <th class="text-white" style="background-color: #0896D1;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($permissions as $permission)
+                            <tr>
+                                <td>{{ $loop->iteration + $permissions->firstItem() - 1 }}</td>
+                                <td>{{ Carbon\Carbon::parse($permission->date)->format('d M Y') }}</td>
+                                <td>{{ $permission->permission_type->label() ?? $permission->permission_type->value }}</td>
+                                <td>{{ Str::limit($permission->proof, 50) }}</td>
+                                {{-- <td>
+                                    @if ($permission->proof_image)
+                                        <a href="{{ asset('storage/' . $permission->proof_image) }}" target="_blank"
+                                            class="btn btn-sm btn-info">
+                                            Lihat
+                                        </a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td> --}}
+                                <td>
+                                    @if ($permission->status == \App\Enums\StatusPermissionEnum::APPROVED)
+                                        <span class="badge bg-light-success text-success">Disetujui</span>
+                                    @elseif ($permission->status == \App\Enums\StatusPermissionEnum::REJECTED)
+                                        <span class="badge bg-light-danger text-danger">Ditolak</span>
+                                    @else
+                                        <span class="badge bg-light-warning text-warning">Menunggu</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary btn-view-detail"
+                                        data-bs-toggle="modal" data-bs-target="#student-permission-modal"
+                                        data-id="{{ $permission->id }}"
+                                        data-name="{{ $permission->employee->user->name ?? 'Unknown' }}"
+                                        data-date="{{ Carbon\Carbon::parse($permission->date)->format('d/m/Y') }}"
+                                        data-type="{{ $permission->permission_type->label() ?? $permission->permission_type->value }}"
+                                        data-proof="{{ $permission->proof }}"
+                                        data-proof-image="{{ $permission->proof_image ? asset('storage/' . $permission->proof_image) : '' }}"
+                                        data-status="{{ $permission->status->value }}">
+                                        {{-- <i class="ti ti-eye"></i> --}}
+                                        Lihat
+                                    </button>
+                                    {{-- @if ($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
+                                        <form action="{{ route('employee.permission.destroy', $permission->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Hapus pengajuan ini?')">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif --}}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr class="empty-tr">
+                                <td colspan="7" class="text-center align-middle">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="No Data"
+                                            width="200px">
+                                        <p class="fs-5 text-dark text-center mt-2">
+                                            Belum ada riwayat perizinan
+                                        </p>
                                     </div>
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="">
-                                    {{-- <li>
-                                        <button class="btn-detail dropdown-item d-flex align-items-center gap-3"><i
-                                                class="fs-4 ti ti-eye"></i>Detail</button>
-                                    </li> --}}
-                                    <li>
-                                        <button data-id="{{ $items->id }}" class="btn-delete dropdown-item d-flex align-items-center text-danger gap-3"><i
-                                                class="fs-4 ti ti-trash"></i>Hapus</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center align-middle">
-                            <div class="d-flex flex-column justify-content-center align-items-center">
-                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
-                                    width="300px">
-                                <p class="fs-5 text-dark text-center mt-2">
-                                    Siswa belum ditambahkan
-                                </p>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                {{ $permissions->links() }}
+            </div>
+        </div>
     </div>
 
-    @include('components.delete-modal-component')
     @include('staff.pages.permission.widgets.detail')
-    @include('staff.pages.permission.widgets.create')
 @endsection
 
 @section('script')
-    @include('staff.pages.permission.scripts.delete')
-    @include('staff.pages.permission.scripts.detail')
-    @include('staff.pages.permission.scripts.select2')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('student-permission-modal');
+
+            modal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+
+                // Get data from button attributes
+                const name = button.getAttribute('data-name');
+                const date = button.getAttribute('data-date');
+                const type = button.getAttribute('data-type');
+                const proof = button.getAttribute('data-proof');
+                const proofImage = button.getAttribute('data-proof-image');
+                const status = button.getAttribute('data-status');
+
+                // Update modal content
+                modal.querySelector('#modal-staff-name').value = name;
+                modal.querySelector('#modal-date').value = date;
+                modal.querySelector('#modal-type').value = type;
+                modal.querySelector('#modal-proof').value = proof || '-';
+
+                // Update proof image
+                const imgContainer = modal.querySelector('#modal-proof-image-container');
+                if (proofImage) {
+                    imgContainer.innerHTML =
+                        `<img src="${proofImage}" class="img-fluid rounded-3" alt="Bukti Izin" style="width: 300px; max-height: 300px; object-fit: cover;">`;
+                } else {
+                    imgContainer.innerHTML = '<p class="text-muted">Tidak ada bukti</p>';
+                }
+
+                // Update status badge
+                const statusBadge = modal.querySelector('#modal-status');
+                if (status === 'approved') {
+                    statusBadge.textContent = 'Disetujui';
+                    statusBadge.style.backgroundColor = '#E6FFFA';
+                    statusBadge.style.color = '#13DEB9';
+                } else if (status === 'rejected') {
+                    statusBadge.textContent = 'Ditolak';
+                    statusBadge.style.backgroundColor = '#FFE5E5';
+                    statusBadge.style.color = '#DC3545';
+                } else {
+                    statusBadge.textContent = 'Menunggu';
+                    statusBadge.style.backgroundColor = '#FFF4E5';
+                    statusBadge.style.color = '#FA896B';
+                }
+            });
+        });
+    </script>
 @endsection

@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importPegawai">Tambah Ekstrakurikuler</h5>
+                <h5 class="modal-title text-white" id="importPegawai">Tambah Ekstrakurikuler</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('school.extracurricular.store') }}" method="POST" enctype="multipart/form-data">
@@ -19,13 +19,24 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="mb-2 pt-3">Pengajar</label>
-                            <select id="pengajar" class="select2 select2-create" name="employee_id">
+                            <select id="pengajar" class="select2 select2-create" name="user_id">
                                 <option value="">Pilih Pengajar</option>
-                                @forelse ($employees as $employee)
-                                    <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>{{ $employee->user->name }}</option>
+                                @forelse ($employees as $user)
+                                    <option value="{{ $user->id }}" 
+                                        data-has-employee="{{ $user->employee ? '1' : '0' }}"
+                                        data-employee-id="{{ $user->employee?->id }}"
+                                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }} ({{ ucfirst($user->roles->first()?->name ?? '-') }})
+                                        @if(!$user->employee)
+                                            - Pembina Baru
+                                        @endif
+                                    </option>
                                 @empty
                                 @endforelse
                             </select>
+                            @error('user_id', 'create')
+                                <span class="text-danger error-create">{{ $message }}</span>
+                            @enderror
                             @error('employee_id', 'create')
                                 <span class="text-danger error-create">{{ $message }}</span>
                             @enderror
@@ -33,7 +44,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-rounded btn-light" data-bs-dismiss="modal">Tutup</button>
+                    <!-- <button type="button" class="btn btn-rounded btn-light" data-bs-dismiss="modal">Tutup</button> -->
                     <button type="submit" class="btn btn-rounded btn-primary">Tambah</button>
                 </div>
             </form>

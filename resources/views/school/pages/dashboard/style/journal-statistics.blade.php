@@ -56,7 +56,7 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #5D87FF;
+    background-color: #0896d1;
     border-radius: 2px;
 }
 
@@ -68,7 +68,7 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #13DEB9;
+    background-color: #1ebb9e;
     border-radius: 2px;
 }
 
@@ -80,7 +80,7 @@
     top: 20px;
     bottom: 0;
     width: 4px;
-    background-color: #FA896B;
+    background-color: #e02123;
     border-radius: 2px;
 }
 </style>

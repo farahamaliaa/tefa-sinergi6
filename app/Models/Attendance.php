@@ -23,6 +23,9 @@ class Attendance extends Model
         'status',
         'proof',
         'checkin',
-        'checkout'
+        'checkout',
+        'latitude',
+        'longitude',
+        'location_address'
     ];
 }

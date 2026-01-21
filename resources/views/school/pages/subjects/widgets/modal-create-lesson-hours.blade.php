@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="tambahPelajaran">Tambah Jam Pelajaran</h5>
+                <h5 class="modal-title text-white" id="tambahPelajaran">Tambah Jam Pelajaran</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="form-create" method="POST" enctype="multipart/form-data">

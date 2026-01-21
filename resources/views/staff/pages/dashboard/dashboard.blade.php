@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    @include('staff.pages.dashboard.panes.corousel')
+    {{-- @include('staff.pages.dashboard.panes.corousel') --}}
 
     {{-- <div class="row">
         <div class="col-lg-12">
@@ -35,14 +35,19 @@
             </div>
         </div>
     </div> --}}
+    <div class="row">
+        <div class="col-lg-12">
+            @include('staff.pages.dashboard.panes.profile')
+        </div>
+    </div>
+
 
     <h4 class=""><b>Riwayat Jurnal</b></h4>
     <p>Daftar jurnal staff setelah melakukan kegiatan</p>
 
     @include('staff.pages.dashboard.panes.journal-history')
-
 @endsection
 
-@section('script')
+{{-- @section('script')
     @include('staff.pages.dashboard.scripts.script-corousel')
-@endsection
+@endsection --}}

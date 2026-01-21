@@ -1,20 +1,68 @@
 @extends('school.layouts.app')
 @section('content')
-    <div class="card bg-primary shadow-none position-relative overflow-hidden text-light">
+<style>
+    .card {
+        border: 1px solid #E0E6ED !important; 
+        box-shadow: none !important;
+    }
+
+    .card-hover:hover {
+        border-color: #00A9D9 !important;
+        transition: .2s ease-in-out;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #098FC6 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #098FC6;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: #0A8ABF20;
+        color: #098FC6;
+    }
+    .header-wave {
+        background-color: #1A94C8 !important;
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-wave::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 256px;
+        background: url("{{ asset('assets/images/wave-header.png') }}");
+        background-size: cover;
+        opacity: 1;
+    }
+</style>
+    <div class="card header-wave shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-8 text-light">Pegawai</h4>
+                    <h4 class="fw-semibold text-white mb-8">Pegawai</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item" aria-current="page">Daftar - daftar guru dan staff di sekolah</li>
+                            <li class="breadcrumb-item">
+                                <a class="text-white text-decoration-none" href="javascript:void(0)">
+                                    Daftar - daftar guru dan staff di sekolah
+                                </a>
+                            </li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{ asset('admin_assets/dist/images/breadcrumb/ChatBc.png') }}" alt=""
-                            class="img-fluid mb-n4">
+                    <div class="text-center mb-n3">
+                        <img src="{{ asset('assets/images/background/book.png') }}" alt=""
+                            class="img-fluid img-header-floating">
                     </div>
                 </div>
             </div>
@@ -50,7 +98,7 @@
                         </div>
                     </div>
                 </div>
-                <img src="{{ asset('assets/images/background/buble-2.png') }}" alt="Image"
+                <img src="{{ asset('assets/images/background/bub1.png') }}" alt="Image"
                     style="position: absolute; bottom: 0; right: 0; width: auto; height: 90px; border-bottom-right-radius: 13px;">
             </div>
         </div>
@@ -88,7 +136,7 @@
                         </div>
                     </div>
                 </div>
-                <img src="{{ asset('assets/images/background/buble-3.png') }}" alt="Image"
+                <img src="{{ asset('assets/images/background/bub2.png') }}" alt="Image"
                     style="position: absolute; bottom: 0; right: 0; width: auto; height: 90px; border-bottom-right-radius: 13px;">
             </div>
         </div>
@@ -119,25 +167,6 @@
                 </svg>
                 <span class="d-none d-md-block font-weight-medium">Staf</span>
             </a>
-        </li>
-
-        <!-- Tombol Guru -->
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-md-auto mt-2 mt-md-0 guru-buttons">
-            <button type="button" class="btn btn-success px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#import-teacher">Import Guru</button>
-        </li>
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-0 ms-md-2 mt-2 mt-md-0 guru-buttons">
-            <button type="button" class="btn btn-primary px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#create-teacher">Tambah Guru</button>
-        </li>
-        <!-- Tombol Pegawai -->
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-md-auto mt-2 mt-md-0 pegawai-buttons d-none">
-            <button type="button" class="btn btn-success px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#import-employe">Import Staf</button>
-        </li>
-        <li class="nav-item d-flex align-items-center col-12 col-md-auto ms-0 ms-md-2 mt-2 mt-md-0 pegawai-buttons d-none">
-            <button type="button" class="btn btn-primary px-4 w-100 w-md-auto" data-bs-toggle="modal"
-                data-bs-target="#modal-add-emplo">Tambah Staf</button>
         </li>
     </ul>
 

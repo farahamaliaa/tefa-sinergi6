@@ -48,4 +48,18 @@ class AttendanceStudentController extends Controller
         $attendances = $this->attendance->exportClassAndDate($classroom->id, $request);
         return view('school.pages.statistic-presence.export.student', compact('classroom', 'attendances'));
     }
+    public function getRealtimeStatistics(Request $request)
+    {
+        $date = $request->input('date', Carbon::today()->format('Y-m-d'));
+        $data = $this->schoolChartService->chartClass($request);
+        $attendances = $this->attendance->allStudentWithPagination($request);
+        
+        // Render the table rows
+        $tableHtml = view('school.pages.statistic-presence.panes.table-rows', compact('attendances'))->render();
+
+        return response()->json([
+            'chart' => $data,
+            'table' => $tableHtml
+        ]);
+    }
 }

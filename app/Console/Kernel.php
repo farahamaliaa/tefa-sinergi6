@@ -23,6 +23,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:create-attendance')->dailyAt('01:00');
         $schedule->command('command:delete-attendance')->dailyAt('23:00');
         $schedule->command('command:employee-journal-command')->dailyAt('23:59');
+        $schedule->command('command:send-attendance-recap')->dailyAt(config('whatsapp.recap.send_time', '08:00'));
+        
+        // Auto-mark staff yang tidak absen sebagai ALPHA setelah batas waktu check-in
+        $schedule->command('attendance:mark-alpha')->dailyAt('10:00')->weekdays();
     }
 
     /**

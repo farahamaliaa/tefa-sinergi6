@@ -1,3 +1,53 @@
+<style>
+    .sidebar-nav .sidebar-item .sidebar-link svg {
+        stroke: #1191C6 !important;
+        color: #1191C6 !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link .hide-menu {
+        color: #000000 !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link:hover {
+        background-color: rgba(13, 147, 202, 0.25) !important;
+    }
+
+    .sidebar-nav .sidebar-item .sidebar-link:hover .hide-menu,
+    .sidebar-nav .sidebar-item .sidebar-link:hover svg {
+        color: #1191C6 !important;
+        stroke: #1191C6 !important;
+    }
+
+    /* Top */
+    #sidebarnav>.sidebar-item>.active.sidebar-link,
+    #sidebarnav>.sidebar-item.selected>.sidebar-link {
+        background-color: #0D93CA !important;
+        border-radius: 8px;
+    }
+
+    #sidebarnav>.sidebar-item>.active.sidebar-link .hide-menu,
+    #sidebarnav>.sidebar-item.selected>.sidebar-link .hide-menu,
+    #sidebarnav>.sidebar-item>.active.sidebar-link svg,
+    #sidebarnav>.sidebar-item.selected>.sidebar-link svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+
+    /* Submenu */
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link,
+    .sidebar-nav .collapse .sidebar-item.selected>.sidebar-link {
+        background-color: transparent !important;
+        border-radius: 8px;
+    }
+
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link .hide-menu,
+    .sidebar-nav .collapse .sidebar-item.selected>.sidebar-link .hide-menu,
+    .sidebar-nav .collapse .sidebar-item .active.sidebar-link svg,
+    .sidebar-nav .collapse .sidebar-item.selected>.sidebar-link svg {
+        color: #1191C6 !important;
+        stroke: #1191C6 !important;
+    }
+</style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
     <div>
@@ -81,11 +131,11 @@
                     <a class="sidebar-link {{ request()->routeIs('school.employees.index') || request()->routeIs('school.teacher.show') ? 'active' : '' }}"
                         href="{{ route('school.employees.index') }}" aria-expanded="false">
                         <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36">
-                                <path fill="currentColor"
-                                    d="M16.43 16.69a7 7 0 1 1 7-7a7 7 0 0 1-7 7m0-11.92a5 5 0 1 0 5 5a5 5 0 0 0-5-5M22 17.9a25.4 25.4 0 0 0-16.12 1.67a4.06 4.06 0 0 0-2.31 3.68v5.95a1 1 0 1 0 2 0v-5.95a2 2 0 0 1 1.16-1.86a22.9 22.9 0 0 1 9.7-2.11a23.6 23.6 0 0 1 5.57.66Zm.14 9.51h6.14v1.4h-6.14z" />
-                                <path fill="currentColor"
-                                    d="M33.17 21.47H28v2h4.17v8.37H18v-8.37h6.3v.42a1 1 0 0 0 2 0V20a1 1 0 0 0-2 0v1.47H17a1 1 0 0 0-1 1v10.37a1 1 0 0 0 1 1h16.17a1 1 0 0 0 1-1V22.47a1 1 0 0 0-1-1" />
+                            <svg width="26" height="20" viewBox="0 0 26 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0 0V1.9375H21.3125V17.4375H7.75V19.375H25.1875V17.4375H23.25V0H0ZM3.87694 2.90625C2.85014 2.90982 1.8664 3.31916 1.14016 4.04504C0.413919 4.77092 0.00408462 5.75446 0 6.78125C0 8.91153 1.74762 10.6562 3.87694 10.6562C4.90321 10.6522 5.88627 10.2425 6.61178 9.51666C7.33729 8.79078 7.74643 7.80753 7.75 6.78125C7.75 4.65291 6.00431 2.90625 3.87694 2.90625ZM9.6875 3.875V5.8125H14.5312V3.875H9.6875ZM16.4688 3.875V5.8125H19.375V3.875H16.4688ZM3.87694 4.84375C4.95612 4.84375 5.8125 5.69916 5.8125 6.78125C5.8125 7.86625 4.95709 8.71875 3.87694 8.71875C2.79194 8.71875 1.9375 7.86625 1.9375 6.78125C1.9375 5.69916 2.79291 4.84375 3.87694 4.84375ZM9.6875 7.75V9.6875H19.375V7.75H9.6875ZM0 11.625V19.375H1.9375V13.5625H4.84375V19.375H6.78125V14.1999L8.78075 15.2578C9.34747 15.5581 10.0285 15.5572 10.5942 15.2578V15.2598L14.0139 13.4511L13.1101 11.7364L9.68944 13.5451L6.69019 11.9621C6.27168 11.7408 5.80543 11.6251 5.332 11.625H0Z"
+                                    fill="#0896D1" />
                             </svg>
                         </span>
                         <span class="hide-menu">Pegawai</span>
@@ -96,13 +146,8 @@
                 {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="/school/teacher" aria-expanded="false">
                         <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="1.5" color="currentColor">
-                                    <path
-                                        d="M2 2h14c1.886 0 2.828 0 3.414.586S20 4.114 20 6v6c0 1.886 0 2.828-.586 3.414S17.886 16 16 16H9m1-9.5h6M2 17v-4c0-.943 0-1.414.293-1.707S3.057 11 4 11h2m-4 6h4m-4 0v5m4-5v-6m0 6v5m0-11h6" />
-                                    <path d="M6 6.5a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
-                                </g>
+                            <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0V1.9375H21.3125V17.4375H7.75V19.375H25.1875V17.4375H23.25V0H0ZM3.87694 2.90625C2.85014 2.90982 1.8664 3.31916 1.14016 4.04504C0.413919 4.77092 0.00408462 5.75446 0 6.78125C0 8.91153 1.74762 10.6562 3.87694 10.6562C4.90321 10.6522 5.88627 10.2425 6.61178 9.51666C7.33729 8.79078 7.74643 7.80753 7.75 6.78125C7.75 4.65291 6.00431 2.90625 3.87694 2.90625ZM9.6875 3.875V5.8125H14.5312V3.875H9.6875ZM16.4688 3.875V5.8125H19.375V3.875H16.4688ZM3.87694 4.84375C4.95612 4.84375 5.8125 5.69916 5.8125 6.78125C5.8125 7.86625 4.95709 8.71875 3.87694 8.71875C2.79194 8.71875 1.9375 7.86625 1.9375 6.78125C1.9375 5.69916 2.79291 4.84375 3.87694 4.84375ZM9.6875 7.75V9.6875H19.375V7.75H9.6875ZM0 11.625V19.375H1.9375V13.5625H4.84375V19.375H6.78125V14.1999L8.78075 15.2578C9.34747 15.5581 10.0285 15.5572 10.5942 15.2578V15.2598L14.0139 13.4511L13.1101 11.7364L9.68944 13.5451L6.69019 11.9621C6.27168 11.7408 5.80543 11.6251 5.332 11.625H0Z" fill="#0896D1"/>
                             </svg>
                         </span>
                         <span class="hide-menu">Guru</span>
@@ -120,29 +165,30 @@
                         <span class="hide-menu">Siswa</span>
                     </a>
                 </li>
-                {{-- <li class="sidebar-item">
-                    <a class="sidebar-link
-                    {{ request()->routeIs('school.class-alumni.index') ||
-                        request()->routeIs('alumni.index') ? 'active' : '' }}" href="{{ route('school.class-alumni.index') }}" aria-expanded="false">
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256">
-                                <path fill="currentColor"
-                                    d="m251.76 88.94l-120-64a8 8 0 0 0-7.52 0l-120 64a8 8 0 0 0 0 14.12L32 117.87v48.42a15.9 15.9 0 0 0 4.06 10.65C49.16 191.53 78.51 216 128 216a130 130 0 0 0 48-8.76V240a8 8 0 0 0 16 0v-40.49a115.6 115.6 0 0 0 27.94-22.57a15.9 15.9 0 0 0 4.06-10.65v-48.42l27.76-14.81a8 8 0 0 0 0-14.12M128 200c-43.27 0-68.72-21.14-80-33.71V126.4l76.24 40.66a8 8 0 0 0 7.52 0L176 143.47v46.34c-12.6 5.88-28.48 10.19-48 10.19m80-33.75a97.8 97.8 0 0 1-16 14.25v-45.57l16-8.53Zm-20-47.31l-.22-.13l-56-29.87a8 8 0 0 0-7.52 14.12L171 128l-43 22.93L25 96l103-54.93L231 96Z" />
-                            </svg>
-                        </span>
-                        <span class="hide-menu">Alumni</span>
-                    </a>
-                </li> --}}
                 <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('school.extracurricular.index') || request()->routeIs('school.extracurricular.show') ? 'active' : '' }}"
-                        href="{{ route('school.extracurricular.index') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('school.parent.index') }}" aria-expanded="false">
                         <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="m20.65 9.375l-1.4-1.4L20 7.2L16.8 4l-.775.75L14.6 3.325l.75-.775q.575-.575 1.425-.563t1.425.588L21.425 5.8Q22 6.375 22 7.212t-.575 1.413zM8.65 21.4q-.575.575-1.412.575T5.825 21.4L2.6 18.175q-.575-.575-.575-1.412T2.6 15.35l.75-.75l1.425 1.425l-.775.75L7.225 20l.75-.775L9.4 20.65zm9.925-8.4L20 11.575L12.425 4L11 5.425zm-7 7L13 18.55L5.45 11L4 12.425zm-.15-5.85l2.75-2.725l-1.6-1.6l-2.725 2.75zM13 21.4q-.575.575-1.425.575T10.15 21.4L2.6 13.85q-.575-.575-.575-1.425T2.6 11l1.425-1.425Q4.6 9 5.437 9t1.413.575l1.575 1.575l2.75-2.75L9.6 6.85q-.575-.575-.575-1.425T9.6 4l1.425-1.425Q11.6 2 12.438 2t1.412.575l7.575 7.575q.575.575.575 1.412t-.575 1.413L20 14.4q-.575.575-1.425.575T17.15 14.4l-1.55-1.575l-2.75 2.75l1.575 1.575q.575.575.575 1.413t-.575 1.412z" />
+                            <svg width="18" height="24" viewBox="0 0 18 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M9 0C10.1017 0 11.1582 0.379285 11.9372 1.05442C12.7162 1.72955 13.1538 2.64522 13.1538 3.6C13.1538 4.55478 12.7162 5.47045 11.9372 6.14558C11.1582 6.82071 10.1017 7.2 9 7.2C7.89833 7.2 6.84178 6.82071 6.06279 6.14558C5.28379 5.47045 4.84615 4.55478 4.84615 3.6C4.84615 2.64522 5.28379 1.72955 6.06279 1.05442C6.84178 0.379285 7.89833 0 9 0ZM9 8.4C11.2569 8.4 13.32 8.82 15.2308 9.66C17.0862 10.512 18 11.532 18 12.732V19.656C18 21 16.8092 22.128 14.3862 23.028V20.4C14.3862 19.26 13.1954 18.456 10.8138 17.964C10.0385 17.808 9.42923 17.736 9 17.736C7.79538 17.736 6.64615 17.94 5.59385 18.36C4.52769 18.768 3.89077 19.296 3.68308 19.932C5.53846 20.568 7.31077 20.892 9 20.892L10.3846 20.772V23.928L9 24C7.14646 24.0016 5.31261 23.6706 3.61385 23.028C1.19077 22.128 0 21 0 19.656V12.732C0 11.532 0.913846 10.512 2.76923 9.66C4.68 8.82 6.75692 8.4 9 8.4ZM9 10.8C8.26555 10.8 7.56119 11.0529 7.04186 11.5029C6.52253 11.953 6.23077 12.5635 6.23077 13.2C6.23077 13.8365 6.52253 14.447 7.04186 14.8971C7.56119 15.3471 8.26555 15.6 9 15.6C9.73445 15.6 10.4388 15.3471 10.9581 14.8971C11.4775 14.447 11.7692 13.8365 11.7692 13.2C11.7692 12.5635 11.4775 11.953 10.9581 11.5029C10.4388 11.0529 9.73445 10.8 9 10.8Z"
+                                    fill="#0896D1" />
                             </svg>
                         </span>
-                        <span class="hide-menu">Ekstrakurikuler</span>
+                        <span class="hide-menu">OrangTua</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link {{ request()->routeIs('school.extra-instructor.*') ? 'active' : '' }}" href="{{ route('school.extra-instructor.index') }}" aria-expanded="false">
+                        <span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.39645 3.81763C4.14427 3.81763 3.8167 3.93435 3.34842 4.23796C3.53433 4.45742 3.73125 4.69203 4.12045 5.14058C4.39148 5.45291 4.66505 5.76355 4.87167 5.98845C4.87345 5.99042 4.87425 5.99103 4.87598 5.99295L6.32414 5.15239L5.63733 4.4892C5.10802 4.04839 4.76339 3.83924 4.44586 3.81922C4.42939 3.81818 4.41295 3.81765 4.39645 3.81763ZM10.0252 4.5246C9.98391 4.52415 9.94261 4.5243 9.90131 4.52506C9.411 4.53411 8.95444 4.6296 8.64778 4.77931L5.49487 6.60922C5.60972 6.63472 5.72386 6.66528 5.83645 6.70391C6.64622 6.98155 7.38769 7.55811 8.15995 8.33047L18.3056 18.3383L22.1014 16.2555L12.121 5.22092C11.7152 4.85342 11.0668 4.61586 10.401 4.54621C10.2761 4.53324 10.1507 4.52604 10.0252 4.52464L10.0252 4.5246ZM2.72967 4.81592C1.90734 5.78731 1.76545 6.55902 2.01127 7.48799C2.0437 7.61071 2.15456 7.78597 2.31 7.97877C2.4159 7.82713 2.52668 7.67896 2.64216 7.53449C2.82919 7.30035 3.0352 7.10403 3.25552 6.94583L3.25055 6.93645L3.3803 6.86099C3.4432 6.82086 3.50779 6.78344 3.57389 6.74881L4.1302 6.42585C3.91211 6.1839 3.69643 5.9398 3.48319 5.69356C3.23065 5.40221 2.97944 5.10966 2.72967 4.81592ZM11.359 5.44583L14.0972 8.33661C11.937 8.1005 11.4352 8.95536 10.8616 9.93974L8.17406 7.15986L11.359 5.44583ZM4.86295 7.37014C4.82936 7.36937 4.79576 7.3694 4.76217 7.37024C4.43517 7.37867 4.09622 7.46671 3.71911 7.6461C3.57684 7.75344 3.43833 7.88966 3.30145 8.06103C2.09348 9.57341 1.87411 10.833 2.10689 11.974C2.33967 13.115 3.06952 14.161 3.8842 15.0891C4.5083 15.8001 5.23702 16.2137 6.15633 16.3983C7.07573 16.583 8.19248 16.5253 9.53039 16.2354C11.0888 15.8979 12.6246 16.6301 14.0215 17.5322C15.2458 18.3229 16.3969 19.2708 17.3487 19.8736L17.7607 18.986L7.56445 8.92808L7.56342 8.92705C6.83573 8.19936 6.17756 7.71275 5.5627 7.50196C5.32739 7.42124 5.09747 7.37567 4.86295 7.37014ZM22.0698 17.2353L18.6269 19.1245L18.1356 20.1823L21.4559 18.3819L22.0698 17.2353L22.0698 17.2353Z"
+                                    fill="#0896D1" />
+                            </svg>
+                        </span>
+                        <span class="hide-menu">Pembina Extrakulikuler</span>
                     </a>
                 </li>
 
@@ -182,7 +228,8 @@
                     <a class="sidebar-link {{ request()->routeIs('school.classroom.index') || request()->routeIs('school.class-student.index') ? 'active' : '' }}"
                         href="{{ route('school.classroom.index') }}" aria-expanded="false">
                         <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                viewBox="0 0 256 256">
                                 <path fill="currentColor"
                                     d="M232 212h-20V40a20 20 0 0 0-20-20H64a20 20 0 0 0-20 20v172H24a12 12 0 0 0 0 24h208a12 12 0 0 0 0-24M68 44h120v168H68Zm104 88a16 16 0 1 1-16-16a16 16 0 0 1 16 16" />
                             </svg>
@@ -410,7 +457,16 @@
                                 <div class="round-16 d-flex align-items-center justify-content-center">
                                     <i class="ti ti-circle"></i>
                                 </div>
-                                <span class="hide-menu">Guru</span>
+                                <span class="hide-menu">Staff</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('school.statistic-presence-extracurricular.index') }}"
+                                class="sidebar-link">
+                                <div class="round-16 d-flex align-items-center justify-content-center">
+                                    <i class="ti ti-circle"></i>
+                                </div>
+                                <span class="hide-menu">Ekskul</span>
                             </a>
                         </li>
                     </ul>
@@ -454,6 +510,23 @@
                 </li>
 
                 <li class="sidebar-item">
+                    <a class="sidebar-link {{ request()->routeIs('school.extracurricular-journal.show') || request()->routeIs('school.extracurricular-journal.export') ? 'active' : '' }}"
+                        href="{{ route('school.extracurricular-journal.show') }}" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16">
+                            <g fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M6 8V1h1v6.117L8.743 6.07a.5.5 0 0 1 .514 0L11 7.117V1h1v7a.5.5 0 0 1-.757.429L9 7.083L6.757 8.43A.5.5 0 0 1 6 8" />
+                                <path
+                                    d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+                                <path
+                                    d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
+                            </g>
+                        </svg>
+                        <span class="hide-menu">Jurnal Pembina Ekskul</span>
+                    </a>
+                </li>
+
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('school.feedback') }}" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
                             <path fill="currentColor"
@@ -461,9 +534,9 @@
                         </svg>
                         <span class="hide-menu">Tanggapan Siswa</span>
                     </a>
-                </li>
+                </li> --}}
 
-                <li class="nav-small-cap">
+                {{-- <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Pelanggaran</span>
                 </li>
@@ -476,8 +549,8 @@
                         </svg>
                         <span class="hide-menu">Akses Pelanggaran</span>
                     </a>
-                </li>
-                <li class="sidebar-item">
+                </li> --}}
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link {{ request()->routeIs('school.violation.index') ? 'active' : '' }}"
                         href="{{ route('school.violation.index') }}" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256">
@@ -500,8 +573,25 @@
                         </svg>
                         <span class="hide-menu">Buku Tamu</span>
                     </a>
-                </li>
+                </li> --}}
 
+                <li class="nav-small-cap">
+                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                    <span class="hide-menu">Managemen Ekstrakurikuler</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link {{ request()->routeIs('school.extracurricular.index') || request()->routeIs('school.extracurricular.show') ? 'active' : '' }}"
+                        href="{{ route('school.extracurricular.index') }}" aria-expanded="false">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="m20.65 9.375l-1.4-1.4L20 7.2L16.8 4l-.775.75L14.6 3.325l.75-.775q.575-.575 1.425-.563t1.425.588L21.425 5.8Q22 6.375 22 7.212t-.575 1.413zM8.65 21.4q-.575.575-1.412.575T5.825 21.4L2.6 18.175q-.575-.575-.575-1.412T2.6 15.35l.75-.75l1.425 1.425l-.775.75L7.225 20l.75-.775L9.4 20.65zm9.925-8.4L20 11.575L12.425 4L11 5.425zm-7 7L13 18.55L5.45 11L4 12.425zm-.15-5.85l2.75-2.725l-1.6-1.6l-2.725 2.75zM13 21.4q-.575.575-1.425.575T10.15 21.4L2.6 13.85q-.575-.575-.575-1.425T2.6 11l1.425-1.425Q4.6 9 5.437 9t1.413.575l1.575 1.575l2.75-2.75L9.6 6.85q-.575-.575-.575-1.425T9.6 4l1.425-1.425Q11.6 2 12.438 2t1.412.575l7.575 7.575q.575.575.575 1.412t-.575 1.413L20 14.4q-.575.575-1.425.575T17.15 14.4l-1.55-1.575l-2.75 2.75l1.575 1.575q.575.575.575 1.413t-.575 1.412z" />
+                            </svg>
+                        </span>
+                        <span class="hide-menu">Ekstrakurikuler</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

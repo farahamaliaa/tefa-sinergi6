@@ -42,7 +42,8 @@
                         <div class="img" data-aos="fade-up" data-aos-duration="2000">
                             <img src="{{ $news['image'] }}" alt="image">
                         </div>
-                        {!! $news['description'] !!}
+                        {{-- SECURITY: Sanitize HTML from external API to prevent XSS --}}
+                        {!! strip_tags($news['description'], '<p><br><strong><em><b><i><ul><ol><li><a><h1><h2><h3><h4><h5><h6><blockquote><span><div>') !!}
                     </div>
                 </div>
                 <div class="col-lg-4">

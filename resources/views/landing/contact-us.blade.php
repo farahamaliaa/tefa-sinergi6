@@ -1,167 +1,201 @@
-@extends('layouts.landing.layouts.app')
+@extends('layouts.landing.layouts-landing')
 
 @section('style')
-<style>
-    .contact_list_section .contact_list_inner .icons .dot_anim {
-        background-color: #E02123;
-    }
+    @include('landing.partials.styles')
+    
+    <style>
+        .contact-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .contact_list_section .contact_list_inner .c_list_card:nth-child(1) .dot_anim {
-        background-color: #E02123;
-    }
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .contact-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(37,99,235,0.1) 0%, rgba(139,92,246,0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--primary);
+            font-size: 2rem;
+            transition: all 0.3s;
+        }
 
-    .contact_list_section .contact_list_inner .c_list_card:nth-child(3) .dot_anim {
-        background-color: #E02123;
-    }
+        .contact-card:hover .contact-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--primary);
+            color: white;
+        }
 
+        .contact-label {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
 
-    .btn_main {
-        background: linear-gradient(45deg, #79C7FF, #0896D1);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
+        .contact-text {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
 
-    .btn_main:hover {
-        background: linear-gradient(45deg, #0896D1, #79C7FF);
-    }
+        .contact-link {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
 
-</style>
-@endsection
+        .contact-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
 
-@section('banner')
-<!-- Bread Crumb -->
-<div class="bread_crumb" data-aos="fade-in" data-aos-duration="2000" data-aos-delay="100">
-    <!-- vertical line animation -->
-    <div class="anim_line dark_bg">
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-        <span><img src="{{ asset('landing_assets/images/anim_line.png') }}" alt="anim_line"></span>
-    </div>
+        .modern-form-wrapper {
+            background: white;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px -10px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
 
-    <div class="container">
-        <div class="bred_text">
-            <h1 class="text-primary">Hubungi Kami</h1>
-            <ul>
-                <li><a href="/">Beranda</a></li>
-                <li><span>»</span></li>
-                <li><a href="/contact-us">Hubungi Kami</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+        .form-control-modern {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            color: var(--dark);
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .form-control-modern:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 180px 0 60px;
+            background: radial-gradient(circle at top center, rgba(37,99,235,0.05) 0%, transparent 70%);
+        }
+    </style>
 @endsection
 
 @section('content')
-<!-- contact list Start -->
-<section class="row_am contact_list_section">
-    <div class="container">
 
-        <div class="contact_list_inner" data-aos="fade-up" data-aos-duration="2000" data-aos-delay="100">
-            <!-- card -->
-            <div class="c_list_card">
-                <div class="icons">
-                    <img src="{{ asset('landing_assets/images/new/contact-us/mail.png') }}" width="106px" alt="image">
-                    <div class="dot_block">
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
+<div class="page-header">
+    <div class="container">
+        <span class="hero-label">Hubungi Kami</span>
+        <h1 class="hero-title" style="font-size: 3.5rem;">Mari Terhubung dengan <br> Sinergi6</h1>
+        <p class="hero-desc" style="margin: 0 auto;">Punya pertanyaan atau butuh bantuan? Tim kami siap membantu Anda kapan saja.</p>
+    </div>
+</div>
+
+<section style="padding: 60px 0 100px;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-card">
+                    <div class="contact-icon-wrapper">
+                        <i class="icofont-email"></i>
                     </div>
-                </div>
-                <div class="inner_text">
-                    <h3 class="text-primary">Email</h3>
-                    <p>Hubungi kami melalui email untuk dukungan atau info lebih lanjut
-                    </p>
-                    <a href="mailto:info@hummatech.com" class="text_btn text-primary">info@hummatech.com</a>
+                    <h3 class="contact-label">Email Support</h3>
+                    <p class="contact-text">Kirimkan pertanyaan Anda melalui email, kami akan membalas secepatnya.</p>
+                    <a href="mailto:info@hummatech.com" class="contact-link">info@hummatech.com</a>
                 </div>
             </div>
-            <!-- card -->
-            <div class="c_list_card">
-                <div class="icons">
-                    <img src="{{ asset('landing_assets/images/new/contact-us/location.png') }}" width="106px" alt="image">
-                    <div class="dot_block">
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
+
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="contact-card">
+                    <div class="contact-icon-wrapper">
+                        <i class="icofont-location-pin"></i>
                     </div>
-                </div>
-                <div class="inner_text">
-                    <h3 class="text-primary">Lokasi</h3>
-                    <p>Temukan lokasi kami di bagian Lokasi.
-                    </p>
-                    <a href="https://maps.app.goo.gl/7e2rM6FNLSsX7M379" class="text_btn text-primary">Perum Permata Regency 1 Blok 10/28, Perun Gpa, Ngijo, Kec. Karang Ploso, Kabupaten Malang, Jawa Timur 65152.</a>
+                    <h3 class="contact-label">Kunjungi Kami</h3>
+                    <p class="contact-text">Datang langsung ke kantor pusat kami untuk konsultasi lebih lanjut.</p>
+                    <a href="https://maps.app.goo.gl/7e2rM6FNLSsX7M379" target="_blank" class="contact-link">Lihat di Google Maps</a>
                 </div>
             </div>
-            <!-- card -->
-            <div class="c_list_card">
-                <div class="icons">
-                    <img src="{{ asset('landing_assets/images/new/contact-us/phone.png') }}" width="106px" alt="image">
-                    <div class="dot_block">
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
-                        <span class="dot_anim"></span>
+
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="contact-card">
+                    <div class="contact-icon-wrapper">
+                        <i class="icofont-phone"></i>
                     </div>
-                </div>
-                <div class="inner_text">
-                    <h3 class="text-primary">Nomor Telepon</h3>
-                    <p>Hubungi kami via telepon untuk dukungan atau pertanyaan.
-                    </p>
-                    <a href="tel: 085176777785" class="text_btn text-primary">085176777785</a>
+                    <h3 class="contact-label">Telepon</h3>
+                    <p class="contact-text">Butuh bantuan mendesak? Hubungi layanan pelanggan kami.</p>
+                    <a href="tel:085176777785" class="contact-link">0851-7677-7785</a>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
-<!-- contact list End -->
 
-<!-- Contact Us form Start -->
-<section class="contact_form_section" style="padding-bottom: 200px;">
+<section style="padding-bottom: 120px;">
     <div class="container">
-        <div class="contact_inner">
-            <div class="contact_form">
-                <div class="section_title">
-                    <h2 class="text-primary">Tuliskan Pesanmu</h2>
-                    <p>Hubungi kami untuk bantuan, pertanyaan, atau informasi lebih lanjut</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="modern-form-wrapper" data-aos="fade-up">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title">Kirim Pesan</h2>
+                        <p class="section-desc">Silakan isi formulir di bawah ini, kami akan segera merespon pesan Anda.</p>
+                    </div>
+
+                    <form action="{{ route('store.send.email') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('post')
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mb-2 fw-bold text-secondary">Nama Lengkap</label>
+                                    <input type="text" name="name" class="form-control-modern" placeholder="Masukkan nama Anda" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mb-2 fw-bold text-secondary">Email</label>
+                                    <input type="email" name="email" class="form-control-modern" placeholder="name@example.com" required>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="mb-2 fw-bold text-secondary">Pesan</label>
+                                    <textarea name="description" class="form-control-modern" style="height: 180px; resize: none;" placeholder="Tuliskan pesan atau pertanyaan Anda di sini..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button class="btn-glow" type="submit" style="min-width: 200px;">
+                                    Kirim Pesan <i class="icofont-paper-plane ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <form action="{{ route('store.send.email') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('post')
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" placeholder="Nama" name="name" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="email" placeholder="Email" name="email" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <textarea class="form-control" style="height: 250px;" name="description" placeholder="Tuliskan pesanmu disini..."></textarea>
-                    </div>
-
-                    <div class="form-group ">
-                        <button class="btn btn_main" type="submit">Kirim Pesan <i class="icofont-arrow-right"></i></button>
-                    </div>
-                </form>
             </div>
-
-
         </div>
     </div>
 </section>
-<!-- Contact Us form End -->
+
 @endsection
