@@ -174,18 +174,18 @@
         </div>
     </div>
     <!-- <div class="row me-3">
-                        <div class="col-lg-6 col-md-12 mb-3">
-                            <div class="d-flex align-items-center">
-                                <span class="mb-1 badge bg-primary p-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
-                                        <path fill="currentColor"
-                                            d="M12 7q-.825 0-1.412-.587T10 5t.588-1.412T12 3t1.413.588T14 5t-.587 1.413T12 7m0 14q-.625 0-1.062-.437T10.5 19.5v-9q0-.625.438-1.062T12 9t1.063.438t.437 1.062v9q0 .625-.437 1.063T12 21" />
-                                    </svg>
-                                </span>
-                                <h5 class="fw-semibold mb-0" style="font-size: 18px" >Daftar Siswa Mengikuti Ekstrakurikuler</h5>
-                            </div>
-                        </div>
-                    </div> -->
+                                <div class="col-lg-6 col-md-12 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="mb-1 badge bg-primary p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M12 7q-.825 0-1.412-.587T10 5t.588-1.412T12 3t1.413.588T14 5t-.587 1.413T12 7m0 14q-.625 0-1.062-.437T10.5 19.5v-9q0-.625.438-1.062T12 9t1.063.438t.437 1.062v9q0 .625-.437 1.063T12 21" />
+                                            </svg>
+                                        </span>
+                                        <h5 class="fw-semibold mb-0" style="font-size: 18px" >Daftar Siswa Mengikuti Ekstrakurikuler</h5>
+                                    </div>
+                                </div>
+                            </div> -->
     <div class="card card-body">
         <h4 class="mb-4">Jadwal Kegiatan Ekstrakulikuler {{ $extracurricular->name }}</h4>
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
@@ -194,7 +194,7 @@
                     <label class="form-label">Hari</label>
                     <select name="day" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Hari</option>
-                        @foreach(App\Enums\DayEnum::cases() as $day)
+                        @foreach (App\Enums\DayEnum::cases() as $day)
                             <option value="{{ $day->value }}" {{ request('day') == $day->value ? 'selected' : '' }}>
                                 {{ ucfirst($day->label()) }}
                             </option>
@@ -220,12 +220,12 @@
                     </button>
                 </div>
             </form>
-            <div>
+            {{-- <div>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#modal-create-schedule">
                     <i class="ti ti-plus"></i> Tambah Jadwal
                 </button>
-            </div>
+            </div> --}}
         </div>
 
         <div class="table-responsive rounded-2 mb-4 pt-2">
@@ -236,7 +236,7 @@
                         <th class="fs-4 fw-semibold mb-0 text-white" style="background-color: #0896D1;">Hari</th>
                         <th class="fs-4 fw-semibold mb-0 text-white" style="background-color: #0896D1;">Jam Mulai</th>
                         <th class="fs-4 fw-semibold mb-0 text-white" style="background-color: #0896D1;">Jam Selesai</th>
-                        <th class="fs-4 fw-semibold mb-0 text-white" style="background-color: #0896D1;">Aksi</th>
+                        {{-- <th class="fs-4 fw-semibold mb-0 text-white" style="background-color: #0896D1;">Aksi</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -246,7 +246,7 @@
                             <td>{{ ucfirst(App\Enums\DayEnum::tryFrom($schedule->day)?->label() ?? $schedule->day) }}</td>
                             <td>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}</td>
                             <td>{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}</td>
-                            <td>
+                            {{-- <td>
                                 <form action="{{ route('school.extracurricular-schedule.destroy', $schedule->id) }}"
                                     method="POST" class="d-inline"
                                     onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
@@ -256,13 +256,14 @@
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </form>
-                            </td>
+                            </td> --}}
                         </tr>
                     @empty
                         <tr>
                             <td colspan="5" class="text-center align-middle">
                                 <div class="d-flex flex-column justify-content-center align-items-center py-3">
-                                    <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="150px">
+                                    <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                        width="150px">
                                     <p class="fs-5 text-dark text-center mt-2">
                                         Belum ada jadwal
                                     </p>
@@ -290,8 +291,8 @@
                 <div class="col-12 col-md-6 col-lg-4 me-3">
                     <form class="d-flex gap-2" action="/school/extracurricular/{{ $extracurricular->id }}">
                         <div class="position-relative w-70">
-                            <input type="text" name="name" class="form-control product-search ps-5" id="input-search"
-                                placeholder="Cari..." value="{{ old('name', request()->name) }}">
+                            <input type="text" name="name" class="form-control product-search ps-5"
+                                id="input-search" placeholder="Cari..." value="{{ old('name', request()->name) }}">
                             <i
                                 class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </div>
@@ -301,12 +302,13 @@
             </div>
             <div class="col-12 col-lg-3 d-flex justify-content-end gap-2 mb-2">
                 <!-- <button type="button" class="btn btn-import " data-bs-toggle="modal" data-bs-target="#modal-import">
-                                <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                Import Siswa
-                            </button> -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-student">
+                                        <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Import Siswa
+                                    </button> -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modal-create-student">
                     <i class="ti ti-plus"></i> Tambah Siswa
                 </button>
             </div>
@@ -341,50 +343,51 @@
                                     data-id="{{ $extracurricularStudent->id }}"><i
                                         class="fs-4 ti ti-trash bg-light-danger p-2 rounded-2"></i></a>
                                 <!-- <div class="dropdown dropstart">
-                                                                <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    <div class="category">
-                                                                        <div class="category-business"></div>
-                                                                        <div class="category-social"></div>
-                                                                        <span class="more-options text-dark">
-                                                                            <i class="ti ti-dots-vertical fs-5"></i>
-                                                                        </span>
-                                                                    </div>
-                                                                </a>
-                                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                                    <li>
-                                                                        <a type="button" class="dropdown-item d-flex align-items-center gap-3 btn-detail"
-                                                                            data-image="{{ $extracurricularStudent->student->image ? asset('storage/' . $extracurricularStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
-                                                                            data-name="{{ $extracurricularStudent->student->user->name }}"
-                                                                            data-email="{{ $extracurricularStudent->student->user->email }}"
-                                                                            data-nisn="{{ $extracurricularStudent->student->nisn }}"
-                                                                            data-classroom="{{ $extracurricularStudent->student->classroomStudents->isNotEmpty() ? $extracurricularStudent->student->classroomStudents->first()->classroom->name : '-' }}"
-                                                                            data-gender="{{ $extracurricularStudent->student->gender->label() }}"
-                                                                            data-religion="{{ $extracurricularStudent->student->religion->name }}"
-                                                                            data-birthdate="{{ $extracurricularStudent->student->birth_date }}"
-                                                                            data-birthplace="{{ $extracurricularStudent->student->birth_place }}"
-                                                                            data-number_kk="{{ $extracurricularStudent->student->number_kk }}"
-                                                                            data-nik="{{ $extracurricularStudent->student->nik }}"
-                                                                            data-order_child="{{ $extracurricularStudent->student->order_child }}"
-                                                                            data-number_akta="{{ $extracurricularStudent->student->number_akta }}"
-                                                                            data-count_sibling="{{ $extracurricularStudent->student->count_siblings }}"
-                                                                            data-address="{{ $extracurricularStudent->student->address }}">
-                                                                            <i class="fs-4 ti ti-eye"></i>Detail
+                                                                        <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                                                            aria-expanded="false">
+                                                                            <div class="category">
+                                                                                <div class="category-business"></div>
+                                                                                <div class="category-social"></div>
+                                                                                <span class="more-options text-dark">
+                                                                                    <i class="ti ti-dots-vertical fs-5"></i>
+                                                                                </span>
+                                                                            </div>
                                                                         </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a class="btn-delete-student dropdown-item d-flex align-items-center text-danger gap-3"
-                                                                            data-id="{{ $extracurricularStudent->id }}"><i
-                                                                                class="fs-4 ti ti-trash"></i>Hapus</a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div> -->
+                                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                            <li>
+                                                                                <a type="button" class="dropdown-item d-flex align-items-center gap-3 btn-detail"
+                                                                                    data-image="{{ $extracurricularStudent->student->image ? asset('storage/' . $extracurricularStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
+                                                                                    data-name="{{ $extracurricularStudent->student->user->name }}"
+                                                                                    data-email="{{ $extracurricularStudent->student->user->email }}"
+                                                                                    data-nisn="{{ $extracurricularStudent->student->nisn }}"
+                                                                                    data-classroom="{{ $extracurricularStudent->student->classroomStudents->isNotEmpty() ? $extracurricularStudent->student->classroomStudents->first()->classroom->name : '-' }}"
+                                                                                    data-gender="{{ $extracurricularStudent->student->gender->label() }}"
+                                                                                    data-religion="{{ $extracurricularStudent->student->religion->name }}"
+                                                                                    data-birthdate="{{ $extracurricularStudent->student->birth_date }}"
+                                                                                    data-birthplace="{{ $extracurricularStudent->student->birth_place }}"
+                                                                                    data-number_kk="{{ $extracurricularStudent->student->number_kk }}"
+                                                                                    data-nik="{{ $extracurricularStudent->student->nik }}"
+                                                                                    data-order_child="{{ $extracurricularStudent->student->order_child }}"
+                                                                                    data-number_akta="{{ $extracurricularStudent->student->number_akta }}"
+                                                                                    data-count_sibling="{{ $extracurricularStudent->student->count_siblings }}"
+                                                                                    data-address="{{ $extracurricularStudent->student->address }}">
+                                                                                    <i class="fs-4 ti ti-eye"></i>Detail
+                                                                                </a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a class="btn-delete-student dropdown-item d-flex align-items-center text-danger gap-3"
+                                                                                    data-id="{{ $extracurricularStudent->id }}"><i
+                                                                                        class="fs-4 ti ti-trash"></i>Hapus</a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div> -->
                             </td>
                         </tr>
                     @empty
                         <td colspan="7" class="text-center align-middle">
                             <div class="d-flex flex-column justify-content-center align-items-center">
-                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
+                                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                    width="300px">
                                 <p class="fs-5 text-dark text-center mt-2">
                                     Belum ada data
                                 </p>
@@ -417,9 +420,9 @@
             <h4><i class="ti ti-notebook me-2"></i>Jurnal Pembina</h4>
         </div>
 
-        @if(isset($journals) && $journals->count() > 0)
+        @if (isset($journals) && $journals->count() > 0)
             <div class="row">
-                @foreach($journals as $journal)
+                @foreach ($journals as $journal)
                     <div class="col-md-6 mb-4">
                         <div class="card h-100 border">
                             <div class="card-header text-white" style="background-color: #0896D1;">
