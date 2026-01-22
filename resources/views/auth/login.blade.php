@@ -20,7 +20,7 @@
         .welcome-title {
             font-size: 1.9rem;
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.4;
             text-align: left;
         }
 
@@ -61,7 +61,7 @@
 
         .decoration {
             position: absolute;
-            z-index: 1;
+            z-index: 0;
             opacity: 0.9;
         }
 
@@ -79,11 +79,9 @@
         }
 
         #welcomeText {
-            white-space: nowrap;
             display: block;
             width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            padding: 0 0 15px 0;
         }
 
         #welcomeText span {
@@ -154,11 +152,11 @@
             <div class="position-relative z-index-5">
                 <div class="row g-0">
 
-                    <div class="col-xl-7 col-xxl-8 d-none d-xl-flex align-items-center justify-content-center bg-custom p-5">
+                    <div class="col-xl-7 col-xxl-7 d-none d-xl-flex align-items-center justify-content-center bg-custom p-5">
                         <img src="{{ asset('assets/images/frame.png') }}" alt="" class="img-fluid" width="600" />
                     </div>
 
-                    <div class="col-12 col-xl-5 col-xxl-4" id="loginSection"
+                    <div class="col-12 col-xl-5 col-xxl-5" id="loginSection"
                         style="opacity: 0; transform: translateX(100px); transition: all 0.8s ease;">
 
                         <div class="authentication-login min-vh-100 bg-body d-flex justify-content-center align-items-center p-5 position-relative">
@@ -166,12 +164,12 @@
                             <img src="{{ asset('assets/images/rectangle1.png') }}" class="decoration decoration-left">
                             <img src="{{ asset('assets/images/rectangle2.png') }}" class="decoration decoration-right">
 
-                            <div class="col-sm-10 col-md-8 col-xl-10">
+                            <div class="col-sm-10 col-md-8 col-xl-10" style="z-index: 1;">
 
                                 <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Logo" width="300"
-                                    class="mb-4" />
+                                    class="mb-4" style="z-index: 1;"/>
 
-                                <h2 id="welcomeText" class="welcome-title"></h2>
+                                <h3 id="welcomeText" class="welcome-title"></h3>
 
                                 <p class="text-start">Akses dashboard sekolah Anda dengan login di bawah ini.</p>
 
@@ -203,7 +201,7 @@
                                     <div class="form-check mb-4">
                                         <input class="form-check-input" type="checkbox" name="remember" id="remember"
                                             {{ old('remember') ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="remember"> Remember me </label>
+                                        <label class="form-check-label" for="remember"> Ingat Saya </label>
                                     </div>
 
                                     <div id="failed-login" class="text-center error-text mb-3"></div>
@@ -235,7 +233,7 @@
                 toggle.classList.toggle("bi-eye-slash");
             });
 
-            const text = "Welcome To School Portal";
+
             const container = document.getElementById("welcomeText");
             const loginSection = document.getElementById("loginSection");
 
@@ -245,22 +243,30 @@
             }, 200);
 
             setTimeout(() => {
-                const words = text.split(" ");
+                const segments = ["Selamat Datang", "Di Website", "Manajemen Sekolah"];
                 let delay = 0;
 
-                words.forEach(word => {
-                    const spanWord = document.createElement("span");
-                    spanWord.style.marginRight = "0.5rem";
-                    container.appendChild(spanWord);
+                segments.forEach(segment => {
+                    const spanSegment = document.createElement("span");
+                    spanSegment.style.marginRight = "0.5rem";
+                    spanSegment.style.whiteSpace = "nowrap";
+                    container.appendChild(spanSegment);
+                    
+                    container.appendChild(document.createTextNode("\u200B"));
 
-                    [...word].forEach(char => {
+                    [...segment].forEach(char => {
                         const charSpan = document.createElement("span");
-                        charSpan.textContent = char;
+                        if (char === " ") {
+                            charSpan.innerHTML = "&nbsp;";
+                        } else {
+                            charSpan.textContent = char;
+                        }
+                        
                         charSpan.style.opacity = 0;
                         charSpan.style.display = "inline-block";
                         charSpan.style.transform = "translateY(10px)";
                         charSpan.style.transition = "all 0.3s ease";
-                        spanWord.appendChild(charSpan);
+                        spanSegment.appendChild(charSpan);
 
                         setTimeout(() => {
                             charSpan.style.opacity = 1;
