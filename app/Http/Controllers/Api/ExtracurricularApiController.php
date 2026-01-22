@@ -228,11 +228,7 @@ class ExtracurricularApiController extends Controller
             ->find($extracurricularId);
 
         if (!$extracurricular) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Ekstrakurikuler tidak ditemukan',
-                'code' => 404
-            ], 404);
+            return ResponseHelper::notFound('Ekstrakurikuler tidak ditemukan');
         }
 
         $date = $request->date ?? Carbon::today()->format('Y-m-d');
