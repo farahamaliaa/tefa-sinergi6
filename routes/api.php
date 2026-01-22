@@ -45,6 +45,12 @@ Route::post('login', [LoginApiController::class, 'login'])->middleware('throttle
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user-detail/{user}', [LoginApiController::class, 'user_detail']);
     
+    // Profile Routes
+    Route::get('profile/{user}', [\App\Http\Controllers\Api\ProfileApiController::class, 'getProfile']);
+    Route::put('profile/{user}', [\App\Http\Controllers\Api\ProfileApiController::class, 'updateProfile']);
+    Route::post('profile/{user}/password', [\App\Http\Controllers\Api\ProfileApiController::class, 'changePassword']);
+    Route::post('profile/{user}/photo', [\App\Http\Controllers\Api\ProfileApiController::class, 'updatePhoto']);
+    
     // Protected Attendance routes (admin only)
     Route::get('attendance/rfids', [RfidApiController::class, 'index'])->name('rfid.account');
     Route::get('attendance/list', [AttendanceController::class, 'listAttendance']);
