@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Extracurricular;
 use App\Models\ExtracurricularJournal;
@@ -18,12 +19,11 @@ class ExtracurricularApiController extends Controller
     {
         $user = auth()->user();
         if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return ResponseHelper::error('Unauthorized', 401);
         }
 
         $extracurriculars = collect();
 
-        // If user is staff, show all extracurriculars
         if ($user->hasRole('staff')) {
             $extracurriculars = Extracurricular::with('extracurricularStudents')
                 ->latest()
@@ -50,20 +50,10 @@ class ExtracurricularApiController extends Controller
         });
 
         if ($data->isEmpty()) {
-             return response()->json([
-                'status' => 'success',
-                'message' => 'User bukan pembina ekstrakurikuler',
-                'code' => 200,
-                'data' => []
-            ]);
+             return ResponseHelper::success([], 'User bukan pembina ekstrakurikuler');
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data',
-            'code' => 200,
-            'data' => $data
-        ]);
+        return ResponseHelper::success($data);
     }
 
 
@@ -75,11 +65,7 @@ class ExtracurricularApiController extends Controller
         ])->find($extracurricularId);
 
         if (!$extracurricular) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Ekstrakurikuler tidak ditemukan',
-                'code' => 404
-            ], 404);
+            return ResponseHelper::notFound('Ekstrakurikuler tidak ditemukan');
         }
 
         $students = $extracurricular->extracurricularStudents->map(function ($es) {
@@ -290,12 +276,10 @@ class ExtracurricularApiController extends Controller
 
         $date = $request->date ?? Carbon::today()->format('Y-m-d');
 
-        // Find the journal for this extracurricular and date
         $journal = ExtracurricularJournal::where('extracurricular_id', $extracurricularId)
             ->whereDate('date', $date)
             ->first();
 
-        // Get attendance records for this journal if it exists
         $attendances = collect();
         if ($journal) {
             $attendances = ExtracurricularAttendance::where('extracurricular_journal_id', $journal->id)
@@ -355,7 +339,6 @@ class ExtracurricularApiController extends Controller
             $dataToUpdate['image'] = $imagePath;
         }
 
-        // Create or update journal
         $journal = ExtracurricularJournal::updateOrCreate(
             [
                 'extracurricular_id' => $request->extracurricular_id,
@@ -365,7 +348,6 @@ class ExtracurricularApiController extends Controller
             $dataToUpdate
         );
 
-        // Store attendance
         foreach ($request->attendance as $att) {
             ExtracurricularAttendance::updateOrCreate(
                 [
@@ -396,7 +378,6 @@ class ExtracurricularApiController extends Controller
             'attendance.*' => 'required|string|in:present,permit,sick,alpha',
         ]);
 
-        // Find existing journal
         $journal = ExtracurricularJournal::where('extracurricular_id', $request->extracurricular_id)
             ->whereDate('date', $request->date)
             ->first();
@@ -490,10 +471,8 @@ class ExtracurricularApiController extends Controller
     {
         $extracurricular = Extracurricular::findOrFail($extracurricularId);
         
-        // Get all student IDs enrolled in this extracurricular
         $studentIds = $extracurricular->extracurricularStudents()->pluck('student_id');
 
-        // Get permissions for these students
         $permissions = \App\Models\StudentPermission::whereIn('student_id', $studentIds)
             ->with(['student.user', 'classroom'])
             ->latest()
@@ -504,11 +483,11 @@ class ExtracurricularApiController extends Controller
                     'student_name' => $perm->student->user ? $perm->student->user->name : '-',
                     'class_name' => $perm->classroom ? $perm->classroom->name : '-',
                     'gender' => $perm->student->gender ?? '-',
-                    'type' => $perm->permission_type, // sick, permit, etc.
-                    'status' => $perm->status, // pending, approved_by, rejected
+                    'type' => $perm->permission_type,
+                    'status' => $perm->status,
                     'date' => $perm->date,
-                    'duration' => '1 Hari', // Simplification, usually calculated
-                    'description' => $perm->proof, // Using proof as description/reason
+                    'duration' => '1 Hari',
+                    'description' => $perm->proof,
                     'attachment_url' => $perm->proof_image ? asset('storage/' . $perm->proof_image) : null,
                 ];
             });
@@ -550,7 +529,6 @@ class ExtracurricularApiController extends Controller
             ], 404);
         }
 
-        // Normalize status
         $status = $request->status;
         if ($status == 'disetujui') $status = 'approved';
         if ($status == 'ditolak') $status = 'rejected';

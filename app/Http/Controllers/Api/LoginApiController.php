@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Interfaces\EmployeeInterface;
 use App\Contracts\Interfaces\StudentInterface;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
@@ -21,9 +22,6 @@ class LoginApiController extends Controller
         $this->employee = $employee;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
@@ -32,30 +30,27 @@ class LoginApiController extends Controller
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken($request->email)->plainTextToken;
-                return response()->json([
-                    'message' => 'Berhasil login',
+                return ResponseHelper::success([
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->first()->name,
                     'token' => $token,
-                    'data' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role' => $user->roles->first()->name,
-                        'image' => match($user->roles->first()->name) {
-                            'student' => $user->student && $user->student->image 
-                                ? asset($fullDomain.'/storage/'.$user->student->image) 
-                                : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
-                            'parent' => asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'), // Parent doesn't have image yet, use default
-                            default => $user->employee && $user->employee->image 
-                                ? asset($fullDomain.'/storage/'.$user->employee->image) 
-                                : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
-                        },
-                    ],
-                ]);
+                    'image' => match($user->roles->first()->name) {
+                        'student' => $user->student && $user->student->image 
+                            ? asset($fullDomain.'/storage/'.$user->student->image) 
+                            : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                        'parent' => asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                        default => $user->employee && $user->employee->image 
+                            ? asset($fullDomain.'/storage/'.$user->employee->image) 
+                            : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                    },
+                ], 'Berhasil login');
             } else {
-                return response()->json(['message' => 'Email atau password salah'], 401);
+                return ResponseHelper::error('Email atau password salah', 401);
             }
         } else {
-            return response()->json(['message' => 'Email atau password salah'], 401);
+            return ResponseHelper::error('Email atau password salah', 401);
         }
     }
 
@@ -65,9 +60,9 @@ class LoginApiController extends Controller
         
         if ($role == 'student') {
             $student = $this->student->whereUserId($user->id);
-            if (!$student) return response()->json(['message' => 'Data siswa tidak ditemukan'], 404);
+            if (!$student) return ResponseHelper::notFound('Data siswa tidak ditemukan');
             
-            return response()->json(['status' => 'success', 'message' => "Data Berhasil di Tambahkan", 'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'nisn' => $student->nisn,
                 'class' => optional($student->classroomStudents()->latest()->first()->classroom)->name,
                 'gender' => $student->gender->label(),
@@ -80,29 +75,28 @@ class LoginApiController extends Controller
                 'number_akta' => $student->number_akta,
                 'count_siblings' => $student->count_siblings,
                 'address' => $student->address,
-            ]]);
+            ]);
         } elseif ($role == 'parent') {
             $parent = \App\Models\Parents::where('user_id', $user->id)->first();
-            return response()->json(['status' => 'success', 'message' => "Data Berhasil Diambil", 'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $parent->phone ?? '-',
                 'address' => $parent->address ?? '-',
                 'role' => 'Wali Murid',
-            ]]);
+            ]);
         } else {
-            // Employee (Teacher/Staff)
             $employee = $this->employee->getByUser($user->id);
-            if (!$employee) return response()->json(['message' => 'Data pegawai tidak ditemukan'], 404);
+            if (!$employee) return ResponseHelper::notFound('Data pegawai tidak ditemukan');
             
-            return response()->json(['status' => 'success', 'message' => "Data Berhasil di Tambahkan", 'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'nip' => $employee->nip,
                 'birth_date' => $employee->birth_date ? Carbon::parse($employee->birth_date)->format('d-m-Y') : null,
                 'nik' => $employee->nik,
                 'phone_number' => $employee->phone_number,
                 'address' => $employee->address,
                 'religion' => optional($employee->religion)->name,
-            ]]);
+            ]);
         }
     }
 }

@@ -8,12 +8,12 @@ use App\Models\Classroom;
 use App\Models\LessonSchedule;
 use App\Models\StudentPermission;
 use App\Models\User;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class ParentController extends Controller
 {
-    //Get /api/parents
     public function index(Request $request)
     {
         if (!$request->expectsJson()) {
@@ -31,7 +31,6 @@ class ParentController extends Controller
         return Parents::with(['user', 'students.classroomStudents.classroom'])->get();
     }
 
-    //Get /api/parents{id}
     public function store(Request $request)
     {
         $request->validate([
@@ -45,7 +44,6 @@ class ParentController extends Controller
         ]);
 
         $slug = \Illuminate\Support\Str::slug($request->name);
-        // Ensure unique slug
         $count = User::where('slug', 'LIKE', "{$slug}%")->count();
         if ($count > 0) {
             $slug .= '-' . ($count + 1);
@@ -72,7 +70,7 @@ class ParentController extends Controller
         }
 
         if ($request->expectsJson()) {
-             return response()->json(['message' => 'Berhasil menambahkan data orang tua', 'data' => $parent], 201);
+             return ResponseHelper::created($parent, 'Berhasil menambahkan data orang tua');
         }
 
         return redirect()->back()->with('success', 'Berhasil menambahkan data orang tua');
@@ -83,13 +81,12 @@ class ParentController extends Controller
         $parent = Parents::with('students')->findOrFail($id);
 
         if ($request->expectsJson()) {
-            return response()->json($parent);
+            return ResponseHelper::success($parent);
         };
 
         return view('school.pages.parent.show', compact('parent'));
     }
 
-    //post /api/parents{id}/students
     public function attachStudent(Request $request, $id)
     {
         $parent = Parents::findOrFail($id);
@@ -100,7 +97,7 @@ class ParentController extends Controller
 
         $parent->students()->syncWithoutDetaching([$validated['student_id']]);
 
-        return response()->json([
+        return ResponseHelper::success([
             'message' => 'Student linked to parent successfully',
             'data' => $parent->load('students'),
         ]);
@@ -111,9 +108,7 @@ class ParentController extends Controller
         $parent = Parents::findOrFail($id);
         $parent->students()->detach($studentId);
 
-        return response()->json([
-            'message' => 'Student Unliked from parent succesfully',
-        ]);
+        return ResponseHelper::success(null, 'Student Unliked from parent successfully');
     }
 
     public function getChildren(User $user)
@@ -146,10 +141,7 @@ class ParentController extends Controller
             ];
         });
         
-        return response()->json([
-            'success' => true,
-            'data' => $childrenData,
-        ]);
+        return ResponseHelper::success($childrenData);
     }
 
     public function getChildLessons(User $user, Student $student)
@@ -195,12 +187,6 @@ class ParentController extends Controller
             return $daySchedules->map(function ($schedule) {
                 $employee = $schedule->teacherSubject->employee;
                 
-                // Extract proper hour numbers
-                // If IDs are 43, 85 etc, we should extract the actual number if possible, 
-                // but since we don't have the logic handy here without helper, let's try to parse from name if available
-                // or just rely on the count/index if needed. 
-                // Ideally, we should use the same logic as WeeklyScheduleResource.
-                
                 $startHour = $schedule->start ? $this->extractHourNumber($schedule->start->name) : $schedule->lesson_hour_start;
                 $endHour = $schedule->end ? $this->extractHourNumber($schedule->end->name) : $schedule->lesson_hour_end;
                 
@@ -225,19 +211,16 @@ class ParentController extends Controller
             });
         });
         
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'student' => [
-                    'id' => $student->id,
-                    'name' => $student->user->name ?? $student->name,
-                ],
-                'classroom' => [
-                    'id' => $classroom->id,
-                    'name' => $classroom->name,
-                ],
-                'schedules' => $schedulesByDay,
+        return ResponseHelper::success([
+            'student' => [
+                'id' => $student->id,
+                'name' => $student->user->name ?? $student->name,
             ],
+            'classroom' => [
+                'id' => $classroom->id,
+                'name' => $classroom->name,
+            ],
+            'schedules' => $schedulesByDay,
         ]);
     }
 
@@ -256,10 +239,7 @@ class ParentController extends Controller
         $isMyChild = $parent->students()->where('students.id', $validated['student_id'])->exists();
         
         if (!$isMyChild) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki akses untuk mengajukan izin untuk siswa ini',
-            ], 403);
+            return ResponseHelper::error('Anda tidak memiliki akses untuk mengajukan izin untuk siswa ini', 403);
         }
         
         $student = Student::find($validated['student_id']);
@@ -289,11 +269,10 @@ class ParentController extends Controller
             'date' => $validated['date'],
         ]);
         
-        return response()->json([
-            'success' => true,
-            'message' => 'Permohonan izin berhasil diajukan dan menunggu persetujuan wali kelas',
-            'data' => $permission->load(['student', 'submittedBy']),
-        ], 201);
+        return ResponseHelper::created(
+            $permission->load(['student', 'submittedBy']),
+            'Permohonan izin berhasil diajukan dan menunggu persetujuan wali kelas'
+        );
     }
 
     public function getPermissionHistory(User $user)
@@ -338,10 +317,7 @@ class ParentController extends Controller
                 ];
             });
         
-        return response()->json([
-            'success' => true,
-            'data' => $permissions,
-        ]);
+        return ResponseHelper::success($permissions);
     }
 
     /**
@@ -356,36 +332,29 @@ class ParentController extends Controller
         $parent = Parents::where('user_id', $user->id)->first();
         
         if (!$parent) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data orang tua tidak ditemukan',
-            ], 404);
+            return ResponseHelper::notFound('Data orang tua tidak ditemukan');
         }
 
         $children = $parent->students()->with(['user', 'classroomStudents.classroom'])->get();
         $childrenCount = $children->count();
         
-        // Count pending permissions
         $studentIds = $children->pluck('id');
         $pendingPermissions = StudentPermission::whereIn('student_id', $studentIds)
             ->where('status', 'pending')
             ->count();
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'parent_name' => $user->name,
-                'children_count' => $childrenCount,
-                'pending_permissions' => $pendingPermissions,
-                'children_summary' => $children->map(function ($child) {
-                    $classroom = $child->classroomStudents->first()?->classroom;
-                    return [
-                        'id' => $child->id,
-                        'name' => $child->user->name ?? $child->name ?? null,
-                        'classroom' => $classroom?->name,
-                    ];
-                }),
-            ],
+        return ResponseHelper::success([
+            'parent_name' => $user->name,
+            'children_count' => $childrenCount,
+            'pending_permissions' => $pendingPermissions,
+            'children_summary' => $children->map(function ($child) {
+                $classroom = $child->classroomStudents->first()?->classroom;
+                return [
+                    'id' => $child->id,
+                    'name' => $child->user->name ?? $child->name ?? null,
+                    'classroom' => $classroom?->name,
+                ];
+            }),
         ]);
     }
 
@@ -401,18 +370,15 @@ class ParentController extends Controller
         $parent = Parents::where('user_id', $user->id)->first();
         $fullDomain = request()->root();
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $parent?->phone ?? null,
-                'address' => $parent?->address ?? null,
-                'image' => $user->image 
-                    ? asset($fullDomain . '/storage/' . $user->image) 
-                    : asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
-            ],
+        return ResponseHelper::success([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $parent?->phone ?? null,
+            'address' => $parent?->address ?? null,
+            'image' => $user->image 
+                ? asset($fullDomain . '/storage/' . $user->image) 
+                : asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
         ]);
     }
 
@@ -439,31 +405,28 @@ class ParentController extends Controller
         $classroomStudent = $student->classroomStudents->first();
         $fullDomain = request()->root();
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $student->id,
-                'user_id' => $student->user_id,
-                'name' => optional($student->user)->name,
-                'email' => optional($student->user)->email,
-                'nisn' => $student->nisn,
-                'nik' => $student->nik,
-                'image' => $student->image 
-                    ? asset($fullDomain . '/storage/' . $student->image) 
-                    : null,
-                'gender' => $student->gender?->value,
-                'gender_label' => $student->gender ? $student->gender->label() : null,
-                'religion_id' => $student->religion_id,
-                'religion_name' => optional($student->religion)->name,
-                'birth_date' => $student->birth_date,
-                'birth_place' => $student->birth_place,
-                'address' => $student->address,
-                'point' => $student->point ?? 0,
-                'classroom' => $classroomStudent ? [
-                    'id' => $classroomStudent->classroom->id,
-                    'name' => $classroomStudent->classroom->name,
-                ] : null,
-            ],
+        return ResponseHelper::success([
+            'id' => $student->id,
+            'user_id' => $student->user_id,
+            'name' => optional($student->user)->name,
+            'email' => optional($student->user)->email,
+            'nisn' => $student->nisn,
+            'nik' => $student->nik,
+            'image' => $student->image 
+                ? asset($fullDomain . '/storage/' . $student->image) 
+                : null,
+            'gender' => $student->gender?->value,
+            'gender_label' => $student->gender ? $student->gender->label() : null,
+            'religion_id' => $student->religion_id,
+            'religion_name' => optional($student->religion)->name,
+            'birth_date' => $student->birth_date,
+            'birth_place' => $student->birth_place,
+            'address' => $student->address,
+            'point' => $student->point ?? 0,
+            'classroom' => $classroomStudent ? [
+                'id' => $classroomStudent->classroom->id,
+                'name' => $classroomStudent->classroom->name,
+            ] : null,
         ]);
     }
 
@@ -495,7 +458,6 @@ class ParentController extends Controller
             ], 404);
         }
 
-        // Get attendance from the relationship
         $attendances = $classroomStudent->attendances()
             ->orderBy('created_at', 'desc')
             ->take(30)
@@ -518,29 +480,21 @@ class ParentController extends Controller
                 ];
             });
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'student' => [
-                    'id' => $student->id,
-                    'name' => $student->user->name ?? $student->name,
-                ],
-                'attendances' => $attendances,
+        return ResponseHelper::success([
+            'student' => [
+                'id' => $student->id,
+                'name' => $student->user->name ?? $student->name,
             ],
+            'attendances' => $attendances,
         ]);
     }
 
-    /**
-     * Extract hour number from lesson hour name
-     * e.g., "Jam - 1" -> "1"
-     */
     private function extractHourNumber($name)
     {
         if (!$name) {
             return '';
         }
         
-        // Try to extract number from name like "Jam - 1"
         if (preg_match('/(\d+)/', $name, $matches)) {
             return $matches[1];
         }

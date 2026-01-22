@@ -6,6 +6,7 @@ use App\Contracts\Interfaces\AttendanceJournalInterface;
 use App\Contracts\Interfaces\ClassroomStudentInterface;
 use App\Contracts\Interfaces\LessonScheduleInterface;
 use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
+use App\Helpers\ResponseHelper;
 use App\Http\Resources\ClassroomStudentResource;
 use App\Http\Resources\LessonScheduleResource;
 use App\Http\Controllers\Controller;
@@ -47,7 +48,7 @@ class LessonScheduleApiController extends Controller
     public function index(User $user)
     {
         $lessonSchedules = $this->lessonSchedule->whereTeacher($user->id, now());
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => LessonScheduleResource::collection($lessonSchedules)]);
+        return ResponseHelper::success(LessonScheduleResource::collection($lessonSchedules));
     }
 
     /**
@@ -56,15 +57,10 @@ class LessonScheduleApiController extends Controller
     public function create(LessonSchedule $lessonSchedule)
     {
         $classroomStudents = $this->classroomStudent->getByClassId($lessonSchedule->classroom->id);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data',
-            'code' => 200,
-            'data' => [
-                'subject' => $lessonSchedule->teacherSubject->subject->name,
-                'classroom' => $lessonSchedule->classroom->name,
-                'classroom_students' => ClassroomStudentResource::collection($classroomStudents)
-            ]
+        return ResponseHelper::success([
+            'subject' => $lessonSchedule->teacherSubject->subject->name,
+            'classroom' => $lessonSchedule->classroom->name,
+            'classroom_students' => ClassroomStudentResource::collection($classroomStudents)
         ]);
     }
 
@@ -77,16 +73,11 @@ class LessonScheduleApiController extends Controller
         $teacherJournal = $this->teacherJournal->getByLessonSchedule($lessonSchedule->id);
         $attendanceJournals = $teacherJournal != null ? $this->attendanceJournal->getByTeacherJournal($teacherJournal->id) : null;
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data',
-            'code' => 200,
-            'data' => [
-                'title' => $teacherJournal != null ? $teacherJournal->title : null,
-                'description' => $teacherJournal != null ? $teacherJournal->description : null,
-                'date' => $teacherJournal != null ? $teacherJournal->date : null,
-                'classroom_students' => $teacherJournal != null ? AttendanceJournalResource::collection($attendanceJournals) : ClassroomStudentResource::collection($classroomStudents)
-            ]
+        return ResponseHelper::success([
+            'title' => $teacherJournal != null ? $teacherJournal->title : null,
+            'description' => $teacherJournal != null ? $teacherJournal->description : null,
+            'date' => $teacherJournal != null ? $teacherJournal->date : null,
+            'classroom_students' => $teacherJournal != null ? AttendanceJournalResource::collection($attendanceJournals) : ClassroomStudentResource::collection($classroomStudents)
         ]);
     }
 
@@ -98,7 +89,7 @@ class LessonScheduleApiController extends Controller
         $data = $this->serviceJournal->store($request, $lessonSchedule);
         $teacherJournal = $this->teacherJournal->store($data);
         $this->serviceAttendance->storeJournal($request['attendance'], $teacherJournal);
-        return response()->json(['status' => 'success', 'message' => "Berhasil menambahkan jurnal",'code' => 200]);
+        return ResponseHelper::success(null, 'Berhasil menambahkan jurnal');
     }
 
     /**
@@ -106,11 +97,10 @@ class LessonScheduleApiController extends Controller
      */
     public function update(LessonSchedule $lessonSchedule, UpdateTeacherJournalRequest $request)
     {
-        // dd($request->validated());
         $data = $this->serviceJournal->update($request, $lessonSchedule);
         $this->teacherJournal->update($lessonSchedule->teacherJournals->first()->id, $data);
         $this->serviceAttendance->updateJournal($request['attendance'], $lessonSchedule->teacherJournals->first());
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengedit jurnal",'code' => 200]);
+        return ResponseHelper::success(null, 'Berhasil mengedit jurnal');
     }
 
     /**
@@ -119,7 +109,7 @@ class LessonScheduleApiController extends Controller
     public function history(User $user, Request $request)
     {
         $histories = $this->teacherJournal->histories($user->id, $request);
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => HistoryJournalResource::collection($histories)]);
+        return ResponseHelper::success(HistoryJournalResource::collection($histories));
     }
 
 

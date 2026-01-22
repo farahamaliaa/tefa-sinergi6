@@ -12,6 +12,7 @@ use App\Contracts\Interfaces\StudentInterface;
 use App\Contracts\Interfaces\StudentRepairInterface;
 use App\Contracts\Interfaces\StudentViolationInterface;
 use App\Enums\AttendanceEnum;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EmployeeJournalResource;
 use App\Http\Resources\PopularViolationResource;
@@ -72,9 +73,8 @@ class StafApiController extends Controller
      */
     public function index(User $user)
     {
-        // SECURITY: Verify user authorization
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         
         try {
@@ -82,45 +82,38 @@ class StafApiController extends Controller
             $process = $this->studentRepair->count_approved('0');
             $not_process = $this->studentRepair->count_approved(null);
 
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'approved' => $approved,
                 'process' => $process,
                 'not_process' => $not_process,
-            ]], 200);
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
     public function history_journals(User $user)
     {
-        // SECURITY: Verify user authorization
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         
         try {
             $employeeJournals = $this->employeeJournal->getEmployee($user->id, 'get');
 
             if ($employeeJournals->where('created_at', '>=', Carbon::today())->isEmpty()) {
-                return response()->json([
+                return ResponseHelper::success([
                     'journal_message' => 'Hari ini anda belum mengisi jurnal!',
-                    'status' => 'success',
-                    'message' => "Berhasil mengambil data",
-                    'code' => 200,
-                    'data' => [ 'journals' => EmployeeJournalResource::collection($employeeJournals),]
-                ], 200);
+                    'journals' => EmployeeJournalResource::collection($employeeJournals),
+                ]);
             } else {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => "Berhasil mengambil data",
-                    'code' => 200,
-                    'data' => [ 'journals' => EmployeeJournalResource::collection($employeeJournals),]
-                ], 200);
+                return ResponseHelper::success([
+                    'journals' => EmployeeJournalResource::collection($employeeJournals),
+                ]);
             }
 
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -128,24 +121,24 @@ class StafApiController extends Controller
     {
         $condition = $this->attendanceRule->whereDayRole(Carbon::today()->format('l'),'teacher');
         if (Carbon::now()->format('H:i:s') <= $condition->checkout_end ) {
-            return response()->json(['status' => 'error', 'message' => 'Anda belum waktunya mengisi jurnal', 'code' => 400], 400);
+            return ResponseHelper::error('Anda belum waktunya mengisi jurnal', 400);
         }
 
         $description = preg_replace('/\s+/', '', $request->input('description'));
         if (strlen($description) < 150) {
-            return response()->json(['status' => 'error', 'message' => 'Deskripsi minimal harus 150 karakter tanpa spasi', 'code' => 400], 400);
+            return ResponseHelper::error('Deskripsi minimal harus 150 karakter tanpa spasi', 400);
         }
 
         $employee = $this->employee->getByUser($user->id);
         $result = $this->employeeJournal->whereDate($employee->id, Carbon::today());
 
         if ($result) {
-            return response()->json(['status' => 'error', 'message' => "Jurnal anda hari ini sudah tersedia", 'code' => 500], 500);
+            return ResponseHelper::error('Jurnal anda hari ini sudah tersedia', 500);
         }
 
         $data = $this->journalService->store_api($request, $user);
         $this->employeeJournal->store($data);
-        return response()->json(['status' => 'success', 'message' => "Data Berhasil di Tambahkan", 'code' => 200], 200);
+        return ResponseHelper::success(null, 'Data Berhasil di Tambahkan');
     }
 
     public function overview_header()
@@ -158,14 +151,14 @@ class StafApiController extends Controller
             $countViolation = $this->studentViolation->count('week');
             $countRepair = $this->studentRepair->count();
 
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'student_violation' => $student_violation,
                 'student_high_point' => $studentHighPoint,
                 'violation_in_week' => $countViolation,
                 'repair_in_week' => $countRepair,
-            ]], 200);
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -173,9 +166,9 @@ class StafApiController extends Controller
     {
         try {
             $maxPoint = $this->schoolPoint->getMaxPoint();
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'max_point' => $maxPoint], 200);
+            return ResponseHelper::success(['max_point' => $maxPoint]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -183,9 +176,9 @@ class StafApiController extends Controller
     {
         try {
             $regulations = $this->regulation->latest();
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => RegulationResource::collection($regulations)], 200);
+            return ResponseHelper::success(RegulationResource::collection($regulations));
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -193,8 +186,7 @@ class StafApiController extends Controller
     {
         try {
             $data = $this->studentRepair->groupByClassroomStudentAndCreated();
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200,
-            'data' => $data->mapWithKeys(function ($dateGroup, $date) {
+            return ResponseHelper::success($data->mapWithKeys(function ($dateGroup, $date) {
                     $formattedDate = Carbon::parse($date)->translatedFormat('j F Y');
                     return [
                         $formattedDate => $dateGroup->map(function ($classroomGroup, $classroomStudentId) {
@@ -208,10 +200,9 @@ class StafApiController extends Controller
                             ];
                         })
                     ];
-                }),
-            ], 200);
+                }));
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -219,9 +210,9 @@ class StafApiController extends Controller
     {
         try {
             $students = $this->student->getByApi($request);
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => StudentPointResource::collection($students)], 200);
+            return ResponseHelper::success(StudentPointResource::collection($students));
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
 
@@ -229,9 +220,9 @@ class StafApiController extends Controller
     {
         try {
             $popular_violations = $this->regulation->getOrderApi();
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => PopularViolationResource::collection($popular_violations)], 200);
+            return ResponseHelper::success(PopularViolationResource::collection($popular_violations));
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong",'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong', 400);
         }
     }
     
@@ -239,9 +230,9 @@ class StafApiController extends Controller
     {
         try {
             $attendances = $this->attendance->getSickAndPermit($request, [AttendanceEnum::SICK->value, AttendanceEnum::PERMIT->value]);
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [ 'permissions' => StudentPermissionResource::collection($attendances)], ], 200);
+            return ResponseHelper::success(['permissions' => StudentPermissionResource::collection($attendances)]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong".$th->getMessage(),'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong'.$th->getMessage(), 400);
         }
     }
 
@@ -249,9 +240,9 @@ class StafApiController extends Controller
     {
         try {
             $charts = $this->chartService->violationChart();
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [ 'violations' => $charts], ], 200);
+            return ResponseHelper::success(['violations' => $charts]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'success', 'message' => "Data Kosong".$th->getMessage(),'code' => 400], 400);
+            return ResponseHelper::error('Data Kosong'.$th->getMessage(), 400);
         }
     }
 }

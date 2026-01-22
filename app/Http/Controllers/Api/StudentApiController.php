@@ -14,6 +14,7 @@ use App\Contracts\Interfaces\StudentRepairInterface;
 use App\Contracts\Interfaces\StudentViolationInterface;
 use App\Contracts\Repositories\AttendanceRepository;
 use App\Enums\AttendanceEnum;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RepairStudentRequest;
 use App\Http\Requests\StoreFeedbackRequest;
@@ -81,7 +82,7 @@ class StudentApiController extends Controller
     public function index(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
@@ -91,7 +92,7 @@ class StudentApiController extends Controller
         $rule_day = $this->attendanceRule->whereDayRole(today()->format('l'), 'student');
 
         if ($rule_rfid) {
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'school_year' => $studentClasses->classroom->schoolYear->school_year,
                 'classroom' => [
                     'name' => $studentClasses->classroom->name,
@@ -113,9 +114,9 @@ class StudentApiController extends Controller
                 'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
-            ]]);
+            ]);
         } else if ($rule_day->is_holiday ==  true) {
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'school_year' => $studentClasses->classroom->schoolYear->school_year,
                 'classroom' => [
                     'name' => $studentClasses->classroom->name,
@@ -137,9 +138,9 @@ class StudentApiController extends Controller
                 'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
-            ]]);
+            ]);
         } else {
-            return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+            return ResponseHelper::success([
                 'school_year' => $studentClasses->classroom->schoolYear->school_year,
                 'classroom' => [
                     'name' => $studentClasses->classroom->name,
@@ -153,7 +154,7 @@ class StudentApiController extends Controller
                 'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
-            ]]);
+            ]);
         }
 
     }
@@ -161,27 +162,27 @@ class StudentApiController extends Controller
     public function history_attendance(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
         $history_attendance = $this->attendance->whereUser($studentClasses->id, 'App\Models\ClassroomStudent');
 
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+        return ResponseHelper::success([
             'attendance_history' => HistoryAttendanceResource::collection($history_attendance),
-        ]]);
+        ]);
     }
 
     public function lessonSchedule(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
         $lessonSchedule = $this->lessonSchedule->whereClassroom($studentClasses->classroom->id, 'day');
 
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+        return ResponseHelper::success([
             'Senin' => LessonResource::collection(isset($lessonSchedule['monday']) ? $lessonSchedule['monday'] : [])->each(function ($resource) use ($student) {
                 $resource->setStudent($student);
             }),
@@ -200,68 +201,69 @@ class StudentApiController extends Controller
             'Sabtu' => LessonResource::collection(isset($lessonSchedule['saturday']) ? $lessonSchedule['saturday'] : [])->each(function ($resource) use ($student) {
                 $resource->setStudent($student);
             }),
-        ]]);
+        ]);
     }
 
     public function violation(User $user, Request $request)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $studentViolations = $this->studentViolation->whereStudent($student->id, $request);
 
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+        return ResponseHelper::success([
             'violations' => StudentViolationResource::collection($studentViolations),
-        ]]);
+        ]);
     }
 
     public function repair(User $user, Request $request)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $repairs = $this->studentRepair->whereStudent($student->id, $request);
 
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengambil data",'code' => 200, 'data' => [
+        return ResponseHelper::success([
             'repair' => StudentRepairResource::collection($repairs),
-        ]]);
+        ]);
     }
 
     public function class_student(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
 
-        return response()->json(['name_class' => $studentClasses->classroom->name, 'status' => 'success', 'message' => "Berhasil mengirim bukti perbaikan",'code' => 200, 'data' =>
-            StudentResource::collection($studentClasses->classroom->classroomStudents),
+        return ResponseHelper::success([
+            'name_class' => $studentClasses->classroom->name,
+            'students' => StudentResource::collection($studentClasses->classroom->classroomStudents),
         ]);
     }
 
     public function point_student(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengirim bukti perbaikan",'code' => 200, 'point' => $student->point]);
+        return ResponseHelper::success(['point' => $student->point]);
     }
 
     public function get_detail_profile(User $user)
     {
         if ($user->id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
         $repairs = $this->studentRepair->count_repair($student->id);
         $violations = $this->studentViolation->count_violation($student->id);
-        return response()->json(['status' => 'success', 'message' => "Berhasil mengirim bukti perbaikan",'code' => 200, 'data' => [
+        return ResponseHelper::success([
             'repair' => $repairs,
             'violation' => $violations,
-        ]]);
+        ]);
     }
 }
