@@ -50,7 +50,7 @@ class ExtracurricularApiController extends Controller
         });
 
         if ($data->isEmpty()) {
-             return response()->json([
+            return response()->json([
                 'status' => 'success',
                 'message' => 'User bukan pembina ekstrakurikuler',
                 'code' => 200,
@@ -85,7 +85,7 @@ class ExtracurricularApiController extends Controller
         $students = $extracurricular->extracurricularStudents->map(function ($es) {
             $student = $es->student;
             $classroom = $student->classroomStudents->first()?->classroom;
-            
+
             return [
                 'id' => $es->id,
                 'student_id' => $student->id,
@@ -134,9 +134,10 @@ class ExtracurricularApiController extends Controller
                 'day' => $schedule->day,
                 'start_time' => $schedule->start_time,
                 'end_time' => $schedule->end_time,
-                'location' => $schedule->location,
+                'location' => $schedule->location_name ?? $schedule->location, // Handle legacy or column name change
                 'latitude' => $schedule->latitude,
                 'longitude' => $schedule->longitude,
+                'radius' => $schedule->radius, // Include radius
             ];
         });
 
@@ -170,11 +171,11 @@ class ExtracurricularApiController extends Controller
         }
 
         $journals = ExtracurricularJournal::where('extracurricular_id', $extracurricularId)
-            ->when($request->month, function ($query) use ($request) {
-                $query->whereMonth('date', $request->month);
+            ->when($request->input('month'), function ($query) use ($request) {
+                $query->whereMonth('date', $request->input('month'));
             })
-            ->when($request->year, function ($query) use ($request) {
-                $query->whereYear('date', $request->year);
+            ->when($request->input('year'), function ($query) use ($request) {
+                $query->whereYear('date', $request->input('year'));
             })
             ->latest('date')
             ->get()
@@ -261,8 +262,8 @@ class ExtracurricularApiController extends Controller
         ]);
 
         $journal->update([
-            'title' => $request->title,
-            'description' => $request->description,
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
         ]);
 
         return response()->json([
@@ -289,11 +290,39 @@ class ExtracurricularApiController extends Controller
         }
 
         $date = $request->date ?? Carbon::today()->format('Y-m-d');
+        $dayName = Carbon::parse($date)->locale('en')->dayName; // e.g., Monday
+        $dayName = strtolower($dayName);
+
+        // Find schedule for this day
+        $schedule = ExtracurricularSchedule::where('extracurricular_id', $extracurricularId)
+            ->where('day', $dayName)
+            ->first();
+
+        // Check if schedule time has passed
+        $isTimePassed = false;
+        if ($schedule) {
+            $scheduleEndTime = Carbon::parse($date . ' ' . $schedule->end_time);
+            if (Carbon::now()->greaterThan($scheduleEndTime)) {
+                $isTimePassed = true;
+            }
+        }
 
         // Find the journal for this extracurricular and date
         $journal = ExtracurricularJournal::where('extracurricular_id', $extracurricularId)
-            ->whereDate('date', $date)
+            ->where('date', $date)
             ->first();
+
+        // If time passed and no journal, create one (optional, but needed for attendance)
+        if ($isTimePassed && !$journal) {
+            $journal = ExtracurricularJournal::create([
+                'extracurricular_id' => $extracurricularId,
+                'date' => $date,
+                'title' => '',
+                'description' => '',
+                'start_time' => $schedule->start_time,
+                'end_time' => $schedule->end_time,
+            ]);
+        }
 
         // Get attendance records for this journal if it exists
         $attendances = collect();
@@ -303,14 +332,30 @@ class ExtracurricularApiController extends Controller
                 ->keyBy('extracurricular_student_id');
         }
 
-        $students = $extracurricular->extracurricularStudents->map(function ($es) use ($attendances) {
+        $students = $extracurricular->extracurricularStudents->map(function ($es) use ($attendances, $isTimePassed, $journal) {
             $attendance = $attendances->get($es->id);
+            $status = $attendance?->status ?? null;
+
+            // Auto-assign Alpha if time passed and no status
+            if ($status === null && $isTimePassed) {
+                // Persist Alpha
+                if ($journal) {
+                    ExtracurricularAttendance::create([
+                        'extracurricular_journal_id' => $journal->id,
+                        'extracurricular_student_id' => $es->id,
+                        'student_id' => $es->student->id,
+                        'status' => 'alpha',
+                    ]);
+                }
+                $status = 'alpha';
+            }
+
             return [
                 'id' => $es->id,
                 'student_id' => $es->student->id,
                 'name' => $es->student->user->name ?? '-',
                 'image' => $es->student->image ? asset('storage/' . $es->student->image) : null,
-                'status' => $attendance?->status ?? null,
+                'status' => $status,
             ];
         });
 
@@ -338,6 +383,7 @@ class ExtracurricularApiController extends Controller
             'extracurricular_id' => 'required|exists:extracurriculars,id',
             'schedule_id' => 'required|exists:extracurricular_schedules,id',
             'date' => 'required|date',
+            'title' => 'required|string|max:255', // Added validation
             'description' => 'required|string',
             'attendance' => 'required|array',
             'attendance.*.student_id' => 'required',
@@ -347,10 +393,13 @@ class ExtracurricularApiController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-             $imagePath = $request->file('image')->store('journal_images', 'public');
+            $imagePath = $request->file('image')->store('journal_images', 'public');
         }
 
-        $dataToUpdate = ['description' => $request->description];
+        $dataToUpdate = [
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+        ];
         if ($imagePath) {
             $dataToUpdate['image'] = $imagePath;
         }
@@ -358,15 +407,15 @@ class ExtracurricularApiController extends Controller
         // Create or update journal
         $journal = ExtracurricularJournal::updateOrCreate(
             [
-                'extracurricular_id' => $request->extracurricular_id,
-                'schedule_id' => $request->schedule_id,
-                'date' => $request->date,
+                'extracurricular_id' => $request->input('extracurricular_id'),
+                'schedule_id' => $request->input('schedule_id'),
+                'date' => $request->input('date'),
             ],
             $dataToUpdate
         );
 
         // Store attendance
-        foreach ($request->attendance as $att) {
+        foreach ($request->input('attendance', []) as $att) {
             ExtracurricularAttendance::updateOrCreate(
                 [
                     'extracurricular_journal_id' => $journal->id,
@@ -397,8 +446,8 @@ class ExtracurricularApiController extends Controller
         ]);
 
         // Find existing journal
-        $journal = ExtracurricularJournal::where('extracurricular_id', $request->extracurricular_id)
-            ->whereDate('date', $request->date)
+        $journal = ExtracurricularJournal::where('extracurricular_id', $request->input('extracurricular_id'))
+            ->where('date', $request->input('date'))
             ->first();
 
         if (!$journal) {
@@ -409,7 +458,7 @@ class ExtracurricularApiController extends Controller
             ], 404);
         }
 
-        foreach ($request->attendance as $esStudentId => $status) {
+        foreach ($request->input('attendance', []) as $esStudentId => $status) {
             ExtracurricularAttendance::updateOrCreate(
                 [
                     'extracurricular_journal_id' => $journal->id,
@@ -439,16 +488,18 @@ class ExtracurricularApiController extends Controller
             'location' => 'required|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'radius' => 'nullable|numeric', // Add validation
         ]);
 
         $schedule = ExtracurricularSchedule::create([
-            'extracurricular_id' => $request->extracurricular_id,
-            'day' => $request->day,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'location' => $request->location,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+            'extracurricular_id' => $request->input('extracurricular_id'),
+            'day' => $request->input('day'),
+            'start_time' => $request->input('start_time'),
+            'end_time' => $request->input('end_time'),
+            'location_name' => $request->input('location'),
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
+            'radius' => $request->input('radius', 100),
         ]);
 
         return response()->json([
@@ -489,7 +540,7 @@ class ExtracurricularApiController extends Controller
     public function permissions($extracurricularId)
     {
         $extracurricular = Extracurricular::findOrFail($extracurricularId);
-        
+
         // Get all student IDs enrolled in this extracurricular
         $studentIds = $extracurricular->extracurricularStudents()->pluck('student_id');
 
@@ -526,7 +577,7 @@ class ExtracurricularApiController extends Controller
     /**
      * Update permission status
      */
-    public function updatePermissionStatus(\Illuminate\Http\Request $request, $permissionId)
+    public function updatePermissionStatus(Request $request, $permissionId)
     {
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'status' => 'required|in:pending,approved,rejected,disetujui,ditolak',
@@ -551,9 +602,11 @@ class ExtracurricularApiController extends Controller
         }
 
         // Normalize status
-        $status = $request->status;
-        if ($status == 'disetujui') $status = 'approved';
-        if ($status == 'ditolak') $status = 'rejected';
+        $status = $request->input('status');
+        if ($status == 'disetujui')
+            $status = 'approved';
+        if ($status == 'ditolak')
+            $status = 'rejected';
 
         $permission->status = $status;
         $permission->save();
