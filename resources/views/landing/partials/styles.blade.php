@@ -1,5 +1,5 @@
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
     :root {
         --primary: #2563eb;
@@ -12,7 +12,7 @@
 
     body,
     .page_wrapper {
-        font-family: 'Outfit', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
         color: var(--text);
         background-color: #ffffff !important;
         background-image: none !important;
@@ -137,5 +137,39 @@
     .section-desc {
         color: #64748b;
         font-size: 1.1rem;
+    }
+    .feature-card-hover {
+        padding: 30px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+        border-color: transparent;
+    }
+
+    .icon-blob {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: #eff6ff;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card-hover:hover .icon-blob {
+        transform: scale(1.1) rotate(5deg);
     }
 </style>
