@@ -24,15 +24,19 @@ class ExtracurricularApiController extends Controller
 
         $extracurriculars = collect();
 
-        if ($user->hasRole('staff')) {
-            $extracurriculars = Extracurricular::with('extracurricularStudents')
+        // Both staff and teacher should only see extracurriculars where they are the pembina
+        $employee = $user->employee;
+
+        if ($employee) {
+            $extracurriculars = Extracurricular::where('employee_id', $employee->id)
+                ->with('extracurricularStudents')
                 ->latest()
                 ->get();
         } else {
-            $employee = $user->employee;
-
-            if ($employee) {
-                $extracurriculars = Extracurricular::where('employee_id', $employee->id)
+            // Fallback: Try to find employee by user_id manually if relation not loaded
+            $manualEmployee = \App\Models\Employee::where('user_id', $user->id)->first();
+            if ($manualEmployee) {
+                $extracurriculars = Extracurricular::where('employee_id', $manualEmployee->id)
                     ->with('extracurricularStudents')
                     ->latest()
                     ->get();
@@ -233,7 +237,7 @@ class ExtracurricularApiController extends Controller
 
         $date = $request->date ?? Carbon::today()->format('Y-m-d');
         $dateCarbon = Carbon::parse($date);
-        $dayName = $dateCarbon->format('l');
+        $dayName = strtolower($dateCarbon->format('l'));
 
         $schedule = ExtracurricularSchedule::where('extracurricular_id', $extracurricularId)
             ->where('day', $dayName)
