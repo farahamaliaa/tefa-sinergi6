@@ -29,11 +29,14 @@ class LessonScheduleApiController extends Controller
     private TeacherJournalService $serviceJournal;
     private AttendanceJournalInterface $attendanceJournal;
 
-    public function __construct(LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent,
-    TeacherJournalInterface $teacherJournal, AttendanceJournalService $serviceAttendance, TeacherJournalService $serviceJournal,
-    AttendanceJournalInterface $attendanceJournal,
-    )
-    {
+    public function __construct(
+        LessonScheduleInterface $lessonSchedule,
+        ClassroomStudentInterface $classroomStudent,
+        TeacherJournalInterface $teacherJournal,
+        AttendanceJournalService $serviceAttendance,
+        TeacherJournalService $serviceJournal,
+        AttendanceJournalInterface $attendanceJournal,
+    ) {
         $this->lessonSchedule = $lessonSchedule;
         $this->classroomStudent = $classroomStudent;
         $this->teacherJournal = $teacherJournal;
@@ -57,6 +60,22 @@ class LessonScheduleApiController extends Controller
     public function create(LessonSchedule $lessonSchedule)
     {
         $classroomStudents = $this->classroomStudent->getByClassId($lessonSchedule->classroom->id);
+
+        // Inject attendance status
+        $studentIds = $classroomStudents->pluck('student_id')->toArray();
+        $todayAttendances = \App\Models\Attendance::where('model_type', 'App\Models\Student')
+            ->whereIn('model_id', $studentIds)
+            ->whereDate('created_at', now())
+            ->get()
+            ->keyBy('model_id');
+
+        foreach ($classroomStudents as $cs) {
+            $att = $todayAttendances->get($cs->student_id);
+            if ($att) {
+                $cs->prefilled_status = $att->status->value;
+            }
+        }
+
         return ResponseHelper::success([
             'subject' => $lessonSchedule->teacherSubject->subject->name,
             'classroom' => $lessonSchedule->classroom->name,
@@ -64,7 +83,7 @@ class LessonScheduleApiController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Display the specified resource.
      */
     public function show(LessonSchedule $lessonSchedule)
@@ -72,6 +91,23 @@ class LessonScheduleApiController extends Controller
         $classroomStudents = $this->classroomStudent->getByClassId($lessonSchedule->classroom->id);
         $teacherJournal = $this->teacherJournal->getByLessonSchedule($lessonSchedule->id);
         $attendanceJournals = $teacherJournal != null ? $this->attendanceJournal->getByTeacherJournal($teacherJournal->id) : null;
+
+        if ($teacherJournal == null) {
+            // Inject attendance status if journal not created yet
+            $studentIds = $classroomStudents->pluck('student_id')->toArray();
+            $todayAttendances = \App\Models\Attendance::where('model_type', 'App\Models\Student')
+                ->whereIn('model_id', $studentIds)
+                ->whereDate('created_at', now())
+                ->get()
+                ->keyBy('model_id');
+
+            foreach ($classroomStudents as $cs) {
+                $att = $todayAttendances->get($cs->student_id);
+                if ($att) {
+                    $cs->prefilled_status = $att->status->value;
+                }
+            }
+        }
 
         return ResponseHelper::success([
             'title' => $teacherJournal != null ? $teacherJournal->title : null,
