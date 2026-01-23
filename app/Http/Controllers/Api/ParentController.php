@@ -10,7 +10,10 @@ use App\Models\StudentPermission;
 use App\Models\User;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Imports\ParentImport;
+use App\Exports\ParentTemplateExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ParentController extends Controller
 {
@@ -505,4 +508,33 @@ class ParentController extends Controller
         
         return $name;
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        try {
+            Excel::import(new ParentImport, $request->file('file'));
+            
+            if ($request->expectsJson()) {
+                return ResponseHelper::success(null, 'Berhasil mengimport data orang tua');
+            }
+
+            return redirect()->back()->with('success', 'Berhasil mengimport data orang tua');
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return ResponseHelper::error('Gagal mengimport data: ' . $e->getMessage(), 500);
+            }
+
+            return redirect()->back()->with('error', 'Gagal mengimport data: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new ParentTemplateExport, 'template-import-orang-tua.xlsx');
+    }
 }
+

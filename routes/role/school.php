@@ -126,6 +126,9 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
     Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
     Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
+    Route::post('import-parent', [ParentController::class, 'import'])->name('parent.import');
+    Route::get('download-template-parent', [ParentController::class, 'downloadTemplate'])->name('parent.download-template');
+
 
     // siswa ekstrakurikuler
     Route::post('extracurricular-students/{extracurricular}', [ExtracurricularStudentController::class, 'store'])->name('extracurricular-students.store');

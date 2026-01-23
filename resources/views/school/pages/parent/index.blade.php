@@ -110,6 +110,12 @@
                 </select>
             </div>
             <div class="col-md-5 text-end">
+                <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success me-2">
+                    <i class="ti ti-download"></i> Template
+                </a>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#importParentModal">
+                    <i class="ti ti-file-import"></i> Import
+                </button>
                 <button class="btn text-white" style="background-color: #0993CD;" data-bs-toggle="modal" data-bs-target="#createParentModal">
                     <i class="ti ti-plus"></i> Tambah Orang Tua
                 </button>
@@ -223,6 +229,46 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importParentModal" tabindex="-1" aria-labelledby="importParentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #198754; color: white;">
+                <h5 class="modal-title text-white" id="importParentModalLabel">Import Data Orang Tua</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('school.parent.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Format Excel:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Kolom: Nama Orang Tua, Email, Password, Jenis Kelamin, Nomor HP, Nama Anak</li>
+                            <li>Jika 1 orang tua punya beberapa anak, buat baris terpisah untuk setiap anak</li>
+                            <li>Baris ke-2 dst dengan orang tua sama, cukup isi Nama Orang Tua dan Nama Anak (email kosong)</li>
+                        </ul>
+                    </div>
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">Pilih File Excel</label>
+                        <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx,.xls,.csv" required>
+                        <small class="text-muted">Format: .xlsx, .xls, .csv (max 10MB)</small>
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success btn-sm">
+                            <i class="ti ti-download"></i> Download Template
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ti ti-file-import"></i> Import
+                    </button>
                 </div>
             </form>
         </div>
