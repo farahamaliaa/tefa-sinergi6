@@ -17,18 +17,21 @@ class ParentController extends Controller
     public function index(Request $request)
     {
         if (!$request->expectsJson()) {
-            $parents = Parents::with(['user', 'students.classroomStudents.classroom'])->get();
-            $students = \App\Models\Student::with('user')->get()->map(function($s) {
-                 return [
-                     'id' => $s->id,
-                     'name' => $s->user->name ?? $s->name,
-                     'classroom' => $s->classroomStudents->first()?->classroom?->name ?? 'No Class'
-                 ];
-            });
+            $parents = Parents::with(['user', 'students.user', 'students.classroomStudents.classroom'])
+                ->get();
+            $students = \App\Models\Student::with(['user', 'classroomStudents.classroom'])
+                ->get()
+                ->map(function($s) {
+                    return [
+                        'id' => $s->id,
+                        'name' => $s->user->name ?? $s->name ?? 'Unknown',
+                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? 'No Class'
+                    ];
+                });
             return view('school.pages.parent.index', compact('parents', 'students'));
         };
 
-        return Parents::with(['user', 'students.classroomStudents.classroom'])->get();
+        return Parents::with(['user', 'students.user', 'students.classroomStudents.classroom'])->get();
     }
 
     public function store(Request $request)
@@ -55,6 +58,7 @@ class ParentController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => 'parent',
+            'gender' => $request->gender,
         ]);
 
         $user->assignRole('parent'); 
@@ -127,7 +131,7 @@ class ParentController extends Controller
             
             return [
                 'id' => $student->id,
-                'name' => $student->user->name ?? $student->name, // Fallback just in case
+                'name' => $student->user->name ?? $student->name,   
                 'nis' => $student->nis ?? null,
                 'nisn' => $student->nisn ?? null,
                 'gender' => $student->gender,
