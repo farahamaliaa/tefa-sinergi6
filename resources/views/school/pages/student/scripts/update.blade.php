@@ -14,6 +14,7 @@
         var order_child = $(this).data('order_child');
         var count_siblings = $(this).data('count_siblings');
         var address = $(this).data('address');
+        var image = $(this).data('image');
         $('#name-edit').val(name);
         $('#email-edit').val(email);
         $('#nisn-edit').val(nisn);
@@ -26,7 +27,15 @@
         $('#count_siblings-edit').val(count_siblings);
         $('#address-edit').val(address);
         $('#religion-edit').val(religion_id).trigger('change');
+        $('#religion-edit').val(religion_id).trigger('change');
         $('#gender-edit').val(gender).trigger('change');
+        
+        if (image) {
+            $('#edit-preview-img').attr('src', image);
+        } else {
+             $('#edit-preview-img').attr('src', "{{ asset('assets/images/default-user.jpeg') }}");
+        }
+
         var url = '{{ route("school.students.update", ":id") }}';
         url = url.replace(':id', id);
         $('#form-update').attr('action', url);

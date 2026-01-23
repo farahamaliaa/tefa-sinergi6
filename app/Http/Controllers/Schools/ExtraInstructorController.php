@@ -13,8 +13,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Traits\UploadTrait;
+use App\Enums\UploadDiskEnum;
+
 class ExtraInstructorController extends Controller
 {
+    use UploadTrait;
     public function index(Request $request)
     {
         $pembinas = User::role('extracurricular')
@@ -60,8 +64,14 @@ class ExtraInstructorController extends Controller
 
         $user->assignRole('extracurricular');
 
+        $imagePath = null;
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $imagePath = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
+        }
+
         $employee = Employee::create([
             'user_id' => $user->id,
+            'image' => $imagePath,
             'nip' => $request->nip ?? '000000000000000000',
             'birth_date' => $request->birth_date ?? now()->subYears(30)->format('Y-m-d'),
             'birth_place' => $request->birth_place ?? '-',
@@ -100,12 +110,21 @@ class ExtraInstructorController extends Controller
         ]);
 
         if ($user->employee) {
-            $user->employee->update([
+            $dataEmployee = [
                 'name' => $request->name,
                 'phone_number' => $request->phone_number,
                 'gender' => $request->gender,
                 'address' => $request->address,
-            ]);
+            ];
+
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                if ($user->employee->image) {
+                    $this->remove($user->employee->image);
+                }
+                $dataEmployee['image'] = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
+            }
+
+            $user->employee->update($dataEmployee);
 
             Extracurricular::where('employee_id', $user->employee->id)
                 ->update(['employee_id' => null]);
@@ -122,6 +141,10 @@ class ExtraInstructorController extends Controller
     public function destroy(User $user)
     {
         if ($user->employee) {
+            if ($user->employee->image) {
+                $this->remove($user->employee->image);
+            }
+
             Extracurricular::where('employee_id', $user->employee->id)
                 ->update(['employee_id' => null]);
             

@@ -333,10 +333,14 @@
                     <h5 class="modal-title text-white" id="createInstructorModalLabel">Tambah Pembina Ekstrakurikuler</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('school.extra-instructor.store') }}" method="POST">
+                <form action="{{ route('school.extra-instructor.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="image" class="form-label">Foto Profil</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            </div>
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Nama Lengkap</label>
                                 <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
@@ -392,11 +396,16 @@
                     <h5 class="modal-title text-white" id="editInstructorModalLabel">Edit Pembina Ekstrakurikuler</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="editInstructorForm" method="POST">
+                <form id="editInstructorForm" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_image" class="form-label">Foto Profil</label>
+                                <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                                <small class="text-muted">Biarkan kosong jika tidak ingin mengubah foto</small>
+                            </div>
                             <div class="col-md-6 mb-3">
                                 <label for="edit_name" class="form-label">Nama Lengkap</label>
                                 <input type="text" class="form-control" id="edit_name" name="name" required>

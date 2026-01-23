@@ -14,9 +14,16 @@ use App\Imports\ParentImport;
 use App\Exports\ParentTemplateExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\UploadTrait;
+use App\Enums\UploadDiskEnum;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ParentController extends Controller
 {
+    use UploadTrait;
+
     public function index(Request $request)
     {
         $query = Parents::with(['user', 'students.user', 'students.classroomStudents.classroom']);
@@ -63,6 +70,7 @@ class ParentController extends Controller
             'phone_number' => 'required|string|max:20',
             'students' => 'nullable|array',
             'students.*' => 'exists:students,id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $slug = \Illuminate\Support\Str::slug($request->name);
@@ -78,6 +86,7 @@ class ParentController extends Controller
             'password' => bcrypt($request->password),
             'role' => 'parent',
             'gender' => $request->gender,
+            'image' => $request->hasFile('image') ? $this->upload(UploadDiskEnum::PARENT->value, $request->file('image')) : null,
         ]);
 
         $user->assignRole('parent'); 
@@ -108,6 +117,80 @@ class ParentController extends Controller
         };
 
         return view('school.pages.parent.show', compact('parent'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $parent = Parents::findOrFail($id);
+        $user = $parent->user;
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone_number' => 'required|string|max:20',
+            'gender' => 'required|in:male,female',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'students' => 'nullable|array',
+            'students.*' => 'exists:students,id',
+        ]);
+
+        DB::transaction(function () use ($request, $parent, $user) {
+            $dataUser = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'gender' => $request->gender,
+            ];
+
+            if ($request->hasFile('image')) {
+                if ($user->image) {
+                    $this->remove($user->image);
+                }
+                $dataUser['image'] = $this->upload(UploadDiskEnum::PARENT->value, $request->file('image'));
+            }
+
+            if ($request->filled('password')) {
+                $dataUser['password'] = bcrypt($request->password);
+            }
+
+            $user->update($dataUser);
+
+            $parent->update([
+                'name' => $request->name,
+                'phone_number' => $request->phone_number,
+            ]);
+
+            if ($request->has('students')) {
+                $parent->students()->sync($request->students);
+            }
+        });
+
+        if ($request->expectsJson()) {
+            return ResponseHelper::success($parent, 'Berhasil memperbarui data orang tua');
+        }
+
+        return redirect()->back()->with('success', 'Berhasil memperbarui data orang tua');
+    }
+
+    public function destroy($id)
+    {
+        $parent = Parents::findOrFail($id);
+        $user = $parent->user;
+
+        DB::transaction(function () use ($parent, $user) {
+            $parent->students()->detach();
+            $parent->delete();
+
+            if ($user->image) {
+                $this->remove($user->image);
+            }
+            $user->delete();
+        });
+
+        if (request()->expectsJson()) {
+            return ResponseHelper::success(null, 'Berhasil menghapus data orang tua');
+        }
+
+        return redirect()->back()->with('success', 'Berhasil menghapus data orang tua');
     }
 
     public function attachStudent(Request $request, $id)
