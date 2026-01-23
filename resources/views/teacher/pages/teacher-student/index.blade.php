@@ -150,7 +150,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="{{ $classroomStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}"
+                                                <img src="{{ $classroomStudent->student->image && Storage::disk('public')->exists($classroomStudent->student->image) ? asset('storage/' . $classroomStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
                                                     class="rounded-circle" width="40" height="40">
                                                 <div class="ms-3">
                                                     <h6 class="fs-4 fw-semibold mb-0">
@@ -180,7 +180,7 @@
                                                     data-number_akta="{{ $classroomStudent->student->number_akta }}"
                                                     data-numbersibling="{{ $classroomStudent->student->count_siblings }}"
                                                     data-address="{{ $classroomStudent->student->address }}"
-                                                    data-image="{{ $classroomStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}">
+                                                    data-image="{{ $classroomStudent->student->image && Storage::disk('public')->exists($classroomStudent->student->image) ? asset('storage/' . $classroomStudent->student->image) : asset('assets/images/default-user.jpeg') }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                                         viewBox="0 0 24 24">
                                                         <g fill="none" stroke="currentColor" stroke-linecap="round"

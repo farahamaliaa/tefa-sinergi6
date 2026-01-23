@@ -15,6 +15,7 @@ class Parents extends Model
         'user_id',
         'name',
         'phone_number',
-        'address'
+        'address',
+        'image'
     ];
 }
