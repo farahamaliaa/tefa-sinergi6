@@ -187,10 +187,19 @@
                 <h5 class="modal-title text-white" id="createParentModalLabel">Tambah Data Orang Tua</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('school.parent.store') }}" method="POST">
+            <form action="{{ route('school.parent.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
+                        <div class="col-12 mb-3 text-center">
+                            <div class="position-relative d-inline-block">
+                                <img id="create-preview-img" src="{{ asset('assets/images/default-user.jpeg') }}" alt="Preview" class="rounded-circle object-fit-cover" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #ddd;">
+                                <label for="image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer" style="cursor: pointer;">
+                                    <i class="ti ti-camera"></i>
+                                    <input type="file" class="d-none" id="image" name="image" accept="image/*" onchange="previewCreateImage(event)">
+                                </label>
+                            </div>
+                        </div>
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Nama Lengkap</label>
                             <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
@@ -229,6 +238,95 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editParentModal" tabindex="-1" aria-labelledby="editParentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ffc107; color: white;">
+                <h5 class="modal-title text-white" id="editParentModalLabel">Edit Data Orang Tua</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editParentForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="row">
+                         <div class="col-12 mb-3 text-center">
+                            <div class="position-relative d-inline-block">
+                                <img id="edit-preview-img" src="" alt="Preview" class="rounded-circle object-fit-cover" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #ddd;">
+                                <label for="edit_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer" style="cursor: pointer;">
+                                    <i class="ti ti-pencil"></i>
+                                    <input type="file" class="d-none" id="edit_image" name="image" accept="image/*" onchange="previewEditImage(event)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_name" class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" id="edit_name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required>
+                        </div>
+                         <div class="col-md-6 mb-3">
+                            <label for="edit_password" class="form-label">Password (Kosongkan jika tidak diubah)</label>
+                            <input type="password" class="form-control" id="edit_password" name="password">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_phone_number" class="form-label">Nomor HP</label>
+                            <input type="text" class="form-control" id="edit_phone_number" name="phone_number" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_gender" class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" id="edit_gender" name="gender" required>
+                                <option value="male">Laki-laki</option>
+                                <option value="female">Perempuan</option>
+                            </select>
+                        </div>
+                         <div class="col-md-6 mb-3">
+                            <label for="edit_students" class="form-label">Pilih Siswa (Anak)</label>
+                            <select class="form-select" id="edit_students" name="students[]" size="5" multiple style="height: 150px;">
+                                @foreach($students as $student)
+                                    <option value="{{ $student['id'] }}">{{ $student['name'] }} - {{ $student['classroom'] }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu anak.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Parent -->
+<div class="modal fade" id="deleteParentModal" tabindex="-1" aria-labelledby="deleteParentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+             <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteParentModalLabel">Hapus Data Orang Tua</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="deleteParentForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body text-center">
+                    <i class="ti ti-alert-circle text-danger display-1"></i>
+                    <p class="mt-3">Apakah Anda yakin ingin menghapus data orang tua ini? Data yang dihapus tidak dapat dikembalikan.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Ya, Hapus!</button>
                 </div>
             </form>
         </div>
@@ -276,6 +374,55 @@
 </div>
 
 <script>
+    function previewCreateImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('create-preview-img').src = URL.createObjectURL(file);
+        }
+    }
+
+    function previewEditImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('edit-preview-img').src = URL.createObjectURL(file);
+        }
+    }
+
+    function editParent(data) {
+        const parent = JSON.parse(decodeURIComponent(data));
+        
+        document.getElementById('edit_name').value = parent.name;
+        document.getElementById('edit_email').value = parent.email;
+        document.getElementById('edit_phone_number').value = parent.phone_number;
+        document.getElementById('edit_gender').value = parent.gender;
+        
+        const studentSelect = document.getElementById('edit_students');
+        Array.from(studentSelect.options).forEach(option => {
+            option.selected = parent.student_ids.includes(parseInt(option.value));
+        });
+
+        const previewImg = document.getElementById('edit-preview-img');
+        if (parent.image) {
+            previewImg.src = "{{ asset('storage') }}/" + parent.image;
+        } else {
+             previewImg.src = "{{ asset('assets/images/default-user.jpeg') }}";
+        }
+        
+        const form = document.getElementById('editParentForm');
+        form.action = `/school/parent/${parent.id}`;
+        
+        const modal = new bootstrap.Modal(document.getElementById('editParentModal'));
+        modal.show();
+    }
+
+    function deleteParent(id) {
+         const form = document.getElementById('deleteParentForm');
+         form.action = `/school/parent/${id}`;
+         
+         const modal = new bootstrap.Modal(document.getElementById('deleteParentModal'));
+         modal.show();
+    }
+
     setInterval(function() {
         fetch("{{ route('school.parent.index') }}", {
             headers: {
@@ -297,10 +444,13 @@
                 let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('admin_assets/dist/images/profile/user-1.jpg') }}";
                 let genderLabel = parent.user && parent.user.gender == 'male' ? 'Laki-laki' : 'Perempuan';
                 let userName = parent.user ? parent.user.name : '-';
+                let userEmail = parent.user ? parent.user.email : '';
+                let userGender = parent.user ? parent.user.gender : '';
+                let userImageRaw = parent.user ? parent.user.image : null;
                 
                 let studentNames = parent.students.map(s => s.user ? s.user.name : s.name).join(', ');
+                let studentIds = parent.students.map(s => s.id);
                 
-                // Extract unique classrooms
                 let classrooms = [];
                 if(parent.students) {
                     parent.students.forEach(s => {
@@ -315,6 +465,17 @@
                 let classroomStr = classrooms.join(', ');
 
                 let phone = parent.phone_number || '-';
+
+                let editData = {
+                    id: parent.id,
+                    name: userName,
+                    email: userEmail,
+                    phone_number: parent.phone_number,
+                    gender: userGender,
+                    image: userImageRaw,
+                    student_ids: studentIds
+                };
+                let editDataStr = encodeURIComponent(JSON.stringify(editData));
 
                 let row = `
                     <tr>
@@ -332,13 +493,15 @@
                         <td>${classroomStr}</td>
                         <td>${phone}</td>
                         <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
+                             <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
                                 <i class="ti ti-eye"></i>
                             </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
+                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit" 
+                                onclick="editParent('${editDataStr}')">
                                 <i class="ti ti-pencil"></i>
                             </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
+                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus"
+                                onclick="deleteParent('${parent.id}')">
                                 <i class="ti ti-trash"></i>
                             </button>
                         </td>

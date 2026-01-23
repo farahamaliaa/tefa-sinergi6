@@ -208,7 +208,8 @@
                                         data-number_akta="{{ $student->number_akta }}"
                                         data-order_child="{{ $student->order_child }}"
                                         data-count_siblings="{{ $student->count_siblings }}"
-                                        data-address="{{ $student->address }}">
+                                        data-address="{{ $student->address }}"
+                                        data-image="{{ $student->image ? asset('storage/' . $student->image) : asset('assets/images/default-user.jpeg') }}">
                                         <i class="fs-4 ti ti-edit"></i>Edit</button>
                                 </li>
                                 <li>

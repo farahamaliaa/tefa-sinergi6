@@ -298,7 +298,7 @@
                             <button class="btn-detail note-business badge-group-item badge-business dropdown-item position-relative category-business d-flex align-items-center gap-3" data-id="{{ $teacher->id }}" data-name="{{ $teacher->user->name }}" data-email="{{ $teacher->user->email }}" data-gender="{{ $teacher->gender }}" data-status="{{ $teacher->active }}" data-nip="{{ $teacher->nip }}" data-nik="{{ $teacher->nik }}" data-birth_date="{{ $teacher->birth_date }}" data-birth_place="{{ $teacher->birth_place }}" data-phone="{{ $teacher->phone_number }}" data-address="{{ $teacher->address }}" data-religion="{{ $teacher->religion_id }}" data-rfid="{{ $teacher->modelHasRfid ? $teacher->modelHasRfid->rfid : 'Tidak ada' }}" data-maple="{{ $teacher->teacherMaples ? $teacher->teacherMaples->count() : '0' }}" data-image="{{ $teacher->image ? asset('storage/' . $teacher->image) : asset('admin_assets/dist/images/profile/user-1.jpg') }}">
                                 <i class="fs-4 ti ti-eye"></i>Detail
                             </button>
-                            <button type="button" class="btn-edit note-business badge-group-item badge-business dropdown-item position-relative category-business d-flex align-items-center gap-3" data-id="{{ $teacher->id }}" data-name="{{ $teacher->user->name }}" data-email="{{ $teacher->user->email }}" data-gender="{{ $teacher->gender }}" data-status="{{ $teacher->active }}" data-nip="{{ $teacher->nip }}" data-nik="{{ $teacher->nik }}" data-birth_date="{{ $teacher->birth_date }}" data-birth_place="{{ $teacher->birth_place }}" data-phone="{{ $teacher->phone_number }}" data-address="{{ $teacher->address }}" data-religion="{{ $teacher->religion_id }}">
+                            <button type="button" class="btn-edit note-business badge-group-item badge-business dropdown-item position-relative category-business d-flex align-items-center gap-3" data-id="{{ $teacher->id }}" data-name="{{ $teacher->user->name }}" data-email="{{ $teacher->user->email }}" data-gender="{{ $teacher->gender }}" data-status="{{ $teacher->active }}" data-nip="{{ $teacher->nip }}" data-nik="{{ $teacher->nik }}" data-birth_date="{{ $teacher->birth_date }}" data-birth_place="{{ $teacher->birth_place }}" data-phone="{{ $teacher->phone_number }}" data-address="{{ $teacher->address }}" data-religion="{{ $teacher->religion_id }}" data-image="{{ $teacher->image ? asset('storage/' . $teacher->image) : asset('admin_assets/dist/images/profile/user-1.jpg') }}">
                                 <i class="fs-4 ti ti-edit"></i>Edit
                             </button>
                             <button type="button" class="btn-delete note-business badge-group-item badge-business dropdown-item text-danger position-relative category-business d-flex align-items-center gap-3" data-id="{{ $teacher->id }}">
@@ -613,6 +613,7 @@
         var phone = $(this).data('phone');
         var address = $(this).data('address');
         var religion = $(this).data('religion');
+        var image = $(this).data('image');
         $('#form-edit').attr('action', '{{ route('teacher.update', '') }}/' + id);
         $('#name-edit').val(name);
         $('#email-edit').val(email);
@@ -625,6 +626,9 @@
         gender == 'male' ? $('#maleEdit').prop('checked', true) : $('#femaleEdit').prop('checked', true);
         $('#religion-edit').val(religion).trigger('change');
         $('#status-edit').val(status).trigger('change');
+        if(image){
+            $('#employeeImagePreview').attr('src', image).show();
+        }
         $('#modal-edit').modal('show');
     });
 
