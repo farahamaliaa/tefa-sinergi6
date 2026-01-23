@@ -47,6 +47,7 @@
         background-color: #1e9c87 !important;
         border-color: #1e9c87 !important;
     }
+
 </style>
 
 @extends('school.layouts.app')
@@ -175,7 +176,20 @@
                         </td>
                         <td>{{ $parent->phone_number ?? '-' }}</td>
                         <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
+                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat"
+                                onclick="detailParent('{{ urlencode(json_encode([
+                                    'name' => $parent->user->name,
+                                    'email' => $parent->user->email,
+                                    'phone_number' => $parent->phone_number,
+                                    'gender' => $parent->user->gender,
+                                    'image' => $parent->user->image,
+                                    'student_details' => $parent->students->map(function($s) {
+                                        return [
+                                            'name' => $s->user ? $s->user->name : $s->name,
+                                            'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
+                                        ];
+                                    })
+                                ])) }}')">
                                 <i class="ti ti-eye"></i>
                             </button>
                             <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
@@ -197,199 +211,14 @@
     </div>
 </div>
 
-<!-- Modal Create Parent -->
-<div class="modal fade" id="createParentModal" tabindex="-1" aria-labelledby="createParentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #0993CD; color: white;">
-                <h5 class="modal-title text-white" id="createParentModalLabel">Tambah Data Orang Tua</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('school.parent.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12 mb-3 text-center">
-                            <div class="position-relative d-inline-block">
-                                <img id="create-preview-img" src="{{ asset('assets/images/default-user.jpeg') }}" alt="Preview" class="rounded-circle object-fit-cover" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #ddd;">
-                                <label for="image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer" style="cursor: pointer;">
-                                    <i class="ti ti-camera"></i>
-                                    <input type="file" class="d-none" id="image" name="image" accept="image/*" onchange="previewCreateImage(event)">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required placeholder="Masukkan email">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="phone_number" class="form-label">Nomor HP</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" required placeholder="Masukkan nomor HP">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="gender" class="form-label">Jenis Kelamin</label>
-                            <select class="form-select" id="gender" name="gender" required>
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="male">Laki-laki</option>
-                                <option value="female">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="students" class="form-label">Pilih Siswa (Anak)</label>
-                            <select class="form-select" id="students" name="students[]" size="5" multiple style="height: 150px;">
-                                @foreach($students as $student)
-                                    <option value="{{ $student['id'] }}">{{ $student['name'] }} - {{ $student['classroom'] }}</option>
-                                @endforeach
-                            </select>
-                            <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu anak.</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@include('school.pages.parent.widgets.create-parent')
 
-<div class="modal fade" id="editParentModal" tabindex="-1" aria-labelledby="editParentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #ffc107; color: white;">
-                <h5 class="modal-title text-white" id="editParentModalLabel">Edit Data Orang Tua</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="editParentForm" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="row">
-                         <div class="col-12 mb-3 text-center">
-                            <div class="position-relative d-inline-block">
-                                <img id="edit-preview-img" src="" alt="Preview" class="rounded-circle object-fit-cover" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #ddd;">
-                                <label for="edit_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer" style="cursor: pointer;">
-                                    <i class="ti ti-pencil"></i>
-                                    <input type="file" class="d-none" id="edit_image" name="image" accept="image/*" onchange="previewEditImage(event)">
-                                </label>
-                            </div>
-                        </div>
+@include('school.pages.parent.widgets.edit-parent')
 
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_name" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="edit_name" name="name" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="edit_email" name="email" required>
-                        </div>
-                         <div class="col-md-6 mb-3">
-                            <label for="edit_password" class="form-label">Password (Kosongkan jika tidak diubah)</label>
-                            <input type="password" class="form-control" id="edit_password" name="password">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_phone_number" class="form-label">Nomor HP</label>
-                            <input type="text" class="form-control" id="edit_phone_number" name="phone_number" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_gender" class="form-label">Jenis Kelamin</label>
-                            <select class="form-select" id="edit_gender" name="gender" required>
-                                <option value="male">Laki-laki</option>
-                                <option value="female">Perempuan</option>
-                            </select>
-                        </div>
-                         <div class="col-md-6 mb-3">
-                            <label for="edit_students" class="form-label">Pilih Siswa (Anak)</label>
-                            <select class="form-select" id="edit_students" name="students[]" size="5" multiple style="height: 150px;">
-                                @foreach($students as $student)
-                                    <option value="{{ $student['id'] }}">{{ $student['name'] }} - {{ $student['classroom'] }}</option>
-                                @endforeach
-                            </select>
-                            <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu anak.</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<x-delete-modal-component />
 
-<!-- Modal Delete Parent -->
-<div class="modal fade" id="deleteParentModal" tabindex="-1" aria-labelledby="deleteParentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteParentModalLabel">Hapus Data Orang Tua</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="deleteParentForm" method="POST">
-                @csrf
-                @method('DELETE')
-                <div class="modal-body text-center">
-                    <i class="ti ti-alert-circle text-danger display-1"></i>
-                    <p class="mt-3">Apakah Anda yakin ingin menghapus data orang tua ini? Data yang dihapus tidak dapat dikembalikan.</p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Ya, Hapus!</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="importParentModal" tabindex="-1" aria-labelledby="importParentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #198754; color: white;">
-                <h5 class="modal-title text-white" id="importParentModalLabel">Import Data Orang Tua</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('school.parent.import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <strong>Format Excel:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>Kolom: Nama Orang Tua, Email, Password, Jenis Kelamin, Nomor HP, Nama Anak</li>
-                            <li>Jika 1 orang tua punya beberapa anak, buat baris terpisah untuk setiap anak</li>
-                            <li>Baris ke-2 dst dengan orang tua sama, cukup isi Nama Orang Tua dan Nama Anak (email kosong)</li>
-                        </ul>
-                    </div>
-                    <div class="mb-3">
-                        <label for="importFile" class="form-label">Pilih File Excel</label>
-                        <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx,.xls,.csv" required>
-                        <small class="text-muted">Format: .xlsx, .xls, .csv (max 10MB)</small>
-                    </div>
-                    <div class="text-center">
-                        <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success btn-sm">
-                            <i class="ti ti-download"></i> Download Template
-                        </a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="ti ti-file-import"></i> Import
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@include('school.pages.parent.widgets.import-parent')
+@include('school.pages.parent.widgets.detail-parent')
 
 <script>
     function previewCreateImage(event) {
@@ -434,11 +263,44 @@
     }
 
     function deleteParent(id) {
-         const form = document.getElementById('deleteParentForm');
+         const form = document.getElementById('form-delete');
          form.action = `/school/parent/${id}`;
          
-         const modal = new bootstrap.Modal(document.getElementById('deleteParentModal'));
+         const modal = new bootstrap.Modal(document.getElementById('modal-delete'));
          modal.show();
+    }
+
+    function detailParent(data) {
+        const parent = JSON.parse(decodeURIComponent(data));
+        
+        document.getElementById('detail_name').textContent = parent.name;
+        document.getElementById('detail_email').textContent = parent.email;
+        document.getElementById('detail_phone_number').textContent = parent.phone_number || '-';
+        document.getElementById('detail_gender').textContent = parent.gender === 'male' ? 'Laki-laki' : 'Perempuan';
+        
+        const previewImg = document.getElementById('detail-preview-img');
+        if (parent.image) {
+            previewImg.src = "{{ asset('storage') }}/" + parent.image;
+        } else {
+             previewImg.src = "{{ asset('assets/images/default-user.jpeg') }}";
+        }
+
+        const studentsContainer = document.getElementById('detail_students');
+        studentsContainer.innerHTML = '';
+        
+        if (parent.student_details) {
+            parent.student_details.forEach(student => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-light text-dark border';
+                badge.textContent = `${student.name} (${student.classroom})`;
+                studentsContainer.appendChild(badge);
+            });
+        } else {
+             studentsContainer.textContent = '-';
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('detailParentModal'));
+        modal.show();
     }
 
     setInterval(function() {
@@ -469,6 +331,20 @@
                 let studentNames = parent.students.map(s => s.user ? s.user.name : s.name).join(', ');
                 let studentIds = parent.students.map(s => s.id);
                 
+                let studentDetails = [];
+                if(parent.students) {
+                    parent.students.forEach(s => {
+                        let cName = '-';
+                        if(s.classroom_students && s.classroom_students.length > 0 && s.classroom_students[0].classroom) {
+                            cName = s.classroom_students[0].classroom.name;
+                        }
+                        studentDetails.push({
+                            name: s.user ? s.user.name : s.name,
+                            classroom: cName
+                        });
+                    });
+                }
+                
                 let classrooms = [];
                 if(parent.students) {
                     parent.students.forEach(s => {
@@ -491,7 +367,8 @@
                     phone_number: parent.phone_number,
                     gender: userGender,
                     image: userImageRaw,
-                    student_ids: studentIds
+                    student_ids: studentIds,
+                    student_details: studentDetails
                 };
                 let editDataStr = encodeURIComponent(JSON.stringify(editData));
 
@@ -511,7 +388,8 @@
                         <td>${classroomStr}</td>
                         <td>${phone}</td>
                         <td>
-                             <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
+                             <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat"
+                                onclick="detailParent('${editDataStr}')">
                                 <i class="ti ti-eye"></i>
                             </button>
                             <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit" 
