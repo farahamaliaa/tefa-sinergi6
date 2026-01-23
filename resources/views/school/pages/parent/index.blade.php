@@ -36,6 +36,17 @@
         background-size: cover;
         opacity: 1;
     }
+
+    .btn-import {
+        background-color: #1EB196 !important;
+        border-color: #1EB196 !important;
+        color: #fff !important;
+    }
+
+    .btn-import:hover {
+        background-color: #1e9c87 !important;
+        border-color: #1e9c87 !important;
+    }
 </style>
 
 @extends('school.layouts.app')
@@ -51,7 +62,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                    Daftar - orang ua
+                                    Daftar Data Orang Tua
                                 </a>
                             </li>
                         </ol>
@@ -95,26 +106,33 @@
         @endif
 
         <div class="row mb-3 align-items-center">
-            <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white">
-                        <i class="ti ti-search"></i>
-                    </span>
-                    <input type="text" class="form-control border-start-0" placeholder="Cari" id="searchInput">
+            <div class="col-md-2">
+                <div class="position-relative flex-grow-1">
+                    <input type="text" name="name" class="form-control product-search ps-5" id="input-search" placeholder="Cari..." value="{{ old('name', request('name')) }}">
+                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                 </div>
             </div>
-            <div class="col-md-3">
-                <select class="form-select" id="filterKelas">
-                    <option value="">Kelas</option>
-                    <option value="XI RPL 1">XI RPL 1</option>
-                </select>
+            <div class="col-md-2">
+                <div class="d-flex align-items-center gap-2">
+                    <select class="form-select" id="filterKelas">
+                        <option value="">Kelas</option>
+                        @foreach($students->pluck('classroom')->unique()->sort() as $class)
+                            @if($class && $class != 'No Class')
+                                <option value="{{ $class }}">{{ $class }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    <button class="btn text-white" style="background-color: #0993CD;" id="filterBtn">Filter</button>
+                </div>
             </div>
-            <div class="col-md-5 text-end">
-                <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success me-2">
+            <div class="col-md-8 text-end">
+                {{-- <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success me-2">
                     <i class="ti ti-download"></i> Template
-                </a>
-                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#importParentModal">
-                    <i class="ti ti-file-import"></i> Import
+                </a> --}}
+                <button class="btn btn-import me-2" data-bs-toggle="modal" data-bs-target="#importParentModal">
+                                        <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>  Import
                 </button>
                 <button class="btn text-white" style="background-color: #0993CD;" data-bs-toggle="modal" data-bs-target="#createParentModal">
                     <i class="ti ti-plus"></i> Tambah Orang Tua
@@ -276,78 +294,104 @@
 </div>
 
 <script>
-    setInterval(function() {
-        fetch("{{ route('school.parent.index') }}", {
-            headers: {
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            let tbody = document.getElementById('parent-table-body');
-            tbody.innerHTML = '';
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data orang tua</td></tr>';
-                return;
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('input-search');
+        const filterKelas = document.getElementById('filterKelas');
+        const filterBtn = document.getElementById('filterBtn');
 
-            data.forEach((parent, index) => {
-                let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('admin_assets/dist/images/profile/user-1.jpg') }}";
-                let genderLabel = parent.user && parent.user.gender == 'male' ? 'Laki-laki' : 'Perempuan';
-                let userName = parent.user ? parent.user.name : '-';
-                
-                let studentNames = parent.students.map(s => s.user ? s.user.name : s.name).join(', ');
-                
-                // Extract unique classrooms
-                let classrooms = [];
-                if(parent.students) {
-                    parent.students.forEach(s => {
-                        if(s.classroom_students && s.classroom_students.length > 0) {
-                            if(s.classroom_students[0].classroom) {
-                                let cName = s.classroom_students[0].classroom.name;
-                                if(!classrooms.includes(cName)) classrooms.push(cName);
-                            }
-                        }
-                    });
+        function fetchParents() {
+            const query = searchInput.value;
+            const kelas = filterKelas.value;
+
+            fetch(`{{ route('school.parent.index') }}?name=${query}&class=${kelas}`, {
+                headers: {
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
                 }
-                let classroomStr = classrooms.join(', ');
+            })
+            .then(response => response.json())
+            .then(data => {
+                let tbody = document.getElementById('parent-table-body');
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data orang tua</td></tr>';
+                    return;
+                }
 
-                let phone = parent.phone_number || '-';
+                data.forEach((parent, index) => {
+                    let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('admin_assets/dist/images/profile/user-1.jpg') }}";
+                    let genderLabel = parent.user && parent.user.gender == 'male' ? 'Laki-laki' : 'Perempuan';
+                    let userName = parent.user ? parent.user.name : '-';
+                    
+                    let studentNames = '-';
+                    let classroomStr = '-';
+                    
+                    if (parent.students) {
+                        studentNames = parent.students.map(s => s.user ? s.user.name : s.name).join(', ');
+                        
+                        let classrooms = [];
+                        parent.students.forEach(s => {
+                            if(s.classroom_students && s.classroom_students.length > 0) {
+                                if(s.classroom_students[0].classroom) {
+                                    let cName = s.classroom_students[0].classroom.name;
+                                    if(!classrooms.includes(cName)) classrooms.push(cName);
+                                }
+                            }
+                        });
+                        if (classrooms.length > 0) classroomStr = classrooms.join(', ');
+                    }
 
-                let row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img src="${userImage}" alt="avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                <div>
-                                    <div class="fw-semibold">${userName}</div>
-                                    <small class="text-muted">${genderLabel}</small>
+                    let phone = parent.phone_number || '-';
+
+                    let row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="${userImage}" alt="avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <div class="fw-semibold">${userName}</div>
+                                        <small class="text-muted">${genderLabel}</small>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>${studentNames}</td>
-                        <td>${classroomStr}</td>
-                        <td>${phone}</td>
-                        <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        })
-        .catch(error => console.error('Error fetching parents:', error));
-    }, 5000);
+                            </td>
+                            <td>${studentNames}</td>
+                            <td>${classroomStr}</td>
+                            <td>${phone}</td>
+                            <td>
+                                <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
+                                    <i class="ti ti-eye"></i>
+                                </button>
+                                <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching parents:', error));
+        }
+
+        // Trigger on Filter Button Click
+        if(filterBtn) {
+            filterBtn.addEventListener('click', fetchParents);
+        }
+
+        // Optional: Trigger on Enter in search box
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchParents();
+            }
+        });
+
+        // Real-time updates (including current filter state)
+        setInterval(fetchParents, 5000);
+    });
 </script>
 @endsection

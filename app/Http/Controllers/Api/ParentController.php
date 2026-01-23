@@ -19,9 +19,25 @@ class ParentController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Parents::with(['user', 'students.user', 'students.classroomStudents.classroom']);
+
+        if ($request->filled('name')) {
+            $search = $request->name;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('class')) {
+            $classParam = $request->class;
+            $query->whereHas('students.classroomStudents.classroom', function($q) use ($classParam) {
+                $q->where('name', 'like', "%{$classParam}%");
+            });
+        }
+
+        $parents = $query->get();
+
         if (!$request->expectsJson()) {
-            $parents = Parents::with(['user', 'students.user', 'students.classroomStudents.classroom'])
-                ->get();
             $students = \App\Models\Student::with(['user', 'classroomStudents.classroom'])
                 ->get()
                 ->map(function($s) {
@@ -34,7 +50,7 @@ class ParentController extends Controller
             return view('school.pages.parent.index', compact('parents', 'students'));
         };
 
-        return Parents::with(['user', 'students.user', 'students.classroomStudents.classroom'])->get();
+        return $parents;
     }
 
     public function store(Request $request)
