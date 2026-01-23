@@ -119,6 +119,12 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
 
     // Extra instructor page
     Route::get('extra-instructor', [ExtraInstructorController::class, 'index'])->name('extra-instructor.index');
+    Route::post('extra-instructor', [ExtraInstructorController::class, 'store'])->name('extra-instructor.store');
+    Route::put('extra-instructor/{user}', [ExtraInstructorController::class, 'update'])->name('extra-instructor.update');
+    Route::delete('extra-instructor/{user}', [ExtraInstructorController::class, 'destroy'])->name('extra-instructor.destroy');
+    Route::post('import-extra-instructor', [ExtraInstructorController::class, 'import'])->name('extra-instructor.import');
+    Route::get('download-template-extra-instructor', [ExtraInstructorController::class, 'downloadTemplate'])->name('extra-instructor.download-template');
+
 
     //parent
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');

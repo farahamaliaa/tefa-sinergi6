@@ -126,7 +126,19 @@
                         </div>
                     </form>
                 </div>
+                <div class="col-md-6 text-end">
+                    <a href="{{ route('school.extra-instructor.download-template') }}" class="btn btn-outline-success me-2">
+                        <i class="ti ti-download"></i> Template
+                    </a>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#importInstructorModal">
+                        <i class="ti ti-file-import"></i> Import
+                    </button>
+                    <button class="btn text-white" style="background-color: #0993CD;" data-bs-toggle="modal" data-bs-target="#createInstructorModal">
+                        <i class="ti ti-plus"></i> Tambah Pembina
+                    </button>
+                </div>
             </div>
+
 
             <div class="table-responsive rounded-2">
                 <table class="table table-hover align-middle mb-0">
@@ -139,7 +151,7 @@
                             <th style="background-color: #0993CD; color: white; padding: 12px; font-weight: 600;">
                                 Ekstrakurikuler</th>
                             <th style="background-color: #0993CD; color: white; padding: 12px; font-weight: 600;">No HP</th>
-                            <th style="background-color: #0993CD; color: white; padding: 12px; font-weight: 600;">Status
+                            <!-- <th style="background-color: #0993CD; color: white; padding: 12px; font-weight: 600;">Status -->
                             </th>
                             <th style="background-color: #0993CD; color: white; padding: 12px; font-weight: 600;">Aksi</th>
                         </tr>
@@ -170,13 +182,13 @@
                                     @endif
                                 </td>
                                 <td>{{ $pembina->employee?->phone_number ?? '-' }}</td>
-                                <td>
+                                <!-- <td>
                                     @if($pembina->employee?->status == 'active' || $pembina->employee?->status == 1)
                                         <span class="badge bg-light-success text-success">Aktif</span>
                                     @else
                                         <span class="badge bg-light-danger text-danger">Nonaktif</span>
                                     @endif
-                                </td>
+                                </td> -->
                                 <td>
                                     <div class="dropdown dropstart">
                                         <a href="#" class="text-muted" id="dropdownMenuButton{{ $pembina->id }}"
@@ -202,6 +214,29 @@
                                                     class="dropdown-item d-flex align-items-center gap-3 btn-detail-pembina">
                                                     <i class="fs-4 ti ti-eye"></i>Detail
                                                 </button>
+                                            </li>
+                                            <li>
+                                                <button type="button"
+                                                    data-id="{{ $pembina->id }}"
+                                                    data-name="{{ $pembina->name }}"
+                                                    data-email="{{ $pembina->email }}"
+                                                    data-phone="{{ $pembina->employee?->phone_number }}"
+                                                    data-gender="{{ $pembina->employee?->gender?->value ?? 'male' }}"
+                                                    data-address="{{ $pembina->employee?->address }}"
+                                                    data-extracurriculars="{{ $pembina->employee ? $pembina->employee->extracurriculars->pluck('id')->join(',') : '' }}"
+                                                    class="dropdown-item d-flex align-items-center gap-3 btn-edit-pembina">
+                                                    <i class="fs-4 ti ti-pencil"></i>Edit
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('school.extra-instructor.destroy', $pembina->id) }}" method="POST" class="d-inline"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pembina ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                        <i class="fs-4 ti ti-trash"></i>Hapus
+                                                    </button>
+                                                </form>
                                             </li>
                                         </ul>
                                     </div>
@@ -291,6 +326,159 @@
         </div>
     </div>
 
+    <div class="modal fade" id="createInstructorModal" tabindex="-1" aria-labelledby="createInstructorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #0993CD; color: white;">
+                    <h5 class="modal-title text-white" id="createInstructorModalLabel">Tambah Pembina Ekstrakurikuler</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('school.extra-instructor.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="Masukkan email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone_number" class="form-label">Nomor HP</label>
+                                <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Masukkan nomor HP">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Jenis Kelamin</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="male">Laki-laki</option>
+                                    <option value="female">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">Alamat</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Masukkan alamat">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="extracurricular_ids" class="form-label">Pilih Ekstrakurikuler</label>
+                                <select class="form-select" id="extracurricular_ids" name="extracurricular_ids[]" multiple size="4">
+                                    @foreach($extracurriculars as $eskul)
+                                        <option value="{{ $eskul->id }}">{{ $eskul->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editInstructorModal" tabindex="-1" aria-labelledby="editInstructorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #FFC107; color: white;">
+                    <h5 class="modal-title text-white" id="editInstructorModalLabel">Edit Pembina Ekstrakurikuler</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editInstructorForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_name" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="edit_name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_phone_number" class="form-label">Nomor HP</label>
+                                <input type="text" class="form-control" id="edit_phone_number" name="phone_number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_gender" class="form-label">Jenis Kelamin</label>
+                                <select class="form-select" id="edit_gender" name="gender" required>
+                                    <option value="male">Laki-laki</option>
+                                    <option value="female">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="edit_address" class="form-label">Alamat</label>
+                                <input type="text" class="form-control" id="edit_address" name="address">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="edit_extracurricular_ids" class="form-label">Pilih Ekstrakurikuler</label>
+                                <select class="form-select" id="edit_extracurricular_ids" name="extracurricular_ids[]" multiple size="4">
+                                    @foreach($extracurriculars as $eskul)
+                                        <option value="{{ $eskul->id }}">{{ $eskul->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning text-white">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import Pembina -->
+    <div class="modal fade" id="importInstructorModal" tabindex="-1" aria-labelledby="importInstructorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #198754; color: white;">
+                    <h5 class="modal-title text-white" id="importInstructorModalLabel">Import Data Pembina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('school.extra-instructor.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <strong>Format Excel:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Kolom: Nama Pembina, Email, Password, Jenis Kelamin, Nomor HP, Alamat, Ekstrakurikuler</li>
+                            </ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="importFile" class="form-label">Pilih File Excel</label>
+                            <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx,.xls,.csv" required>
+                            <small class="text-muted">Format: .xlsx, .xls, .csv (max 10MB)</small>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ route('school.extra-instructor.download-template') }}" class="btn btn-outline-success btn-sm">
+                                <i class="ti ti-download"></i> Download Template
+                            </a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="ti ti-file-import"></i> Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('script')
@@ -307,6 +495,31 @@
                 document.getElementById('detail-extracurriculars').textContent = this.dataset.extracurriculars || '-';
 
                 var modal = new bootstrap.Modal(document.getElementById('modal-detail-pembina'));
+                modal.show();
+            });
+        });
+
+        // Edit button handler
+        document.querySelectorAll('.btn-edit-pembina').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var id = this.dataset.id;
+                var form = document.getElementById('editInstructorForm');
+                form.action = "{{ url('school/extra-instructor') }}/" + id;
+
+                document.getElementById('edit_name').value = this.dataset.name;
+                document.getElementById('edit_email').value = this.dataset.email;
+                document.getElementById('edit_phone_number').value = this.dataset.phone || '';
+                document.getElementById('edit_gender').value = this.dataset.gender;
+                document.getElementById('edit_address').value = this.dataset.address || '';
+
+                // Set selected extracurriculars
+                var eskulIds = this.dataset.extracurriculars ? this.dataset.extracurriculars.split(',') : [];
+                var selectElement = document.getElementById('edit_extracurricular_ids');
+                for (var i = 0; i < selectElement.options.length; i++) {
+                    selectElement.options[i].selected = eskulIds.includes(selectElement.options[i].value);
+                }
+
+                var modal = new bootstrap.Modal(document.getElementById('editInstructorModal'));
                 modal.show();
             });
         });
