@@ -41,7 +41,7 @@
             <div class="card-body position-relative p-4" style="z-index: 1;">
                 <h6 class="mb-4 fw-bolder text-dark" style="font-size: 20px;">Profile Guru</h6>
                 <div class="d-flex align-items-center mb-3">
-                    <img src="{{ asset('assets/images/default-user.jpeg') }}" width="90px" height="90px"
+                    <img src="{{ auth()->user()->employee->image && Storage::disk('public')->exists(auth()->user()->employee->image) ? asset('storage/' . auth()->user()->employee->image) : asset('assets/images/default-user.jpeg') }}" width="90px" height="90px"
                         alt="Profile" class="img-fluid rounded-circle object-fit-cover me-4 border border-3 border-white shadow-sm">
                     <div>
                         <h4 class="fw-bold mb-1 text-dark">{{ auth()->user()->name }}</h4>
