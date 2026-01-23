@@ -191,7 +191,7 @@
                                 <th class="text-black">Jenis Kelamin</th>
                                 <th class="text-black">Kelas</th>
                                 <th class="text-black">NISN</th>
-                                <th class="text-black">Aksi</th>
+                                <th class="text-black text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
