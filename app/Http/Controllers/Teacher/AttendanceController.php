@@ -32,17 +32,14 @@ class AttendanceController extends Controller
             return redirect()->route('teacher.dashboard')->with('error', 'Kelas tidak ditemukan');
         }
         
-        // Get classroom info
         $classroom = \App\Models\Classroom::find($classroomId);
         
         if (!$classroom) {
             return redirect()->route('teacher.dashboard')->with('error', 'Kelas tidak ditemukan');
         }
         
-        // Get classroom students
         $classroomStudents = $this->studentClass->where($classroomId, $request);
         
-        // Get attendance data for this classroom with filters
         $attendances = $this->attendance->whereClassroomFiltered($classroomId, $request);
         
         return view('teacher.pages.classroom-attendance.index', compact('attendances', 'classroomStudents', 'classroom'));
@@ -56,20 +53,33 @@ class AttendanceController extends Controller
             return redirect()->route('teacher.dashboard')->with('error', 'Kelas tidak ditemukan');
         }
         
-        // Get classroom info
         $classroom = \App\Models\Classroom::find($classroomId);
         
         if (!$classroom) {
             return redirect()->route('teacher.dashboard')->with('error', 'Kelas tidak ditemukan');
         }
         
-        // Get classroom students
         $classroomStudents = $this->studentClass->where($classroomId, $request);
         
-        $permissions = \App\Models\StudentPermission::where('classroom_id', $classroomId)
-            ->with(['student', 'submittedBy', 'approvedBy'])
-            ->latest()
-            ->get();
+        $query = \App\Models\StudentPermission::where('classroom_id', $classroomId)
+            ->with(['student.user', 'submittedBy', 'approvedBy']);
+        
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->whereHas('student.user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->get('status'));
+        }
+        
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->get('date'));
+        }
+        
+        $permissions = $query->latest()->get();
         
         return view('teacher.pages.classroom-permission.index', compact('classroomStudents', 'classroom', 'permissions'));
     }

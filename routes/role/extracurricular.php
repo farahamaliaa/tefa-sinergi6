@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'role:extracurricular|staff|teacher'])->prefix('extracurricular')->name('extracurricular.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardExtracurricularController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardExtracurricularController::class, 'profile'])->name('profile');
+    Route::put('/profile', [DashboardExtracurricularController::class, 'updateProfile'])->name('profile.update');
 
     // Extracurricular list
     Route::get('list', [ExtracurricularManagementController::class, 'index'])->name('list');
