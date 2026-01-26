@@ -111,7 +111,10 @@ class SchoolYearController extends Controller
         try {
             $this->schoolYear->setNonactive();
             $this->schoolYear->update($schoolYear->id, ['active' => 1]);
-            return back()->with('success', 'Berhasil');
+            
+            \App\Models\Classroom::query()->update(['school_year_id' => $schoolYear->id]);
+            
+            return back()->with('success', 'Berhasil mengaktifkan tahun ajaran dan memindahkan kelas');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }

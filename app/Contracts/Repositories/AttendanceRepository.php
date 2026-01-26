@@ -193,7 +193,13 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function AttendanceDasboard(mixed $model, mixed $query, Request $request): mixed
     {
         $result = $this->model->query();
-        $result->with('model.user');
+        
+        if ($model === 'App\Models\ClassroomStudent') {
+            $result->with('model.student.user');
+        } else {
+            $result->with('model.user');
+        }
+
         $result->where('model_type', $model);
         $result->where('status', $query);
         $request->date ? $result->whereDate('created_at', $request->date) : $result->whereDate('created_at', now());

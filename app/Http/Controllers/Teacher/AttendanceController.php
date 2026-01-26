@@ -59,7 +59,7 @@ class AttendanceController extends Controller
             return redirect()->route('teacher.dashboard')->with('error', 'Kelas tidak ditemukan');
         }
         
-        $classroomStudents = $this->studentClass->where($classroomId, $request);
+        $classroomStudents = $this->studentClass->where($classroomId, new Request());
         
         $query = \App\Models\StudentPermission::where('classroom_id', $classroomId)
             ->with(['student.user', 'submittedBy', 'approvedBy']);
