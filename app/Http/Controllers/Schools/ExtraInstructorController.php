@@ -40,7 +40,7 @@ class ExtraInstructorController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|string|max:13',
             'gender' => 'required|in:male,female',
             'address' => 'nullable|string',
             'extracurricular_ids' => 'nullable|array',
@@ -96,7 +96,7 @@ class ExtraInstructorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|string|max:13',
             'gender' => 'required|in:male,female',
             'address' => 'nullable|string',
             'extracurricular_ids' => 'nullable|array',
@@ -106,8 +106,23 @@ class ExtraInstructorController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'gender' => $request->gender,
         ]);
+
+        if (!$user->employee) {
+            $user->employee()->create([
+                'nip' => '000000000000000000',
+                'birth_date' => now()->subYears(30)->format('Y-m-d'),
+                'birth_place' => '-',
+                'nik' => '0000000000000000',
+                'phone_number' => $request->phone_number ?? '0000000000000',
+                'gender' => $request->gender,
+                'address' => $request->address ?? '-',
+                'status' => 'staff',
+                'active' => true,
+                'religion_id' => 1,
+            ]);
+            $user->refresh();
+        }
 
         if ($user->employee) {
             $dataEmployee = [

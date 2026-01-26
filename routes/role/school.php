@@ -130,6 +130,8 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
     Route::post('parents', [ParentController::class, 'store'])->name('parent.store');
     Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
+    Route::put('parents/{id}', [ParentController::class, 'update'])->name('parent.update');
+    Route::delete('parents/{id}', [ParentController::class, 'destroy'])->name('parent.destroy');
     Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
     Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
     Route::post('import-parent', [ParentController::class, 'import'])->name('parent.import');

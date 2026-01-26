@@ -162,7 +162,7 @@
                                 <td>{{ $pembinas->firstItem() + $index }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ $pembina->employee?->image ? asset('storage/' . $pembina->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                                        <img src="{{ $pembina->employee?->image && Storage::exists($pembina->employee->image) ? asset('storage/' . $pembina->employee->image) : asset('assets/images/default-user.jpeg') }}"
                                             alt="avatar" class="rounded-circle me-2"
                                             style="width: 40px; height: 40px; object-fit: cover;">
                                         <div>
@@ -205,7 +205,7 @@
                                             style="z-index: 20000;">
                                             <li>
                                                 <button type="button"
-                                                    data-image="{{ $pembina->employee?->image ? asset('storage/' . $pembina->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                                                    data-image="{{ $pembina->employee?->image && Storage::exists($pembina->employee->image) ? asset('storage/' . $pembina->employee->image) : asset('assets/images/default-user.jpeg') }}"
                                                     data-name="{{ $pembina->name }}" data-email="{{ $pembina->email }}"
                                                     data-phone="{{ $pembina->employee?->phone_number }}"
                                                     data-gender="{{ $pembina->employee?->gender?->label() ?? '-' }}"

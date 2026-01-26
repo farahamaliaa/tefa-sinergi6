@@ -95,6 +95,13 @@
         </div>
         @endif
 
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
         @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <ul class="mb-0">
@@ -159,7 +166,7 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="{{ $parent->user->image ? asset('storage/' . $parent->user->image) : asset('admin_assets/dist/images/profile/user-1.jpg') }}" alt="avatar" 
+                                <img src="{{ $parent->user->image && Storage::exists($parent->user->image) ? asset('storage/' . $parent->user->image) : asset('assets/images/default-user.jpeg') }}" alt="avatar" 
                                      class="rounded-circle me-2" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
                                 <div>
@@ -176,28 +183,68 @@
                         </td>
                         <td>{{ $parent->phone_number ?? '-' }}</td>
                         <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat"
-                                onclick="detailParent('{{ urlencode(json_encode([
-                                    'name' => $parent->user->name,
-                                    'email' => $parent->user->email,
-                                    'phone_number' => $parent->phone_number,
-                                    'gender' => $parent->user->gender,
-                                    'image' => $parent->user->image,
-                                    'student_details' => $parent->students->map(function($s) {
-                                        return [
-                                            'name' => $s->user ? $s->user->name : $s->name,
-                                            'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
-                                        ];
-                                    })
-                                ])) }}')">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
+                            <div class="dropdown dropstart">
+                                <a href="#" class="text-muted" id="dropdownMenuButton{{ $parent->id }}"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="category">
+                                        <div class="category-business"></div>
+                                        <div class="category-social"></div>
+                                        <span class="more-options text-dark">
+                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $parent->id }}"
+                                    style="z-index: 20000;">
+                                    <li>
+                                        <button type="button"
+                                            onclick="detailParent('{{ urlencode(json_encode([
+                                                'name' => $parent->user->name,
+                                                'email' => $parent->user->email,
+                                                'phone_number' => $parent->phone_number,
+                                                'gender' => $parent->user->gender,
+                                                'image' => $parent->user->image,
+                                                'student_details' => $parent->students->map(function($s) {
+                                                    return [
+                                                        'name' => $s->user ? $s->user->name : $s->name,
+                                                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
+                                                    ];
+                                                })
+                                            ])) }}')"
+                                            class="dropdown-item d-flex align-items-center gap-3">
+                                            <i class="fs-4 ti ti-eye"></i>Detail
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            class="dropdown-item d-flex align-items-center gap-3"
+                                            onclick="editParent('{{ urlencode(json_encode([
+                                                'id' => $parent->id,
+                                                'name' => $parent->user->name,
+                                                'email' => $parent->user->email,
+                                                'phone_number' => $parent->phone_number,
+                                                'gender' => $parent->user->gender,
+                                                'image' => $parent->user->image,
+                                                'student_ids' => $parent->students->pluck('id'),
+                                                'student_details' => $parent->students->map(function($s) {
+                                                    return [
+                                                        'name' => $s->user ? $s->user->name : $s->name,
+                                                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
+                                                    ];
+                                                })
+                                            ])) }}')">
+                                            <i class="fs-4 ti ti-pencil"></i>Edit
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            onclick="deleteParent('{{ $parent->id }}')"
+                                            class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                            <i class="fs-4 ti ti-trash"></i>Hapus
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -256,7 +303,7 @@
         }
         
         const form = document.getElementById('editParentForm');
-        form.action = `/school/parent/${parent.id}`;
+        form.action = `/school/parents/${parent.id}`;
         
         const modal = new bootstrap.Modal(document.getElementById('editParentModal'));
         modal.show();
@@ -264,7 +311,7 @@
 
     function deleteParent(id) {
          const form = document.getElementById('form-delete');
-         form.action = `/school/parent/${id}`;
+         form.action = `/school/parents/${id}`;
          
          const modal = new bootstrap.Modal(document.getElementById('modal-delete'));
          modal.show();
@@ -321,7 +368,7 @@
             }
 
             data.forEach((parent, index) => {
-                let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('admin_assets/dist/images/profile/user-1.jpg') }}";
+                let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('assets/images/default-user.jpeg') }}";
                 let genderLabel = parent.user && parent.user.gender == 'male' ? 'Laki-laki' : 'Perempuan';
                 let userName = parent.user ? parent.user.name : '-';
                 let userEmail = parent.user ? parent.user.email : '';
@@ -388,18 +435,42 @@
                         <td>${classroomStr}</td>
                         <td>${phone}</td>
                         <td>
-                             <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat"
-                                onclick="detailParent('${editDataStr}')">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit" 
-                                onclick="editParent('${editDataStr}')">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus"
-                                onclick="deleteParent('${parent.id}')">
-                                <i class="ti ti-trash"></i>
-                            </button>
+                             <div class="dropdown dropstart">
+                                <a href="#" class="text-muted" id="dropdownMenuButton${parent.id}"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="category">
+                                        <div class="category-business"></div>
+                                        <div class="category-social"></div>
+                                        <span class="more-options text-dark">
+                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${parent.id}"
+                                    style="z-index: 20000;">
+                                    <li>
+                                        <button type="button"
+                                            onclick="detailParent('${editDataStr}')"
+                                            class="dropdown-item d-flex align-items-center gap-3">
+                                            <i class="fs-4 ti ti-eye"></i>Detail
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            class="dropdown-item d-flex align-items-center gap-3"
+                                            onclick="editParent('${editDataStr}')">
+                                            <i class="fs-4 ti ti-pencil"></i>Edit
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            onclick="deleteParent('${parent.id}')"
+                                            class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                            <i class="fs-4 ti ti-trash"></i>Hapus
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 `;

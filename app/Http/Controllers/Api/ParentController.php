@@ -79,33 +79,42 @@ class ParentController extends Controller
             $slug .= '-' . ($count + 1);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'slug' => $slug,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => 'parent',
-            'gender' => $request->gender,
-            'image' => $request->hasFile('image') ? $this->upload(UploadDiskEnum::PARENT->value, $request->file('image')) : null,
-        ]);
+        try {
+            DB::transaction(function () use ($request, $slug, $count) {
+                 $user = User::create([
+                    'name' => $request->name,
+                    'slug' => $slug,
+                    'email' => $request->email,
+                    'password' => bcrypt($request->password),
+                    'role' => 'parent',
+                    'gender' => $request->gender,
+                    'image' => $request->hasFile('image') ? $this->upload(UploadDiskEnum::PARENT->value, $request->file('image')) : null,
+                ]);
 
-        $user->assignRole('parent'); 
+                $user->assignRole('parent'); 
 
-        $parent = Parents::create([
-            'user_id' => $user->id,
-            'name' => $request->name,
-            'phone_number' => $request->phone_number,
-        ]);
+                $parent = Parents::create([
+                    'user_id' => $user->id,
+                    'name' => $request->name,
+                    'phone_number' => $request->phone_number,
+                ]);
 
-        if($request->has('students')) {
-            $parent->students()->attach($request->students);
+                if($request->has('students')) {
+                    $parent->students()->attach($request->students);
+                }
+            });
+
+            if ($request->expectsJson()) {
+                 return ResponseHelper::created(null, 'Berhasil menambahkan data orang tua');
+            }
+
+            return redirect()->back()->with('success', 'Berhasil menambahkan data orang tua');
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return ResponseHelper::error('Gagal adding parent: ' . $e->getMessage(), 500);
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        if ($request->expectsJson()) {
-             return ResponseHelper::created($parent, 'Berhasil menambahkan data orang tua');
-        }
-
-        return redirect()->back()->with('success', 'Berhasil menambahkan data orang tua');
     }
 
     public function show($id, Request $request)
@@ -134,41 +143,48 @@ class ParentController extends Controller
             'students.*' => 'exists:students,id',
         ]);
 
-        DB::transaction(function () use ($request, $parent, $user) {
-            $dataUser = [
-                'name' => $request->name,
-                'email' => $request->email,
-                'gender' => $request->gender,
-            ];
+        try {
+            DB::transaction(function () use ($request, $parent, $user) {
+                $dataUser = [
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'gender' => $request->gender,
+                ];
 
-            if ($request->hasFile('image')) {
-                if ($user->image) {
-                    $this->remove($user->image);
+                if ($request->hasFile('image')) {
+                    if ($user->image) {
+                        $this->remove($user->image);
+                    }
+                    $dataUser['image'] = $this->upload(UploadDiskEnum::PARENT->value, $request->file('image'));
                 }
-                $dataUser['image'] = $this->upload(UploadDiskEnum::PARENT->value, $request->file('image'));
+
+                if ($request->filled('password')) {
+                    $dataUser['password'] = bcrypt($request->password);
+                }
+
+                $user->update($dataUser);
+
+                $parent->update([
+                    'name' => $request->name,
+                    'phone_number' => $request->phone_number,
+                ]);
+
+                if ($request->has('students')) {
+                    $parent->students()->sync($request->students);
+                }
+            });
+
+            if ($request->expectsJson()) {
+                return ResponseHelper::success($parent, 'Berhasil memperbarui data orang tua');
             }
 
-            if ($request->filled('password')) {
-                $dataUser['password'] = bcrypt($request->password);
+            return redirect()->back()->with('success', 'Berhasil memperbarui data orang tua');
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return ResponseHelper::error('Gagal update parent: ' . $e->getMessage(), 500);
             }
-
-            $user->update($dataUser);
-
-            $parent->update([
-                'name' => $request->name,
-                'phone_number' => $request->phone_number,
-            ]);
-
-            if ($request->has('students')) {
-                $parent->students()->sync($request->students);
-            }
-        });
-
-        if ($request->expectsJson()) {
-            return ResponseHelper::success($parent, 'Berhasil memperbarui data orang tua');
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'Berhasil memperbarui data orang tua');
     }
 
     public function destroy($id)
@@ -176,21 +192,28 @@ class ParentController extends Controller
         $parent = Parents::findOrFail($id);
         $user = $parent->user;
 
-        DB::transaction(function () use ($parent, $user) {
-            $parent->students()->detach();
-            $parent->delete();
+        try {
+            DB::transaction(function () use ($parent, $user) {
+                $parent->students()->detach();
+                $parent->delete();
 
-            if ($user->image) {
-                $this->remove($user->image);
+                if ($user->image) {
+                    $this->remove($user->image);
+                }
+                $user->delete();
+            });
+
+            if (request()->expectsJson()) {
+                return ResponseHelper::success(null, 'Berhasil menghapus data orang tua');
             }
-            $user->delete();
-        });
 
-        if (request()->expectsJson()) {
-            return ResponseHelper::success(null, 'Berhasil menghapus data orang tua');
+            return redirect()->back()->with('success', 'Berhasil menghapus data orang tua');
+        } catch (\Exception $e) {
+             if (request()->expectsJson()) {
+                return ResponseHelper::error('Gagal delete parent: ' . $e->getMessage(), 500);
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'Berhasil menghapus data orang tua');
     }
 
     public function attachStudent(Request $request, $id)

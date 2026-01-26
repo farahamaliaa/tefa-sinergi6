@@ -1,8 +1,6 @@
 <div class="row">
-    <!-- Profile Staff Card -->
     <div class="col-lg-6 mb-3">
         <div class="card h-100 border-1 shadow-sm overflow-hidden">
-            <!-- Header Background with Gradient -->
             <div class="position-relative rounded-2"
                 style="height: 130px; background: linear-gradient(45deg, #0169C2 0%, #7ED4EF 100%);">\
                 <img src="{{ asset('assets/images/background/doble-bubble-1.png') }}"
@@ -14,23 +12,22 @@
             </div>
 
             <div class="card-body text-center pt-0 position-relative">
-                <!-- Profile Image -->
                 <div class="d-flex justify-content-center position-relative" style="margin-top: -60px; z-index: 2;">
-                    <img src="{{ asset('assets/images/default-user.jpeg') }}" alt="Profile"
-                        class="rounded-circle border border-2 border-white shadow-sm object-fit-cover"
+                    <img src="{{ auth()->user()->employee && auth()->user()->employee->image ? asset('storage/' . auth()->user()->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                        alt="Profile" class="rounded-circle border border-2 border-white shadow-sm object-fit-cover"
                         style="width: 110px; height: 110px;">
                 </div>
 
                 <div class="mt-3">
                     <h3 class="fw-bold text-dark mb-1">{{ auth()->user()->name }}</h3>
                     <p class="text-muted fs-4 mb-2">Staff Tata Usaha</p>
-                    <p class="text-dark fw-bold mb-0" style="letter-spacing: 0.5px;">NIP : 1234567891011</p>
+                    <p class="text-dark fw-bold mb-0" style="letter-spacing: 0.5px;">NIP :
+                        {{ auth()->user()->employee ? auth()->user()->employee->nip : '-' }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Attendance Status Card -->
     <div class="col-lg-6 mb-3">
         <div class="card h-100 border-1 shadow-sm position-relative overflow-hidden">
             <img src="{{ asset('assets/images/background/calender2.png') }}" class="position-absolute bottom-0 end-0"
@@ -55,7 +52,6 @@
 
                 <div class="mb-4">
                     <div class="d-flex align-items-center mb-2 text-dark">
-                        <!-- Clock Icon -->
                         <span class="me-2 text-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
