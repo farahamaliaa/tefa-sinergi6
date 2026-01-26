@@ -23,6 +23,7 @@ Route::get('/login', function () {
 
 Route::get('/', [LandingController::class, 'index'])->name('beranda');
 
+Route::view('/password/email-sent', 'auth.passwords.email-sent')->name('password.email-sent');
 Auth::routes();
 
 require_once __DIR__ . '/role/school.php';
