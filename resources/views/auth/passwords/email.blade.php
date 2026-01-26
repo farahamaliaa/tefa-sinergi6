@@ -125,7 +125,7 @@
             margin-top: 24px;
             display: inline-block;
         }
-        
+
         .back-link a {
             color: #0896D1;
             text-decoration: none;
@@ -135,11 +135,12 @@
         .back-link a:hover {
             text-decoration: underline;
         }
-        
+
         @media (max-width: 1125px) {
             .bg-image {
                 width: 100%;
             }
+
             .bg-left {
                 display: none;
             }
@@ -148,17 +149,22 @@
 </head>
 
 <body>
-    <img src="{{ asset('assets/images/background/BgResetPasswordLeft.png') }}" alt="Background Left" class="bg-image bg-left">
-    <img src="{{ asset('assets/images/background/BgResetPasswordRight.png') }}" alt="Background Right" class="bg-image bg-right">
+    <img src="{{ asset('assets/images/background/BgResetPasswordLeft.png') }}" alt="Background Left"
+        class="bg-image bg-left">
+    <img src="{{ asset('assets/images/background/BgResetPasswordRight.png') }}" alt="Background Right"
+        class="bg-image bg-right">
 
     <div class="d-flex align-items-center justify-content-center min-vh-100 p-4">
         <div class="container" style="max-width: 500px;">
             <div class="card-custom text-center">
-                
-                <div class="icon-circle">
-                    <svg width="40" height="40" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="50" height="50" rx="14" fill="#0896D1"/>
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M41 19.0687C41 24.6303 36.4721 29.139 30.8882 29.139C29.8706 29.139 27.5507 28.9054 26.4227 27.9678L25.0116 29.3726C24.1812 30.1998 24.4052 30.443 24.7748 30.843C24.9284 31.011 25.1076 31.2046 25.2467 31.4814C25.2467 31.4814 26.4227 33.1198 25.2467 34.7598C24.5412 35.6958 22.5652 37.0061 20.3093 34.7598L19.8389 35.227C19.8389 35.227 21.2484 36.8669 20.0741 38.5069C19.3685 39.4429 17.4869 40.3789 15.8406 38.7405L14.1958 40.3789C13.0662 41.5037 11.6871 40.8477 11.1399 40.3789L9.7271 38.9741C8.41033 37.6621 9.17831 36.2413 9.7271 35.6941L21.954 23.5183C21.954 23.5183 20.778 21.6463 20.778 19.0703C20.778 13.5088 25.3059 9 30.8898 9C36.4737 9 41 13.5088 41 19.0687ZM30.8898 22.5823C31.8231 22.584 32.7188 22.215 33.3801 21.5564C34.0414 20.8978 34.414 20.0036 34.4161 19.0703C34.4153 18.6081 34.3234 18.1505 34.1458 17.7238C33.9681 17.297 33.7081 16.9095 33.3807 16.5832C33.0532 16.2569 32.6647 15.9983 32.2373 15.8222C31.8099 15.6461 31.3521 15.5559 30.8898 15.5567C30.4276 15.5559 29.9697 15.6461 29.5423 15.8222C29.1149 15.9983 28.7264 16.2569 28.399 16.5832C28.0715 16.9095 27.8116 17.297 27.6339 17.7238C27.4562 18.1505 27.3643 18.6081 27.3635 19.0703C27.3656 20.0036 27.7383 20.8978 28.3996 21.5564C29.0608 22.215 29.9566 22.584 30.8898 22.5823Z" fill="white"/>
+
+                <div class="icon-circle bg-light-primary">
+                    <svg width="40" height="40" viewBox="0 0 50 50" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect width="50" height="50" rx="14" fill="#0896D1" />
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M41 19.0687C41 24.6303 36.4721 29.139 30.8882 29.139C29.8706 29.139 27.5507 28.9054 26.4227 27.9678L25.0116 29.3726C24.1812 30.1998 24.4052 30.443 24.7748 30.843C24.9284 31.011 25.1076 31.2046 25.2467 31.4814C25.2467 31.4814 26.4227 33.1198 25.2467 34.7598C24.5412 35.6958 22.5652 37.0061 20.3093 34.7598L19.8389 35.227C19.8389 35.227 21.2484 36.8669 20.0741 38.5069C19.3685 39.4429 17.4869 40.3789 15.8406 38.7405L14.1958 40.3789C13.0662 41.5037 11.6871 40.8477 11.1399 40.3789L9.7271 38.9741C8.41033 37.6621 9.17831 36.2413 9.7271 35.6941L21.954 23.5183C21.954 23.5183 20.778 21.6463 20.778 19.0703C20.778 13.5088 25.3059 9 30.8898 9C36.4737 9 41 13.5088 41 19.0687ZM30.8898 22.5823C31.8231 22.584 32.7188 22.215 33.3801 21.5564C34.0414 20.8978 34.414 20.0036 34.4161 19.0703C34.4153 18.6081 34.3234 18.1505 34.1458 17.7238C33.9681 17.297 33.7081 16.9095 33.3807 16.5832C33.0532 16.2569 32.6647 15.9983 32.2373 15.8222C31.8099 15.6461 31.3521 15.5559 30.8898 15.5567C30.4276 15.5559 29.9697 15.6461 29.5423 15.8222C29.1149 15.9983 28.7264 16.2569 28.399 16.5832C28.0715 16.9095 27.8116 17.297 27.6339 17.7238C27.4562 18.1505 27.3643 18.6081 27.3635 19.0703C27.3656 20.0036 27.7383 20.8978 28.3996 21.5564C29.0608 22.215 29.9566 22.584 30.8898 22.5823Z"
+                            fill="white" />
                     </svg>
                 </div>
 
@@ -183,24 +189,28 @@
                     <div class="mb-4">
                         <div class="input-wrapper">
                             <span class="input-group-text">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M18 6H6C4.89543 6 4 6.89543 4 8V16C4 17.1046 4.89543 18 6 18H18C19.1046 18 20 17.1046 20 16V8C20 6.89543 19.1046 6 18 6Z" stroke="#888888" stroke-width="2"/>
-                                    <path d="M4 9L11.106 12.553C11.3836 12.6917 11.6897 12.7639 12 12.7639C12.3103 12.7639 12.6164 12.6917 12.894 12.553L20 9" stroke="#888888" stroke-width="2"/>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M18 6H6C4.89543 6 4 6.89543 4 8V16C4 17.1046 4.89543 18 6 18H18C19.1046 18 20 17.1046 20 16V8C20 6.89543 19.1046 6 18 6Z"
+                                        stroke="#888888" stroke-width="2" />
+                                    <path
+                                        d="M4 9L11.106 12.553C11.3836 12.6917 11.6897 12.7639 12 12.7639C12.3103 12.7639 12.6164 12.6917 12.894 12.553L20 9"
+                                        stroke="#888888" stroke-width="2" />
                                 </svg>
                             </span>
-                            <input id="email" type="email" 
-                                class="form-control @error('email') is-invalid @enderror" 
-                                name="email" value="{{ old('email') }}" 
-                                placeholder="Masukkan Email Anda"
-                                required autocomplete="email" autofocus>
-                                
-                            @error('email')
+                            <input id="email" type="email"
+                                class="form-control @error('email') is-invalid @enderror" name="email"
+                                value="{{ old('email') }}" placeholder="Masukkan Email Anda" required
+                                autocomplete="email" autofocus>
+
+                            {{-- @error('email')
                                 <span class="position-absolute end-0 top-50 translate-middle-y me-3">
                                     <i class="bi bi-exclamation-circle text-danger" style="color: #ff6b6b !important; font-size: 1.2rem;"></i>
                                 </span>
-                            @enderror
+                            @enderror --}}
                         </div>
-                        
+
                         @error('email')
                             <span class="invalid-feedback text-start d-block mt-1" role="alert">
                                 <strong>{{ $message }}</strong>
