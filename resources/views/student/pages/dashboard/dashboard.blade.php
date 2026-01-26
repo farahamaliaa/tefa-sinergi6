@@ -331,7 +331,7 @@
                                         class="rounded-circle img-fluid mb-2" style="max-width: 100px; height: auto;">
 
                                     <div class="ms-3 text-center text-sm-start">
-                                        <h4><b>{{ $studentClasses->classroom->employee->user->name }}</b></h4>
+                                        <h4><b>{{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</b></h4>
                                         <h6>Tahun Ajaran {{ $studentClasses->classroom->schoolYear->school_year }}</h6>
 
                                     </div>
@@ -339,7 +339,7 @@
                                 <div class="d-flex flex-wrap justify-content-center justify-content-sm-start gap-2"
                                     id="subject-container">
                                     @php
-                                        $subjects = $studentClasses->classroom->employee->teacherSubjects;
+                                        $subjects = $studentClasses->classroom->employee?->teacherSubjects ?? collect();
                                         $displayedSubjects = $subjects->take(2);
                                         $remainingSubjects = $subjects->count() - $displayedSubjects->count();
                                     @endphp
@@ -527,7 +527,7 @@
                             <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" class="rounded-circle"
                                 width="45" height="45" alt="">
                             <div class="ms-3">
-                                <h6 class="mb-0 fw-semibold">{{ $studentClasses->classroom->employee->user->name }}</h6>
+                                <h6 class="mb-0 fw-semibold">{{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</h6>
                                 <span class="fs-2 text-muted">Tahun Ajaran
                                     {{ $studentClasses->classroom->schoolYear->school_year }}</span>
                             </div>

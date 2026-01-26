@@ -11,7 +11,7 @@
             <a class="d-flex align-items-center gap-2 text-decoration-none" href="#" id="profileDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
 
-                <img src="{{ Auth::user()->employee && Auth::user()->employee->image && Storage::exists(Auth::user()->employee->image) ? asset('storage/' . Auth::user()->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                <img src="{{ (Auth::user()->image && Storage::exists(Auth::user()->image)) ? asset('storage/' . Auth::user()->image) : ((Auth::user()->employee && Auth::user()->employee->image && Storage::exists(Auth::user()->employee->image)) ? asset('storage/' . Auth::user()->employee->image) : asset('assets/images/default-user.jpeg')) }}"
                     class="rounded-circle" width="38" height="38" style="object-fit: cover" />
 
                 <div class="d-flex flex-column text-start">
@@ -23,6 +23,11 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">
+                <li>
+                    <a href="{{ route('extracurricular.profile') }}" class="dropdown-item d-flex align-items-center gap-2">
+                        <i class="ti ti-user fs-4"></i> Profile
+                    </a>
+                </li>
                 <li>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST">
                         @csrf

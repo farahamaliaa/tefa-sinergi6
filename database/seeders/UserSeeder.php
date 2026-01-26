@@ -28,7 +28,6 @@ class UserSeeder extends Seeder
             if ($role['name'] == 'staff') {
                 $user->givePermissionTo('view_violation');
 
-                // Create second staff user for "Staff Biasa"
                 $user2 = User::query()->create([
                     'name' => 'Staff Biasa',
                     'slug' => 'staff-biasa',

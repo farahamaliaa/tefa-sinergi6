@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('', [DashboardTeacherController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardTeacherController::class, 'profile'])->name('profile');
+    Route::put('/profile', [DashboardTeacherController::class, 'updateProfile'])->name('profile.update');
+
+    // New Permission Routes
+    Route::get('/permissions', [DashboardTeacherController::class, 'permissions'])->name('permissions');
+    Route::patch('/permissions/{id}/approve', [DashboardTeacherController::class, 'approvePermission'])->name('permissions.approve');
+    Route::patch('/permissions/{id}/reject', [DashboardTeacherController::class, 'rejectPermission'])->name('permissions.reject');
 
     Route::get('extracurricular', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
 
