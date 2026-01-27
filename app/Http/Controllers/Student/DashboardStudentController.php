@@ -161,7 +161,21 @@ class DashboardStudentController extends Controller
                 'birth_place' => 'nullable|string',
                 'religion_id' => 'required|exists:religions,id',
                 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ], [
+                'name.required' => 'Nama lengkap wajib diisi.',
+                'name.max' => 'Nama lengkap maksimal :max karakter.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'email.unique' => 'Email sudah digunakan.',
+                'gender.required' => 'Jenis kelamin wajib dipilih.',
+                'gender.in' => 'Jenis kelamin tidak valid.',
+                'religion_id.required' => 'Agama wajib dipilih.',
+                'religion_id.exists' => 'Agama tidak valid.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
             ]);
+
 
             try {
                 DB::transaction(function () use ($request, $user, $student) {
