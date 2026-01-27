@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Contracts\Interfaces\AttendanceInterface;
 use App\Contracts\Interfaces\ClassroomInterface;
 use App\Contracts\Interfaces\EmployeeInterface;
 use App\Contracts\Interfaces\LessonScheduleInterface;
-use App\Contracts\Interfaces\MapleInterface;
 use App\Contracts\Interfaces\ModelHasRfidInterface;
 use App\Contracts\Interfaces\RfidInterface;
 use App\Contracts\Interfaces\SchoolInterface;
@@ -17,35 +17,49 @@ use App\Contracts\Interfaces\StudentViolationInterface;
 use App\Contracts\Interfaces\SubjectInterface;
 use App\Enums\AttendanceEnum;
 use App\Enums\RoleEnum;
-use App\Http\Requests\StoreModelHasRfidRequest;
 use App\Models\School;
-use App\Services\ModelHasRfidService;
 use App\Services\SchoolChartService;
+use App\Services\SemesterService;
 use Illuminate\Http\Request;
-
 
 class SchoolDashboardController extends Controller
 {
     private SchoolInterface $school;
+
     private SchoolYearInterface $schoolYear;
+
     private RfidInterface $rfid;
+
     private ClassroomInterface $classroom;
+
     private SemesterInterface $semester;
+
     private AttendanceInterface $attendance;
+
     private StudentInterface $student;
+
     private EmployeeInterface $employee;
+
     private SchoolChartService $schoolChart;
+
     private SubjectInterface $subjects;
+
     private ModelHasRfidInterface $modelHasRfid;
+
     private LessonScheduleInterface $lessonSchedule;
+
     private SchoolPointInterface $schoolPoints;
+
     private StudentViolationInterface $studentViolation;
 
+    private SemesterService $semesterService;
+
     public function __construct(SchoolInterface $school, SchoolYearInterface $schoolYear,
-    RfidInterface $rfid, ClassroomInterface $classroom, SemesterInterface $semester,
-    SchoolChartService $schoolChart, AttendanceInterface $attendance, StudentInterface $student,
-    EmployeeInterface $employee, SubjectInterface $subjects, ModelHasRfidInterface $modelHasRfid,
-    LessonScheduleInterface $lessonSchedule, SchoolPointInterface $schoolPoints, StudentViolationInterface $studentViolation)
+        RfidInterface $rfid, ClassroomInterface $classroom, SemesterInterface $semester,
+        SchoolChartService $schoolChart, AttendanceInterface $attendance, StudentInterface $student,
+        EmployeeInterface $employee, SubjectInterface $subjects, ModelHasRfidInterface $modelHasRfid,
+        LessonScheduleInterface $lessonSchedule, SchoolPointInterface $schoolPoints, StudentViolationInterface $studentViolation,
+        SemesterService $semesterService)
     {
         $this->employee = $employee;
         $this->school = $school;
@@ -61,13 +75,14 @@ class SchoolDashboardController extends Controller
         $this->lessonSchedule = $lessonSchedule;
         $this->schoolPoints = $schoolPoints;
         $this->studentViolation = $studentViolation;
+        $this->semesterService = $semesterService;
     }
 
     public function index(Request $request)
     {
         $classrooms = $this->classroom->countClass();
         $schoolYear = $this->schoolYear->active();
-        $semester = $this->semester->whereSchool();
+        $currentSemesterType = $this->semesterService->getCurrentSemester();
 
         $attendanceChart = $this->schoolChart->ChartAttendance($this->attendance);
         $violationChart = $this->schoolChart->ChartViolation($this->studentViolation);
@@ -82,8 +97,8 @@ class SchoolDashboardController extends Controller
         $schoolPoints = $this->schoolPoints->get();
         $maxPoint = $this->schoolPoints->getMaxPoint();
 
-        $fill = $this->lessonSchedule->dahsboardSchool('fill',now());
-        $notfill = $this->lessonSchedule->dahsboardSchool('notfill',now());
+        $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
+        $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
 
         $lates = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::LATE->value, $request);
         $alpha = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::ALPHA->value, $request);
@@ -107,7 +122,7 @@ class SchoolDashboardController extends Controller
             'lates', 'alpha', 'sick', 'permit', 'totalPermit',
             'lates_teacher', 'alpha_teacher', 'sick_teacher', 'permit_teacher', 'totalPermit_teacher',
             'studentChart', 'fill', 'notfill', 'classrooms', 'violations',
-            'schoolYear', 'semester',
+            'schoolYear', 'currentSemesterType',
             'attendanceChart', 'alumni',
             'teachers', 'employees', 'students',
             'subjects', 'schoolPoints', 'maxPoint', 'violationChart'));
@@ -118,12 +133,14 @@ class SchoolDashboardController extends Controller
         $rfids = $this->modelHasRfid->searchMaster($request);
         $school = $this->school->showWithSlug(auth()->user()->slug);
         $schoolYear = $this->schoolYear->active($school->id);
+
         return view('school.pages.settings.information', compact('school', 'schoolYear', 'rfids'));
     }
 
     public function edit()
     {
         $school = $this->school->showWithSlug(auth()->user()->slug);
+
         return view('school.pages.settings.update-information', compact('school'));
     }
 
@@ -144,7 +161,7 @@ class SchoolDashboardController extends Controller
 
         $merged_teacher = $sick_teacher->merge($permit_teacher);
         $totalPermit_teacher = $merged_teacher->count();
-        
+
         $teachers = $this->employee->where(RoleEnum::TEACHER->value);
 
         $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
@@ -166,7 +183,7 @@ class SchoolDashboardController extends Controller
 
         $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('teachers', 'fill', 'notfill'))->render();
         $teacherJournalPane = view('school.pages.dashboard.panes.teacher-journal', compact('fill', 'notfill'))->render();
-        
+
         // Charts Data
         $attendanceChart = $this->schoolChart->ChartAttendance($this->attendance);
         $violationChart = $this->schoolChart->ChartViolation($this->studentViolation);
@@ -199,9 +216,9 @@ class SchoolDashboardController extends Controller
                 'student' => $studentChart,
                 'journal' => [
                     'fill' => $fill->count(),
-                    'notfill' => $notfill->count()
-                ]
-            ]
+                    'notfill' => $notfill->count(),
+                ],
+            ],
         ]);
     }
 }
