@@ -41,8 +41,9 @@
             <div class="card-body position-relative p-4" style="z-index: 1;">
                 <h6 class="mb-4 fw-bolder text-dark" style="font-size: 20px;">Profile Guru</h6>
                 <div class="d-flex align-items-center mb-3">
-                    <img src="{{ auth()->user()->employee->image && Storage::disk('public')->exists(auth()->user()->employee->image) ? asset('storage/' . auth()->user()->employee->image) : asset('assets/images/default-user.jpeg') }}" width="90px" height="90px"
-                        alt="Profile" class="img-fluid rounded-circle object-fit-cover me-4 border border-3 border-white shadow-sm">
+                    <img src="{{ auth()->user()->employee->image && Storage::disk('public')->exists(auth()->user()->employee->image) ? asset('storage/' . auth()->user()->employee->image) : asset('assets/images/default-user.jpeg') }}"
+                        width="90" height="90" alt="Profile"
+                        class="rounded-circle object-fit-cover me-4 border border-3 border-white shadow-sm">
                     <div>
                         <h4 class="fw-bold mb-1 text-dark">{{ auth()->user()->name }}</h4>
                         <p class="text-muted mb-0 fs-6">Tahun Ajaran {{ $schoolYear->school_year }}</p>
@@ -64,16 +65,14 @@
     <div class="col-lg-6 mb-3">
         <div class="card h-100 border shadow-none position-relative overflow-hidden">
 
-            <img src="{{ asset('assets/images/asset.png') }}" alt=""
-                class="position-absolute"
+            <img src="{{ asset('assets/images/asset.png') }}" alt="" class="position-absolute"
                 style="top: 0; right: 0; width: 100px; z-index: 5;">
 
-            <img src="{{ asset('assets/images/Topi.png') }}" alt="Graduation Cap"
-                class="position-absolute"
+            <img src="{{ asset('assets/images/Topi.png') }}" alt="Graduation Cap" class="position-absolute"
                 style="top: 50%; right: 10px; transform: translateY(-50%); width: 150px; z-index: 5;">
 
 
-            <div class="card-body p-4 position-relative" style="z-index: 10;">
+            <div class="card-body p-4 position-relative" style="z-index: 1;">
                 <div class="d-flex justify-content-between align-items-start h-100 text-start">
                     @if ($classroom)
                         <div class="pt-1 ps-1">
@@ -87,7 +86,8 @@
                         </div>
                     @else
                         <div class="w-100 text-center align-self-center">
-                            <h6 class="mb-4 fw-bold text-dark text-start" style="font-size: 20px;">Wali Kelas Dari :</h6>
+                            <h6 class="mb-4 fw-bold text-dark text-start" style="font-size: 20px;">Wali Kelas Dari :
+                            </h6>
                             <div class="py-3">
                                 <img src="{{ asset('assets/images/Topi.png') }}" width="100" alt="Graduation Cap"
                                     class="img-fluid mb-3 opacity-50">
