@@ -24,6 +24,11 @@ class LoginApiController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
         $user = User::where('email', $request->email)->first();
         $fullDomain = request()->root();
 
@@ -34,16 +39,16 @@ class LoginApiController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'role' => $user->roles->first()->name,
+                    'role' => $user->roles->first()->name ?? 'unknown',
                     'token' => $token,
-                    'image' => match($user->roles->first()->name) {
-                        'student' => $user->student && $user->student->image 
-                            ? asset($fullDomain.'/storage/'.$user->student->image) 
-                            : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
-                        'parent' => asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
-                        default => $user->employee && $user->employee->image 
-                            ? asset($fullDomain.'/storage/'.$user->employee->image) 
-                            : asset($fullDomain.'/public/admin_assets/dist/images/profile/user-1.jpg'),
+                    'image' => match ($user->roles->first()->name ?? 'unknown') {
+                        'student' => $user->student && $user->student->image
+                        ? asset($fullDomain . '/storage/' . $user->student->image)
+                        : asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
+                        'parent' => asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
+                        default => $user->employee && $user->employee->image
+                        ? asset($fullDomain . '/storage/' . $user->employee->image)
+                        : asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
                     },
                 ], 'Berhasil login');
             } else {
@@ -56,12 +61,13 @@ class LoginApiController extends Controller
 
     public function user_detail(User $user)
     {
-        $role = $user->roles->first()->name;
-        
+        $role = $user->roles->first()->name ?? 'unknown';
+
         if ($role == 'student') {
             $student = $this->student->whereUserId($user->id);
-            if (!$student) return ResponseHelper::notFound('Data siswa tidak ditemukan');
-            
+            if (!$student)
+                return ResponseHelper::notFound('Data siswa tidak ditemukan');
+
             return ResponseHelper::success([
                 'nisn' => $student->nisn,
                 'class' => optional($student->classroomStudents()->latest()->first()->classroom)->name,
@@ -87,8 +93,9 @@ class LoginApiController extends Controller
             ]);
         } else {
             $employee = $this->employee->getByUser($user->id);
-            if (!$employee) return ResponseHelper::notFound('Data pegawai tidak ditemukan');
-            
+            if (!$employee)
+                return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+
             return ResponseHelper::success([
                 'nip' => $employee->nip,
                 'birth_date' => $employee->birth_date ? Carbon::parse($employee->birth_date)->format('d-m-Y') : null,

@@ -53,15 +53,20 @@ class StudentApiController extends Controller
     private ModelHasRfidInterface $modelHasRfid;
     private AttendanceRuleInterface $attendanceRule;
 
-    public function __construct(FeedbackService $feedbackService,
-    LessonScheduleInterface $lessonSchedule, FeedbackInterface $feedback,
-    RepairStudentService $service, StudentRepairInterface $studentRepair,
-    SchoolPointInterface $schoolPoint, StudentViolationInterface $studentViolation,
-    AttendanceInterface $attendance, StudentInterface $student,
-    ClassroomStudentInterface $classroomStudent, ModelHasRfidInterface $modelHasRfid,
-    AttendanceRuleInterface $attendanceRule,
-    )
-    {
+    public function __construct(
+        FeedbackService $feedbackService,
+        LessonScheduleInterface $lessonSchedule,
+        FeedbackInterface $feedback,
+        RepairStudentService $service,
+        StudentRepairInterface $studentRepair,
+        SchoolPointInterface $schoolPoint,
+        StudentViolationInterface $studentViolation,
+        AttendanceInterface $attendance,
+        StudentInterface $student,
+        ClassroomStudentInterface $classroomStudent,
+        ModelHasRfidInterface $modelHasRfid,
+        AttendanceRuleInterface $attendanceRule,
+    ) {
         $this->classroomStudent = $classroomStudent;
         $this->studentViolation = $studentViolation;
         $this->feedbackService = $feedbackService;
@@ -85,7 +90,15 @@ class StudentApiController extends Controller
             return ResponseHelper::unauthorized();
         }
         $student = $this->student->whereUserId($user->id);
+        if (!$student) {
+            return ResponseHelper::notFound('Data siswa tidak ditemukan');
+        }
+
         $studentClasses = $this->classroomStudent->whereStudent($student->id);
+        if (!$studentClasses || !$studentClasses->classroom) {
+            return ResponseHelper::notFound('Siswa belum terdaftar di kelas manapun');
+        }
+
         $lessonSchedule = $this->lessonSchedule->whereDayApi($studentClasses->classroom->id);
         $single_attendance = $this->attendance->userToday('App\Models\ClassroomStudent', $studentClasses->id);
         $rule_rfid = $this->modelHasRfid->first('App\Models\Student', $student->id);
@@ -111,11 +124,11 @@ class StudentApiController extends Controller
                     'check_out' => $single_attendance ? ($single_attendance->checkout == null ? '-' : \Carbon\Carbon::parse($single_attendance->checkout)->format('H:i')) : '-',
                     'status' => $single_attendance ? $single_attendance->status->label() : '',
                 ],
-                'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
+                'subject' => SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
             ]);
-        } else if ($rule_day->is_holiday ==  true) {
+        } else if ($rule_day && $rule_day->is_holiday == true) {
             return ResponseHelper::success([
                 'school_year' => $studentClasses->classroom->schoolYear->school_year,
                 'classroom' => [
@@ -135,7 +148,7 @@ class StudentApiController extends Controller
                     'check_out' => '-',
                     'status' => 'Libur',
                 ],
-                'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
+                'subject' => SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
             ]);
@@ -150,8 +163,8 @@ class StudentApiController extends Controller
                     'name' => $studentClasses->classroom->employee->user->name,
                     'email' => $studentClasses->classroom->employee->user->email,
                 ],
-                'message_attendance' => "Anda belum memiliku RFID",
-                'subject'=> SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
+                'message_attendance' => "Anda belum memiliki RFID",
+                'subject' => SubjectResource::collection($lessonSchedule)->each(function ($resource) use ($student) {
                     $resource->setStudent($student);
                 }),
             ]);

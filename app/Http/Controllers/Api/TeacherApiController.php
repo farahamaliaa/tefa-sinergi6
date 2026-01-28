@@ -55,8 +55,7 @@ class TeacherApiController extends Controller
         ModelHasRfidInterface $modelHasRfid,
         AttendanceRuleInterface $attendanceRule,
         ClassroomStudentInterface $classroomStudent,
-    )
-    {
+    ) {
         $this->employee = $employee;
         $this->classroom = $classroom;
         $this->attendance = $attendance;
@@ -78,17 +77,20 @@ class TeacherApiController extends Controller
             return ResponseHelper::unauthorized();
         }
         $employee = $this->employee->getByUser($user->id);
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-    
+
         $pendingPermissions = 0;
         if ($classroom) {
             $pendingPermissions = StudentPermission::where('classroom_id', $classroom->id)
                 ->where('status', 'pending')
                 ->count();
         }
-        
+
         $todaySchedules = $this->lessonSchedule->whereTeacher($user->id, today())->count();
-        
+
         return ResponseHelper::success(
             new TeacherDashboardResource($user, $classroom, $pendingPermissions, $todaySchedules)
         );
@@ -103,7 +105,7 @@ class TeacherApiController extends Controller
             return ResponseHelper::unauthorized();
         }
         $user->load(['employee.teacherSubjects.subject', 'employee.classroom', 'employee.employeePosition']);
-        
+
         return ResponseHelper::success(new TeacherProfileResource($user));
     }
 
@@ -117,13 +119,13 @@ class TeacherApiController extends Controller
         }
         $employee = $this->employee->getByUser($user->id);
         $teacherSubjects = $this->teacherSubject->getByTeacher($employee->id);
-        
+
         $schedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjects->pluck('id'))
             ->with(['classroom', 'teacherSubject.subject', 'start', 'end'])
             ->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")
             ->orderBy('lesson_hour_start')
             ->get();
-        
+
         $groupedSchedules = $schedules->groupBy('day')->map(function ($daySchedules) {
             return WeeklyScheduleResource::collection($daySchedules);
         });
@@ -141,13 +143,13 @@ class TeacherApiController extends Controller
         }
         $employee = $this->employee->getByUser($user->id);
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-        
+
         if (!$classroom) {
             return ResponseHelper::error('Anda bukan wali kelas', 403);
         }
-        
+
         $attendances = $this->attendance->whereClassroomFiltered($classroom->id, $request);
-        
+
         return ResponseHelper::success([
             'classroom' => [
                 'id' => $classroom->id,
@@ -167,26 +169,26 @@ class TeacherApiController extends Controller
         }
         $employee = $this->employee->getByUser($user->id);
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-        
+
         if (!$classroom) {
             return ResponseHelper::error('Anda bukan wali kelas', 403);
         }
-        
+
         $query = StudentPermission::where('classroom_id', $classroom->id)
             ->with(['student.user', 'classroom', 'submittedBy', 'approvedBy']);
-        
+
         if ($request->has('status') && $request->status != 'all') {
             $query->where('status', $request->status);
         }
-        
+
         $permissions = $query->latest()->get();
-        
+
         $statusCounts = [
             'pending' => StudentPermission::where('classroom_id', $classroom->id)->where('status', 'pending')->count(),
             'approved' => StudentPermission::where('classroom_id', $classroom->id)->where('status', 'approved')->count(),
             'rejected' => StudentPermission::where('classroom_id', $classroom->id)->where('status', 'rejected')->count(),
         ];
-        
+
         return ResponseHelper::success([
             'classroom' => [
                 'id' => $classroom->id,
@@ -207,16 +209,16 @@ class TeacherApiController extends Controller
         }
         $employee = $this->employee->getByUser($user->id);
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-        
+
         if (!$classroom || $classroom->id != $permission->classroom_id) {
             return ResponseHelper::error('Anda tidak memiliki akses untuk menyetujui izin ini', 403);
         }
-        
+
         $permission->update([
             'status' => 'approved',
             'approved_by' => $user->id,
         ]);
-        
+
         return ResponseHelper::success(
             new TeacherPermissionResource($permission->fresh(['student.user', 'classroom', 'submittedBy', 'approvedBy'])),
             'Izin berhasil disetujui'
@@ -233,16 +235,16 @@ class TeacherApiController extends Controller
         }
         $employee = $this->employee->getByUser($user->id);
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-        
+
         if (!$classroom || $classroom->id != $permission->classroom_id) {
             return ResponseHelper::error('Anda tidak memiliki akses untuk menolak izin ini', 403);
         }
-        
+
         $permission->update([
             'status' => 'rejected',
             'approved_by' => $user->id,
         ]);
-        
+
         return ResponseHelper::success(
             new TeacherPermissionResource($permission->fresh(['student.user', 'classroom', 'submittedBy', 'approvedBy'])),
             'Izin berhasil ditolak'
@@ -281,6 +283,9 @@ class TeacherApiController extends Controller
             return ResponseHelper::unauthorized();
         }
         $employee = $this->employee->getByUser($user->id);
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
         $history_attendance = $this->attendance->whereUser($employee->id, 'App\Models\Employee');
         $single_attendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
         $rule_rfid = $this->modelHasRfid->first('App\Models\Employee', $employee->id);
@@ -299,7 +304,7 @@ class TeacherApiController extends Controller
                 ],
                 'attendance_history' => $history_attendance->count() > 0 ? HistoryAttendanceResource::collection($history_attendance) : 'Data Kosong',
             ]);
-        } else if ($rule_day->is_holiday ==  true) {
+        } else if ($rule_day && $rule_day->is_holiday == true) {
             return ResponseHelper::success([
                 'attendance_now' => [
                     'day' => now()->translatedFormat('l'),
@@ -373,7 +378,7 @@ class TeacherApiController extends Controller
         if (!$employee || $teacherSubject->employee_id !== $employee->id) {
             return ResponseHelper::unauthorized();
         }
-        
+
         $feedbacks = $this->feedback->getBySubject($teacherSubject->id);
         if ($feedbacks->count() > 0) {
             return ResponseHelper::success(FeedbackResource::collection($feedbacks));
@@ -387,12 +392,12 @@ class TeacherApiController extends Controller
         if ($user->id !== auth()->id()) {
             return ResponseHelper::unauthorized();
         }
-        
+
         $employee = $this->employee->getByUser($user->id);
         $classroom = $this->classroom->whereEmployeeId($employee->id);
-        
+
         $studentClassroom = $student->classroomStudents()->latest()->first();
-        
+
         if (!$classroom || !$studentClassroom || $studentClassroom->classroom_id !== $classroom->id) {
             return ResponseHelper::error('Anda tidak memiliki akses ke data siswa ini', 403);
         }
@@ -403,7 +408,7 @@ class TeacherApiController extends Controller
         return ResponseHelper::success([
             'id' => $student->id,
             'user_id' => $student->user_id,
-                
+
             'name' => $student->user->name ?? null,
             'email' => $student->user->email ?? null,
             'nisn' => $student->nisn,
@@ -416,30 +421,30 @@ class TeacherApiController extends Controller
             'birth_date' => $student->birth_date,
             'birth_date_formatted' => $student->birth_date ? \Carbon\Carbon::parse($student->birth_date)->format('d-m-Y') : null,
             'birth_place' => $student->birth_place,
-            
+
             // Identity Documents
             'nik' => $student->nik,
             'number_kk' => $student->number_kk,
             'number_akta' => $student->number_akta,
-            
+
             // Family Information
             'order_child' => $student->order_child,
             'count_siblings' => $student->count_siblings,
-            
+
             // Address
             'address' => $student->address,
-            
+
             // Academic Information
             'point' => $student->point ?? 0,
             'classroom' => $studentClassroom ? [
                 'id' => $studentClassroom->classroom->id,
                 'name' => $studentClassroom->classroom->name,
             ] : null,
-            
+
             // RFID Information
             'has_rfid' => $student->modelHasRfid !== null,
             'rfid' => $student->modelHasRfid?->rfid ?? null,
-            
+
             // Timestamps
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,

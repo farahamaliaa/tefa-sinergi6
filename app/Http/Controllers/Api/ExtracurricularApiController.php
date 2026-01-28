@@ -210,6 +210,14 @@ class ExtracurricularApiController extends Controller
             return ResponseHelper::notFound('Jurnal tidak ditemukan');
         }
 
+        $user = auth()->user();
+        $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+        $extracurricular = $journal->extracurricular;
+
+        if (!$employee || $extracurricular->employee_id !== $employee->id) {
+            return ResponseHelper::unauthorized();
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -386,6 +394,14 @@ class ExtracurricularApiController extends Controller
      */
     public function storeSchedule(Request $request)
     {
+        $user = auth()->user();
+        $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+        $extracurricular = Extracurricular::find($request->input('extracurricular_id'));
+
+        if (!$employee || !$extracurricular || $extracurricular->employee_id !== $employee->id) {
+            return ResponseHelper::unauthorized();
+        }
+
         $request->validate([
             'extracurricular_id' => 'required|exists:extracurriculars,id',
             'day' => 'required|string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
