@@ -24,22 +24,26 @@ class ExtracurricularApiController extends Controller
 
         $extracurriculars = collect();
 
-        // Both staff and teacher should only see extracurriculars where they are the pembina
-        $employee = $user->employee;
-
-        if ($employee) {
-            $extracurriculars = Extracurricular::where('employee_id', $employee->id)
-                ->with('extracurricularStudents')
+        if ($user->hasRole('school')) {
+            $extracurriculars = Extracurricular::with('extracurricularStudents')
                 ->latest()
                 ->get();
         } else {
-            // Fallback: Try to find employee by user_id manually if relation not loaded
-            $manualEmployee = \App\Models\Employee::where('user_id', $user->id)->first();
-            if ($manualEmployee) {
-                $extracurriculars = Extracurricular::where('employee_id', $manualEmployee->id)
+            $employee = $user->employee;
+
+            if ($employee) {
+                $extracurriculars = Extracurricular::where('employee_id', $employee->id)
                     ->with('extracurricularStudents')
                     ->latest()
                     ->get();
+            } else {
+                $manualEmployee = \App\Models\Employee::where('user_id', $user->id)->first();
+                if ($manualEmployee) {
+                    $extracurriculars = Extracurricular::where('employee_id', $manualEmployee->id)
+                        ->with('extracurricularStudents')
+                        ->latest()
+                        ->get();
+                }
             }
         }
 
@@ -211,11 +215,15 @@ class ExtracurricularApiController extends Controller
         }
 
         $user = auth()->user();
-        $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
-        $extracurricular = $journal->extracurricular;
+        $isSchool = $user->hasRole('school');
 
-        if (!$employee || $extracurricular->employee_id !== $employee->id) {
-            return ResponseHelper::unauthorized();
+        if (!$isSchool) {
+            $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+            $extracurricular = $journal->extracurricular;
+
+            if (!$employee || $extracurricular->employee_id !== $employee->id) {
+                return ResponseHelper::unauthorized();
+            }
         }
 
         $request->validate([
@@ -394,12 +402,17 @@ class ExtracurricularApiController extends Controller
      */
     public function storeSchedule(Request $request)
     {
+        // Verify ownership - must be pembina OR school role
         $user = auth()->user();
-        $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
-        $extracurricular = Extracurricular::find($request->input('extracurricular_id'));
+        $isSchool = $user->hasRole('school');
 
-        if (!$employee || !$extracurricular || $extracurricular->employee_id !== $employee->id) {
-            return ResponseHelper::unauthorized();
+        if (!$isSchool) {
+            $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+            $extracurricular = Extracurricular::find($request->input('extracurricular_id'));
+
+            if (!$employee || !$extracurricular || $extracurricular->employee_id !== $employee->id) {
+                return ResponseHelper::unauthorized();
+            }
         }
 
         $request->validate([
