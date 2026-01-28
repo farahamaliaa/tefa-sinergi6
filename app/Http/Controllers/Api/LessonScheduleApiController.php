@@ -133,9 +133,14 @@ class LessonScheduleApiController extends Controller
      */
     public function update(LessonSchedule $lessonSchedule, UpdateTeacherJournalRequest $request)
     {
+        $journal = $lessonSchedule->teacherJournals->first();
+        if (!$journal) {
+            return ResponseHelper::notFound('Jurnal belum dibuat untuk jadwal ini');
+        }
+
         $data = $this->serviceJournal->update($request, $lessonSchedule);
-        $this->teacherJournal->update($lessonSchedule->teacherJournals->first()->id, $data);
-        $this->serviceAttendance->updateJournal($request['attendance'], $lessonSchedule->teacherJournals->first());
+        $this->teacherJournal->update($journal->id, $data);
+        $this->serviceAttendance->updateJournal($request['attendance'], $journal);
         return ResponseHelper::success(null, 'Berhasil mengedit jurnal');
     }
 

@@ -15,20 +15,19 @@ class StudentPermissionController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+
         $query = StudentPermission::with(['student', 'submittedBy', 'approvedBy', 'classroom']);
-        
+
         if ($user->employee) {
             $classroom = $user->employee->classroom;
             if ($classroom) {
                 $query->where('classroom_id', $classroom->id);
             }
-        }
-        elseif ($user->parent) {
+        } elseif ($user->parent) {
             $studentIds = $user->parent->students()->pluck('students.id');
             $query->whereIn('student_id', $studentIds);
         }
-        
+
         $permissions = $query->latest()->get();
         return ResponseHelper::success($permissions);
     }
@@ -62,9 +61,17 @@ class StudentPermissionController extends Controller
 
     public function approve($id)
     {
+        $user = auth()->user();
         $permission = StudentPermission::findOrFail($id);
+
+        if ($user->employee && $user->employee->classroom) {
+            if ($user->employee->classroom->id !== $permission->classroom_id) {
+                return ResponseHelper::error('Anda tidak memiliki akses untuk menyetujui izin ini', 403);
+            }
+        }
+
         $permission->update([
-            'status' => 'approved_by',
+            'status' => 'approved',
             'approved_by' => auth()->id(),
         ]);
 
@@ -73,14 +80,23 @@ class StudentPermissionController extends Controller
 
     public function reject($id)
     {
+        $user = auth()->user();
         $permission = StudentPermission::findOrFail($id);
+
+        // Verify user has access to reject this permission
+        if ($user->employee && $user->employee->classroom) {
+            if ($user->employee->classroom->id !== $permission->classroom_id) {
+                return ResponseHelper::error('Anda tidak memiliki akses untuk menolak izin ini', 403);
+            }
+        }
+
         $permission->update([
             'status' => 'rejected',
             'approved_by' => auth()->id(),
         ]);
 
         return ResponseHelper::success(null, 'Permission rejected successfully');
-    }    
+    }
 
     /**
      * Display the specified resource.
