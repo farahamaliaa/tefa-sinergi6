@@ -43,9 +43,77 @@ class TeacherJournalController extends Controller
     public function index(Request $request)
     {
         $teacherSchedules = $this->lessonSchedule->whereTeacher(auth()->user()->id, now());
-        // dd($teacherSchedules);
-        $histories = $this->teacherJournal->histories(auth()->user()->id, $request);
-        // dd($teacherSchedules);
+        $filledHistories = $this->teacherJournal->histories(auth()->user()->id, $request);
+
+        // Get unfilled schedules from the past 30 days
+        $employee = \App\Models\Employee::where('user_id', auth()->user()->id)->first();
+        $unfilledSchedules = collect();
+
+        if ($employee) {
+            $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
+            $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
+                ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
+                ->get();
+
+            $dayMapping = [
+                'Monday' => 1,
+                'monday' => 1,
+                'Tuesday' => 2,
+                'tuesday' => 2,
+                'Wednesday' => 3,
+                'wednesday' => 3,
+                'Thursday' => 4,
+                'thursday' => 4,
+                'Friday' => 5,
+                'friday' => 5,
+                'Saturday' => 6,
+                'saturday' => 6,
+                'Sunday' => 0,
+                'sunday' => 0
+            ];
+
+            foreach ($allSchedules as $schedule) {
+                $dayOfWeek = $dayMapping[$schedule->day] ?? null;
+                if ($dayOfWeek === null)
+                    continue;
+
+                $startDate = now()->subDays(30);
+                $currentDate = $startDate->copy();
+
+                while ($currentDate->lt(today())) {
+                    if ($currentDate->dayOfWeek === $dayOfWeek) {
+                        $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
+                            return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
+                        });
+
+                        if (!$journalExists) {
+                            // Create a fake object for unfilled schedule
+                            $unfilled = new \stdClass();
+                            $unfilled->id = null;
+                            $unfilled->lesson_schedule_id = $schedule->id;
+                            $unfilled->lessonSchedule = $schedule;
+                            $unfilled->title = null;
+                            $unfilled->description = null;
+                            $unfilled->date = $currentDate->format('Y-m-d');
+                            $unfilled->is_filled = false;
+                            $unfilled->attendanceJournals = collect(); // Empty collection
+
+                            $unfilledSchedules->push($unfilled);
+                        }
+                    }
+                    $currentDate->addDay();
+                }
+            }
+        }
+
+        // Merge and sort by date (newest first)
+        $histories = $filledHistories->toBase()->map(function ($journal) {
+            $journal->is_filled = true;
+            return $journal;
+        })->merge($unfilledSchedules)->sortByDesc(function ($item) {
+            return $item->date;
+        })->values();
+
         return view('teacher.pages.journals.index', compact('teacherSchedules', 'histories'));
     }
 
@@ -70,7 +138,7 @@ class TeacherJournalController extends Controller
             $this->serviceAttendance->storeJournal($request['attendance'], $teacherJournal);
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengirim jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
         }
     }
 
@@ -103,7 +171,7 @@ class TeacherJournalController extends Controller
             $this->serviceAttendance->updateJournal($request['attendance'], $teacherJournal);
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengupdate jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
         }
     }
 
@@ -116,7 +184,7 @@ class TeacherJournalController extends Controller
             $this->teacherJournal->delete($teacherJournal->id);
             return redirect()->back()->with('success', 'Berhasi menghapus jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
         }
     }
 }

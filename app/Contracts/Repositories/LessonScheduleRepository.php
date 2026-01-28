@@ -68,7 +68,7 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
             ->with('teacherJournals', function ($query) use ($day) {
                 $query->whereDay('created_at', $day);
             })
-            ->where('day', $day->format('l'))
+            ->where('day', strtolower($day->format('l')))
             ->get();
     }
 
@@ -85,14 +85,14 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
         return $this->model->query()
             ->whereDoesntHave('teacherJournals')
             ->whereRelation('teacherSubject.employee.user', 'id', $id)
-            ->where('day', $day->format('l'))
+            ->where('day', strtolower($day->format('l')))
             ->get();
     }
 
     public function dahsboardSchool(mixed $query, mixed $day): mixed
     {
         $result = $this->model->query()
-            ->where('day', $day->format('l'));
+            ->where('day', strtolower($day->format('l')));
 
         $query == 'fill' ? $result->whereHas('teacherJournals') : $result->whereDoesntHave('teacherJournals');
 
@@ -147,7 +147,7 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     public function groupByLatest($query): mixed
     {
         return $this->model->query()
-            ->where('day', $query)
+            ->where('day', strtolower($query))
             ->latest()
             ->first();
     }
@@ -156,8 +156,8 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     {
         return $this->model->query()
             ->where('classroom_id', $query)
-            ->where('day', now()->format('l'))
-            ->whereHas('end', function($query){
+            ->where('day', strtolower(now()->format('l')))
+            ->whereHas('end', function ($query) {
                 $query->where('end', '<', now()->format('H:i'));
             })
             ->get();
@@ -166,8 +166,8 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     public function whereDayApi(mixed $query): mixed
     {
         return $this->model->query()
-        ->where('classroom_id', $query)
-        ->where('day', now()->format('l'))
-        ->get();
+            ->where('classroom_id', $query)
+            ->where('day', strtolower(now()->format('l')))
+            ->get();
     }
 }

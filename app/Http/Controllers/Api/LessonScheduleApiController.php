@@ -149,8 +149,101 @@ class LessonScheduleApiController extends Controller
      */
     public function history(User $user, Request $request)
     {
-        $histories = $this->teacherJournal->histories($user->id, $request);
-        return ResponseHelper::success(HistoryJournalResource::collection($histories));
+        // Get filled journals
+        $filledJournals = $this->teacherJournal->histories($user->id, $request);
+
+        // Get all lesson schedules for this teacher that are in the past (before today)
+        $employee = \App\Models\Employee::where('user_id', $user->id)->first();
+        if (!$employee) {
+            return ResponseHelper::success(HistoryJournalResource::collection($filledJournals));
+        }
+
+        $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
+
+        // Get all past lesson schedules (schedules where the day has passed)
+        $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
+            ->with([
+                'classroom',
+                'teacherSubject.subject',
+                'teacherJournals' => function ($q) {
+                    $q->whereDate('date', '<', today()); // Only past journals
+                }
+            ])
+            ->get();
+
+        // Create a collection for unfilled schedules (past schedules without journals)
+        $unfilledSchedules = collect();
+        $dayMapping = [
+            'Monday' => 1,
+            'monday' => 1,
+            'Tuesday' => 2,
+            'tuesday' => 2,
+            'Wednesday' => 3,
+            'wednesday' => 3,
+            'Thursday' => 4,
+            'thursday' => 4,
+            'Friday' => 5,
+            'friday' => 5,
+            'Saturday' => 6,
+            'saturday' => 6,
+            'Sunday' => 0,
+            'sunday' => 0
+        ];
+
+        // Check each schedule for missing journals in the past
+        foreach ($allSchedules as $schedule) {
+            $dayOfWeek = $dayMapping[$schedule->day] ?? null;
+            if ($dayOfWeek === null)
+                continue;
+
+            // Get all dates in the past month where this schedule should have had a journal
+            $startDate = now()->subDays(30);
+            $currentDate = $startDate->copy();
+
+            while ($currentDate->lt(today())) {
+                if ($currentDate->dayOfWeek === $dayOfWeek) {
+                    // Check if journal exists for this date
+                    $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
+                        return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
+                    });
+
+                    if (!$journalExists) {
+                        // Add unfilled schedule entry
+                        $unfilledSchedules->push([
+                            'id' => $schedule->id,
+                            'lesson_schedule_id' => $schedule->id,
+                            'subject' => $schedule->teacherSubject->subject->name ?? '-',
+                            'subject_name' => $schedule->teacherSubject->subject->name ?? '-',
+                            'classroom' => $schedule->classroom->name ?? '-',
+                            'class_name' => $schedule->classroom->name ?? '-',
+                            'title' => null,
+                            'description' => null,
+                            'date' => $currentDate->translatedFormat('d F'),
+                            'year' => $currentDate->format('Y'),
+                            'date_full' => $currentDate->format('Y-m-d'),
+                            'status' => 'not_filled',
+                            'count_alpha' => null,
+                            'count_sick' => null,
+                            'count_permit' => null,
+                            'count_present' => null,
+                            'attendance' => null,
+                        ]);
+                    }
+                }
+                $currentDate->addDay();
+            }
+        }
+
+        // Merge filled journals with unfilled schedules
+        $filledData = HistoryJournalResource::collection($filledJournals)->resolve();
+        $allHistory = collect($filledData)->merge($unfilledSchedules);
+
+        // Sort by date (newest first)
+        $sortedHistory = $allHistory->sortByDesc(function ($item) {
+            return $item['date_full'] ?? $item['year'] . '-01-01';
+        })->values();
+
+        return ResponseHelper::success($sortedHistory);
     }
 
 

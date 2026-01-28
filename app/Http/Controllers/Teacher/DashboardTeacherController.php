@@ -39,11 +39,15 @@ class DashboardTeacherController extends Controller
     private ClassroomInterface $classroom;
 
     public function __construct(
-        NotificationJournalService $notification, SchoolYearInterface $schoolYear,
-        TeacherSubjectInterface $teacherSubject, AttendanceInterface $attendance,
-        LessonScheduleInterface $lessonSchedule, TeacherService $service, TeacherJournalInterface $teacherJournal,
-        ClassroomInterface $classroom)
-    {
+        NotificationJournalService $notification,
+        SchoolYearInterface $schoolYear,
+        TeacherSubjectInterface $teacherSubject,
+        AttendanceInterface $attendance,
+        LessonScheduleInterface $lessonSchedule,
+        TeacherService $service,
+        TeacherJournalInterface $teacherJournal,
+        ClassroomInterface $classroom
+    ) {
         $this->notification = $notification;
         $this->schoolYear = $schoolYear;
         $this->teacherSubject = $teacherSubject;
@@ -70,14 +74,90 @@ class DashboardTeacherController extends Controller
         $permit = $this->attendance->getByUserAndStatus('App\Models\Employee', auth()->user()->employee->id, AttendanceEnum::PERMIT->value, 'get');
         $chartTeacherAttendance = $this->service->chartTeacherAttendance($late, $sick, $alpha, $present, $permit);
 
-        $teacherJournals = $this->teacherJournal->getByTeacher(auth()->user()->employee->id);
+        // Get filled journals
+        $filledJournals = $this->teacherJournal->getByTeacher(auth()->user()->employee->id);
+
+        // Get unfilled schedules logic (similar to TeacherJournalController)
+        $unfilledSchedules = collect();
+        $employee = auth()->user()->employee;
+
+        if ($employee) {
+            $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
+            // Get all schedules
+            $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
+                ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
+                ->get();
+
+            $dayMapping = [
+                'Monday' => 1,
+                'monday' => 1,
+                'Tuesday' => 2,
+                'tuesday' => 2,
+                'Wednesday' => 3,
+                'wednesday' => 3,
+                'Thursday' => 4,
+                'thursday' => 4,
+                'Friday' => 5,
+                'friday' => 5,
+                'Saturday' => 6,
+                'saturday' => 6,
+                'Sunday' => 0,
+                'sunday' => 0
+            ];
+
+            foreach ($allSchedules as $schedule) {
+                $dayOfWeek = $dayMapping[$schedule->day] ?? null;
+                if ($dayOfWeek === null)
+                    continue;
+
+                $startDate = now()->subDays(30);
+                $currentDate = $startDate->copy();
+
+                while ($currentDate->lt(today())) {
+                    if ($currentDate->dayOfWeek === $dayOfWeek) {
+                        $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
+                            return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
+                        });
+
+                        if (!$journalExists) {
+                            // Create a fake object for unfilled schedule
+                            $unfilled = new \stdClass();
+                            $unfilled->id = null;
+                            $unfilled->lesson_schedule_id = $schedule->id;
+                            $unfilled->lessonSchedule = $schedule;
+                            $unfilled->title = null;
+                            $unfilled->description = null;
+                            $unfilled->date = $currentDate->format('Y-m-d');
+                            $unfilled->is_filled = false;
+                            $unfilled->attendanceJournals = collect(); // Empty collection
+
+                            $unfilledSchedules->push($unfilled);
+                        }
+                    }
+                    $currentDate->addDay();
+                }
+            }
+        }
+
+        // Merge and sort
+        $teacherJournals = $filledJournals->toBase()->map(function ($journal) {
+            $journal->is_filled = true;
+            return $journal;
+        })->merge($unfilledSchedules)->sortByDesc('date')->values();
+
         $classroom = $this->classroom->whereEmployeeId(auth()->user()->employee->id);
-        // dd($chartTeacherAttendance);
 
         return view('teacher.pages.dashboard.index', compact(
-            'notifications', 'schoolYear', 'teacherSubjects',
-            'todayAttendance', 'lessonSchedules', 'attendances',
-            'chartTeacherAttendance', 'teacherJournals', 'classroom'));
+            'notifications',
+            'schoolYear',
+            'teacherSubjects',
+            'todayAttendance',
+            'lessonSchedules',
+            'attendances',
+            'chartTeacherAttendance',
+            'teacherJournals',
+            'classroom'
+        ));
     }
 
     public function profile()
@@ -115,7 +195,7 @@ class DashboardTeacherController extends Controller
                 'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus (@$!%*#?&).',
             ]);
 
-            if (! Hash::check($request->current_password, $user->password)) {
+            if (!Hash::check($request->current_password, $user->password)) {
                 return redirect()->back()->withErrors(['current_password' => 'Password lama tidak sesuai'])->withInput();
             }
 
@@ -128,7 +208,7 @@ class DashboardTeacherController extends Controller
             // Profile Info Update Logic
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,'.$user->id,
+                'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone_number' => 'nullable|string|max:13',
                 'gender' => 'required|in:male,female',
                 'address' => 'nullable|string',
@@ -185,7 +265,7 @@ class DashboardTeacherController extends Controller
 
                 return redirect()->back()->with('success', 'Profil berhasil diperbarui');
             } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Gagal memperbarui profil: '.$e->getMessage());
+                return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
             }
         }
     }
@@ -253,7 +333,7 @@ class DashboardTeacherController extends Controller
 
             return redirect()->back()->with('success', 'Permission approved and attendance updated.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error approving: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Error approving: ' . $e->getMessage());
         }
     }
 
