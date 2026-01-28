@@ -28,7 +28,8 @@ class DashboardExtracurricularController extends Controller
         
         if (!$employee) {
             $extracurriculars = collect([]);
-            return view('extracurricular.pages.dashboard.index', compact('extracurriculars'))
+            $recentJournals = collect([]);
+            return view('extracurricular.pages.dashboard.index', compact('extracurriculars', 'recentJournals'))
                 ->with('error', 'Akun Anda belum terhubung dengan data pegawai. Silakan hubungi administrator.');
         }
         
@@ -37,7 +38,25 @@ class DashboardExtracurricularController extends Controller
             ->latest()
             ->get();
 
-        return view('extracurricular.pages.dashboard.index', compact('extracurriculars'));
+        // Get recent journals from all extracurriculars
+        $extracurricularIds = $extracurriculars->pluck('id');
+        $recentJournals = \App\Models\ExtracurricularJournal::whereIn('extracurricular_id', $extracurricularIds)
+            ->with('extracurricular', 'schedule', 'attendances')
+            ->orderBy('date', 'desc')
+            ->take(5)
+            ->get();
+
+        // Get schedules organized by day for the tabs
+        $schedules = \App\Models\ExtracurricularSchedule::whereIn('extracurricular_id', $extracurricularIds)
+            ->with('extracurricular')
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy(function($item) {
+                // Ensure day keys are consistent (e.g. 'monday', 'tuesday')
+                return strtolower($item->day); 
+            });
+
+        return view('extracurricular.pages.dashboard.index', compact('extracurriculars', 'recentJournals', 'schedules'));
     }
 
     public function profile()
