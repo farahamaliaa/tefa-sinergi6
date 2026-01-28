@@ -1,102 +1,163 @@
 @extends('extracurricular.layouts.app')
 
 @section('style')
-<style>
-    .bg-ekstra {
-        background-image: url('{{ asset('assets/images/bg-ekstra.png') }}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        width: 100%;
-    }
+    <style>
+        .bg-ekstra {
+            background-image: url('{{ asset('assets/images/bg-ekstra.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+        }
 
-    .header-wave {
-        background-color: #1A94C8 !important;
-        border-radius: 14px;
-        position: relative;
-        overflow: hidden;
-    }
+        .header-wave {
+            background-color: #1A94C8 !important;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .header-wave::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 256px;
-        background: url("{{ asset('assets/images/wave-header.png') }}");
-        background-size: cover;
-        opacity: 1;
-    }
-</style>
+        .header-wave::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 256px;
+            background: url("{{ asset('assets/images/wave-header.png') }}");
+            background-size: cover;
+            opacity: 1;
+        }
+
+        .scroll-container {
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f0f0f0;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #0B95D0 !important;
+            color: white !important;
+        }
+
+        .nav-pills .nav-link {
+            color: #0B95D0 !important;
+        }
+    </style>
 @endsection
 
 @section('content')
-<div class="card header-wave shadow-none position-relative overflow-hidden">
-    <div class="card-body px-4 py-3">
-        <div class="row align-items-center">
-            <div class="col-9">
-                <h4 class="fw-semibold text-white mb-8">Dashboard Pembina Ekstrakurikuler</h4>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                {{ auth()->user()->name }}
-                            </a>
-                        </li>
-                    </ol>
-                </nav>
+    <div class="row">
+        <div class="col-lg-12">
+            @include('extracurricular.pages.dashboard.panes.profile')
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <h4 class="mb-4 fw-bolder">Jadwal Mengajar</h4>
+        <div class="border rounded-pill p-1 d-inline-block w-100" style="max-width: 600px;">
+            <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill" id="pills-senin-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-senin" type="button" role="tab" aria-controls="pills-senin"
+                        aria-selected="true">
+                        Senin
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-selasa-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-selasa" type="button" role="tab" aria-controls="pills-selasa"
+                        aria-selected="false">
+                        Selasa
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-rabu-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-rabu" type="button" role="tab" aria-controls="pills-rabu"
+                        aria-selected="false">
+                        Rabu
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-kamis-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-kamis" type="button" role="tab" aria-controls="pills-kamis"
+                        aria-selected="false">
+                        Kamis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill" id="pills-jumat-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-jumat" type="button" role="tab" aria-controls="pills-jumat"
+                        aria-selected="false">
+                        Jumat
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content mt-4" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-senin" role="tabpanel" aria-labelledby="pills-senin-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-monday')
             </div>
-            <div class="col-3">
-                <div class="text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="100" viewBox="0 0 24 24">
-                        <path fill="#ffffff" d="M5 13.18v2.81c0 .73.4 1.41 1.04 1.76l5 2.73c.6.33 1.32.33 1.92 0l5-2.73c.64-.35 1.04-1.03 1.04-1.76v-2.81l-6.04 3.3c-.6.33-1.32.33-1.92 0zm6.04-9.66l-8.43 4.6c-.69.38-.69 1.38 0 1.76l8.43 4.6c.6.33 1.32.33 1.92 0L21 10.09V16c0 .55.45 1 1 1s1-.45 1-1V9.59c0-.37-.2-.7-.52-.88l-9.52-5.19a2.04 2.04 0 0 0-1.92 0" />
-                    </svg>
-                </div>
+            <div class="tab-pane fade" id="pills-selasa" role="tabpanel" aria-labelledby="pills-selasa-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-tuesday')
+            </div>
+            <div class="tab-pane fade" id="pills-rabu" role="tabpanel" aria-labelledby="pills-rabu-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-wednesday')
+            </div>
+            <div class="tab-pane fade" id="pills-kamis" role="tabpanel" aria-labelledby="pills-kamis-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-thursday')
+            </div>
+            <div class="tab-pane fade" id="pills-jumat" role="tabpanel" aria-labelledby="pills-jumat-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-friday')
+            </div>
+            <div class="tab-pane fade" id="pills-sabtu" role="tabpanel" aria-labelledby="pills-sabtu-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-saturday')
+            </div>
+            <div class="tab-pane fade" id="pills-minggu" role="tabpanel" aria-labelledby="pills-minggu-tab">
+                @include('extracurricular.pages.dashboard.panes.schedule-tab.tab-sunday')
             </div>
         </div>
     </div>
-</div>
 
-<h4 class="fw-semibold">Daftar Ekstrakurikuler yang Diampu</h4>
-<p class="text-muted mb-4">Kelola kegiatan ekstrakurikuler yang Anda bina</p>
+    <h4 style="font-size: 30px;" class="fw-bold">Riwayat Jurnal</h4>
+    <h6 class="mb-4">Daftar jurnal pembina setelah berkegiatan ekstrakurikuler</h6>
 
-<div class="row mt-4">
-    @forelse ($extracurriculars as $extracurricular)
-        <div class="col-lg-6 col-md-12 mb-3">
-            <div class="card bg-ekstra border shadow-none">
-                <div class="p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="text-primary fw-bold mb-2">{{ $extracurricular->name }}</h5>
-                            <p class="text-primary mb-0">
-                                <i class="ti ti-users fs-5 me-1"></i>
-                                {{ $extracurricular->extracurricularStudents->count() }} Siswa
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('extracurricular.students.index', ['extracurricular' => $extracurricular->id]) }}" 
-                               class="btn btn-sm btn-primary" title="Daftar Siswa">
-                                <i class="ti ti-users"></i>
-                            </a>
-                            <a href="{{ route('extracurricular.journal.index', ['extracurricular' => $extracurricular->id]) }}" 
-                               class="btn btn-sm btn-info" title="Jurnal">
-                                <i class="ti ti-notebook"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-lg-12">
+            @include('extracurricular.pages.dashboard.panes.journal-history')
         </div>
-    @empty
-        <div class="col-12">
-            <div class="text-center py-5">
-                <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
-                <p class="fs-5 text-dark text-center mt-2">
-                    Belum ada ekstrakurikuler yang ditugaskan
-                </p>
-            </div>
-        </div>
-    @endforelse
-</div>
+    </div>
+
+    @if ($recentJournals->count() > 3)
+        <a class="btn mb-5 waves-effect waves-light btn-outline-info w-100" href="{{ route('extracurricular.list') }}">Lihat
+            Selengkapnya
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                <path fill="currentColor"
+                    d="M8.22 2.97a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.042-.018a.75.75 0 0 1-.018-1.042l2.97-2.97H3.75a.75.75 0 0 1 0-1.5h7.44L8.22 4.03a.75.75 0 0 1 0-1.06" />
+            </svg>
+        </a>
+    @endif
 @endsection
