@@ -53,8 +53,7 @@ class StafApiController extends Controller
         RegulationInterface $regulation,
         AttendanceInterface $attendance,
         StaffChartService $chartService
-    )
-    {
+    ) {
         $this->attendanceRule = $attendanceRule;
         $this->studentViolation = $studentViolation;
         $this->studentRepair = $studentRepair;
@@ -76,7 +75,7 @@ class StafApiController extends Controller
         if ($user->id !== auth()->id()) {
             return ResponseHelper::unauthorized();
         }
-        
+
         try {
             $approved = $this->studentRepair->count_approved('1');
             $process = $this->studentRepair->count_approved('0');
@@ -97,11 +96,14 @@ class StafApiController extends Controller
         if ($user->id !== auth()->id()) {
             return ResponseHelper::unauthorized();
         }
-        
-        try {
-            $employeeJournals = $this->employeeJournal->getEmployee($user->id, 'get');
 
-            if ($employeeJournals->where('created_at', '>=', Carbon::today())->isEmpty()) {
+        try {
+            $employeeJournals = $this->journalService->getHistory($user);
+            $todayJournal = $employeeJournals->first(function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->isToday();
+            });
+
+            if ($todayJournal && $todayJournal->status === \App\Enums\StatusEnum::NOT_COMPLETED) {
                 return ResponseHelper::success([
                     'journal_message' => 'Hari ini anda belum mengisi jurnal!',
                     'journals' => EmployeeJournalResource::collection($employeeJournals),
@@ -113,20 +115,20 @@ class StafApiController extends Controller
             }
 
         } catch (\Throwable $th) {
-            return ResponseHelper::error('Data Kosong', 400);
+            return ResponseHelper::error('Data Kosong ' . $th->getMessage(), 400);
         }
     }
 
     public function create_journal(User $user, Request $request)
     {
-        $condition = $this->attendanceRule->whereDayRole(Carbon::today()->format('l'),'teacher');
-        if (Carbon::now()->format('H:i:s') <= $condition->checkout_end ) {
+        $condition = $this->attendanceRule->whereDayRole(Carbon::today()->format('l'), 'teacher');
+        if (Carbon::now()->format('H:i:s') <= $condition->checkout_end) {
             return ResponseHelper::error('Anda belum waktunya mengisi jurnal', 400);
         }
 
         $description = preg_replace('/\s+/', '', $request->input('description'));
-        if (strlen($description) < 150) {
-            return ResponseHelper::error('Deskripsi minimal harus 150 karakter tanpa spasi', 400);
+        if (strlen($description) < 10) {
+            return ResponseHelper::error('Deskripsi minimal harus 10 karakter tanpa spasi', 400);
         }
 
         $employee = $this->employee->getByUser($user->id);
@@ -136,9 +138,36 @@ class StafApiController extends Controller
             return ResponseHelper::error('Jurnal anda hari ini sudah tersedia', 500);
         }
 
+
         $data = $this->journalService->store_api($request, $user);
         $this->employeeJournal->store($data);
         return ResponseHelper::success(null, 'Data Berhasil di Tambahkan');
+    }
+
+    public function update_journal($journalId, Request $request)
+    {
+        $journal = $this->employeeJournal->show($journalId);
+
+        if (!$journal) {
+            return ResponseHelper::error('Jurnal tidak ditemukan', 404);
+        }
+
+        // Only allow editing today's journal
+        if (!Carbon::parse($journal->created_at)->isToday()) {
+            return ResponseHelper::error('Hanya bisa mengedit jurnal hari ini', 403);
+        }
+
+        $description = preg_replace('/\s+/', '', $request->input('description'));
+        if (strlen($description) < 10) {
+            return ResponseHelper::error('Deskripsi minimal harus 10 karakter tanpa spasi', 400);
+        }
+
+        $this->employeeJournal->update($journalId, [
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+        ]);
+
+        return ResponseHelper::success(null, 'Data Berhasil di Update');
     }
 
     public function overview_header()
@@ -187,20 +216,20 @@ class StafApiController extends Controller
         try {
             $data = $this->studentRepair->groupByClassroomStudentAndCreated();
             return ResponseHelper::success($data->mapWithKeys(function ($dateGroup, $date) {
-                    $formattedDate = Carbon::parse($date)->translatedFormat('j F Y');
-                    return [
-                        $formattedDate => $dateGroup->map(function ($classroomGroup, $classroomStudentId) {
-                            $totalPoints = $classroomGroup->sum('point');
-                            $studentName = optional($classroomGroup->first())->classroomStudent()->latest()->first()->student->user->name;
+                $formattedDate = Carbon::parse($date)->translatedFormat('j F Y');
+                return [
+                    $formattedDate => $dateGroup->map(function ($classroomGroup, $classroomStudentId) {
+                        $totalPoints = $classroomGroup->sum('point');
+                        $studentName = optional($classroomGroup->first())->classroomStudent()->latest()->first()->student->user->name;
 
-                            return [
-                                'name' => $studentName,
-                                'total_points' => $totalPoints,
-                                'data' => RepairStudentResource::collection($classroomGroup),
-                            ];
-                        })
-                    ];
-                }));
+                        return [
+                            'name' => $studentName,
+                            'total_points' => $totalPoints,
+                            'data' => RepairStudentResource::collection($classroomGroup),
+                        ];
+                    })
+                ];
+            }));
         } catch (\Throwable $th) {
             return ResponseHelper::error('Data Kosong', 400);
         }
@@ -225,14 +254,14 @@ class StafApiController extends Controller
             return ResponseHelper::error('Data Kosong', 400);
         }
     }
-    
+
     public function student_permissions(Request $request)
     {
         try {
             $attendances = $this->attendance->getSickAndPermit($request, [AttendanceEnum::SICK->value, AttendanceEnum::PERMIT->value]);
             return ResponseHelper::success(['permissions' => StudentPermissionResource::collection($attendances)]);
         } catch (\Throwable $th) {
-            return ResponseHelper::error('Data Kosong'.$th->getMessage(), 400);
+            return ResponseHelper::error('Data Kosong' . $th->getMessage(), 400);
         }
     }
 
@@ -242,7 +271,7 @@ class StafApiController extends Controller
             $charts = $this->chartService->violationChart();
             return ResponseHelper::success(['violations' => $charts]);
         } catch (\Throwable $th) {
-            return ResponseHelper::error('Data Kosong'.$th->getMessage(), 400);
+            return ResponseHelper::error('Data Kosong' . $th->getMessage(), 400);
         }
     }
 }

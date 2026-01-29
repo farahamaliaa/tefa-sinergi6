@@ -44,19 +44,19 @@ Route::get('attendance/hours', [AttendanceRuleApiController::class, 'index'])->n
 Route::post('login', [LoginApiController::class, 'login'])->middleware('throttle:5,1');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user-detail/{user}', [LoginApiController::class, 'user_detail']);
-    
+
     // Profile Routes
     Route::get('profile/{user}', [\App\Http\Controllers\Api\ProfileApiController::class, 'getProfile']);
     Route::put('profile/{user}', [\App\Http\Controllers\Api\ProfileApiController::class, 'updateProfile']);
     Route::post('profile/{user}/password', [\App\Http\Controllers\Api\ProfileApiController::class, 'changePassword']);
     Route::post('profile/{user}/photo', [\App\Http\Controllers\Api\ProfileApiController::class, 'updatePhoto']);
-    
+
     // Protected Attendance routes (admin only)
     Route::get('attendance/rfids', [RfidApiController::class, 'index'])->name('rfid.account');
     Route::get('attendance/list', [AttendanceController::class, 'listAttendance']);
     Route::delete('attendance/reset', [AttendanceController::class, 'reset']); // Changed to DELETE method
     Route::get('student/classroom/{classroom}', [ClassroomStudentController::class, 'getByClasroom']);
-    
+
     Route::get('feedback-active', [PermissionController::class, 'is_active']);
 
     // Student Routes
@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('staf/create-journal/{user}', [StafApiController::class, 'create_journal']);
     Route::get('staf/dashboard/{user}', [StafApiController::class, 'index']);
     Route::get('staf/history-journals/{user}', [StafApiController::class, 'history_journals']);
+    Route::put('staf/update-journal/{journalId}', [StafApiController::class, 'update_journal']);
     Route::get('staf/overview-header', [StafApiController::class, 'overview_header']);
     Route::get('staf/max-point', [StafApiController::class, 'max_point']);
     Route::get('staf/list-violation', [StafApiController::class, 'list_violation']);
@@ -136,13 +137,13 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dashboard & Profile
         Route::get('dashboard/{user}', [ParentController::class, 'dashboard']);
         Route::get('profile/{user}', [ParentController::class, 'profile']);
-        
+
         // Children management
         Route::get('{user}/children', [ParentController::class, 'getChildren']);
         Route::get('{user}/children/{student}', [ParentController::class, 'childDetail']);
         Route::get('{user}/children/{student}/lessons', [ParentController::class, 'getChildLessons']);
         Route::get('{user}/children/{student}/attendance', [ParentController::class, 'childAttendance']);
-        
+
         // Permission management
         Route::post('{user}/permissions', [ParentController::class, 'createPermission']);
         Route::get('{user}/permissions', [ParentController::class, 'getPermissionHistory']);

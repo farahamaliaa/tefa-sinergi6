@@ -36,7 +36,9 @@ Route::middleware(['auth', 'role:staff|teacher'])->prefix('employee')->name('emp
     // fitur buku tamu
     Route::resource('guestbook', GuestBookController::class);
     // fitur jurnal
-    Route::resource('journal', EmployeeJournalController::class)->except('show');
+    Route::resource('journal', EmployeeJournalController::class)->except('show')->parameters([
+        'journal' => 'employeeJournal'
+    ]);
     Route::get('journal/detail/{employeeJournal}', [EmployeeJournalController::class, 'detail'])->name('journal.detail');
 
     // fitur absensi

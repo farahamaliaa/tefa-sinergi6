@@ -28,7 +28,19 @@ class EmployeeJournalController extends Controller
      */
     public function index()
     {
-        $employeeJournals = $this->employeeJournal->getEmployee(auth()->user()->id, 'paginate');
+        //$employeeJournals = $this->employeeJournal->getEmployee(auth()->user()->id, 'paginate');
+        // Use service to get history with gaps
+        $history = $this->service->getHistory(auth()->user());
+
+        // Manual pagination if needed, or just pass the collection
+        // Creating a paginator to be safe if view expects it (though likely not using it)
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $perPage = 10;
+        $currentItems = $history->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $employeeJournals = new \Illuminate\Pagination\LengthAwarePaginator($currentItems, count($history), $perPage, $currentPage, [
+            'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+        ]);
+
         return view('staff.pages.journal.index', compact('employeeJournals'));
     }
 
@@ -58,7 +70,7 @@ class EmployeeJournalController extends Controller
     public function store(StoreEmployeeJournalRequest $request)
     {
         $employee = auth()->user()->employee;
-        
+
         // Enforce 1 journal per day per employee
         $existingJournal = \App\Models\EmployeeJournal::where('employee_id', $employee->id)
             ->whereDate('created_at', now()->toDateString())

@@ -28,8 +28,18 @@ class DashboardStaffController extends Controller
     private AttendanceInterface $attendance;
     private StudentInterface $student;
 
-    public function __construct(ClassroomStudentInterface $classroomStudent, StudentViolationInterface $studentViolation, StudentRepairInterface $studentRepair, SchoolPointInterface $schoolPoint, StudentInterface $student, EmployeeJournalInterface $employeeJournal, AttendanceInterface $attendance)
-    {
+    private \App\Services\EmployeeJournalService $journalService;
+
+    public function __construct(
+        ClassroomStudentInterface $classroomStudent,
+        StudentViolationInterface $studentViolation,
+        StudentRepairInterface $studentRepair,
+        SchoolPointInterface $schoolPoint,
+        StudentInterface $student,
+        EmployeeJournalInterface $employeeJournal,
+        AttendanceInterface $attendance,
+        \App\Services\EmployeeJournalService $journalService
+    ) {
         $this->classroomStudent = $classroomStudent;
         $this->studentViolation = $studentViolation;
         $this->employeeJournal = $employeeJournal;
@@ -37,6 +47,7 @@ class DashboardStaffController extends Controller
         $this->schoolPoint = $schoolPoint;
         $this->attendance = $attendance;
         $this->student = $student;
+        $this->journalService = $journalService;
     }
 
     /**
@@ -49,7 +60,9 @@ class DashboardStaffController extends Controller
         $studentViolation = $this->studentViolation->countByStudent();
         $maxPoint = $this->schoolPoint->getMaxPoint();
         $studentHighPoint = $this->student->highestPoint($maxPoint);
-        $employeeJournals = $this->employeeJournal->getEmployee(auth()->user()->id, 'take');
+
+        // Use service to get history including gaps, take only limited amount for dashboard if needed
+        $employeeJournals = $this->journalService->getHistory(auth()->user(), 3);
 
         return view('staff.pages.dashboard.dashboard', compact('countViolation', 'countRepair', 'studentViolation', 'studentHighPoint', 'employeeJournals'));
     }

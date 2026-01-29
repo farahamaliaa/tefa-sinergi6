@@ -18,6 +18,7 @@ class EmployeeJournalResource extends JsonResource
         return [
             'id' => $this->id,
             'date' => Carbon::parse($this->created_at)->translatedFormat('d F Y'),
+            'date_raw' => Carbon::parse($this->created_at)->format('Y-m-d'),
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status,
