@@ -31,11 +31,17 @@ class ExtracurricularJournalController extends Controller
 
     public function export(Request $request)
     {
-        $journals = ExtracurricularJournal::with([
+        $query = ExtracurricularJournal::with([
             'extracurricular.employee.user',
             'schedule',
             'attendances'
-        ])->orderBy('date', 'desc')->get();
+        ])->orderBy('date', 'desc');
+
+        if ($request->filled('start') && $request->filled('end')) {
+            $query->whereBetween('date', [$request->start, $request->end]);
+        }
+
+        $journals = $query->paginate(10);
 
         return view('school.pages.journals.export-extracurricular', compact('journals'));
     }
