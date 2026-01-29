@@ -126,8 +126,9 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ $extracurricularStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}"
-                                                class="rounded-circle" width="40" height="40">
+                                            <img src="{{ $extracurricularStudent->student->image ? asset('storage/' . $extracurricularStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
+                                                class="rounded-circle" width="40" height="40"
+                                                style="object-fit: cover;">
                                             <div class="ms-3">
                                                 <h6 class="fs-4 fw-semibold mb-0">
                                                     {{ $extracurricularStudent->student->user->name }}</h6>
@@ -150,7 +151,7 @@
                                                 data-nik="{{ $extracurricularStudent->student->nik ?? '-' }}"
                                                 data-rfid="{{ $extracurricularStudent->student->user->modelHasRfid->rfid ?? '-' }}"
                                                 data-address="{{ $extracurricularStudent->student->address ?? '-' }}"
-                                                data-image="{{ $extracurricularStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}">
+                                                data-image="{{ $extracurricularStudent->student->image ? asset('storage/' . $extracurricularStudent->student->image) : asset('assets/images/default-user.jpeg') }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                                     viewBox="0 0 24 24">
                                                     <g fill="none" stroke="currentColor" stroke-linecap="round"
