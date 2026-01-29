@@ -83,7 +83,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('staf/list-point-student', [StafApiController::class, 'list_point_student']);
     Route::get('staf/popular-violations', [StafApiController::class, 'popular_violations']);
     Route::get('staf/student-permissions', [StafApiController::class, 'student_permissions']);
+
     Route::get('staf/statistic-violation', [StafApiController::class, 'statistic_violation']);
+
+    // Absensi Staff
+    Route::get('staf/attendance-config', [StafApiController::class, 'get_config']);
+    Route::get('staf/attendance-history/{user}', [StafApiController::class, 'attendance_history']);
+    Route::post('staf/check-in', [StafApiController::class, 'check_in']);
+    Route::post('staf/check-out', [StafApiController::class, 'check_out']);
 
     // Teacher Routes - requires teacher role
     Route::middleware(['role:teacher'])->prefix('teacher')->group(function () {

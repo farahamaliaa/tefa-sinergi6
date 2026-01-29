@@ -146,13 +146,16 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->student->query()
             ->whereHas('attendances', function ($query) use ($date, $request, $startDate, $endDate) {
                 $query->whereDate('created_at', $date)
-                ->when($request->start, function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('created_at', [$startDate, $endDate]);
-                });
+                    ->when($request->start, function ($q) use ($startDate, $endDate) {
+                        $q->whereBetween('created_at', [$startDate, $endDate]);
+                    });
             })
-            ->with(['student.user', 'attendances' => function ($query) use ($date) {
-                $query->whereDate('created_at', $date);
-            }])
+            ->with([
+                'student.user',
+                'attendances' => function ($query) use ($date) {
+                    $query->whereDate('created_at', $date);
+                }
+            ])
             ->where('classroom_id', $classroom_id)
             ->when($request->name, function ($query) use ($request) {
                 $query->whereRelation('student.user', 'name', 'LIKE', '%' . $request->name . '%');
@@ -205,7 +208,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function AttendanceDasboard(mixed $model, mixed $query, Request $request): mixed
     {
         $result = $this->model->query();
-        
+
         if ($model === 'App\Models\ClassroomStudent') {
             $result->with('model.student.user');
         } else {
@@ -223,9 +226,11 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->model->query()
             ->whereDate('created_at', $date)
             ->where('model_type', 'App\Models\ClassroomStudent')
-            ->with(['model' => function ($query) {
-                $query->with('classroom'); // Memuat relasi classroom dari model
-            }])
+            ->with([
+                'model' => function ($query) {
+                    $query->with('classroom'); // Memuat relasi classroom dari model
+                }
+            ])
             ->get()
             ->groupBy(function ($item) {
                 // Mengelompokkan berdasarkan classroom_id dari relasi model
@@ -308,7 +313,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->model->query()
             ->where('model_type', $model)
             ->where('model_id', $id)
-            ->whereDay('created_at', today()->day)
+            ->whereDate('created_at', today())
             ->first();
     }
 
@@ -331,15 +336,15 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $condition == 'get' ? $result->get() : $result->count();
     }
 
-    public function getSickAndPermit(Request $request, array $status) : mixed
+    public function getSickAndPermit(Request $request, array $status): mixed
     {
         return $this->model->query()
             ->where('model_type', 'App\Models\ClassroomStudent')
             ->whereIn('status', $status)
-            ->when($request->status, function($query) use ($request) {
+            ->when($request->status, function ($query) use ($request) {
                 $query->where('status', 'like', '%' . $request->status . '%');
             })
-            ->when($request->classroom, function($query) use ($request) {
+            ->when($request->classroom, function ($query) use ($request) {
                 $query->where('model_id', $request->classroom);
             })
             ->latest()->get();

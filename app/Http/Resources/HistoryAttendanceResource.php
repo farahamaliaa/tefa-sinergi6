@@ -19,17 +19,18 @@ class HistoryAttendanceResource extends JsonResource
         if ($this->model_type === 'App\\Models\\ClassroomStudent' && $this->model) {
             $studentImage = $this->model->student->image ?? null;
         }
-        
+
         return [
             'day' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('l'),
             'date' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('d'),
             'month' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('M'),
             'date_complate' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('l, j F Y'),
+            'date_raw' => $this->created_at == null ? null : $this->created_at->format('Y-m-d'),
             'check_in' => $this->checkin == null ? '-' : \Carbon\Carbon::parse($this->checkin)->format('H:i'),
             'check_out' => $this->checkout == null ? '-' : \Carbon\Carbon::parse($this->checkout)->format('H:i'),
             'status' => $this->status == null ? '-' : $this->status->label(),
-            'image' => $studentImage 
-                ? asset('storage/' . $studentImage) 
+            'image' => $studentImage
+                ? asset('storage/' . $studentImage)
                 : asset('admin_assets/dist/images/profile/user-1.jpg'),
         ];
     }

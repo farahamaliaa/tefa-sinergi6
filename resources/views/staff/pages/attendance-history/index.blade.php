@@ -79,9 +79,13 @@
         }
 
         .location-status {
-            padding: 12px 16px;
+            padding: 13px 16px;
             border-radius: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
         }
 
         .location-status.in-range {
@@ -112,16 +116,29 @@
             font-size: 1rem;
             border-radius: 10px;
             transition: all 0.3s ease;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-absen.btn-success,
+        .btn-absen.btn-primary {
+            background: #0896D1 !important;
+            border: none;
+            color: white !important;
         }
 
         .btn-absen:disabled {
-            opacity: 0.7;
+            background: #e9ecef !important;
+            color: #2d3436 !important;
+            border: 1px solid #dfe6e9 !important;
             cursor: not-allowed;
+            opacity: 1;
         }
 
-        .btn-absen.btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border: none;
+        .btn-absen:disabled svg path {
+            fill: #2d3436 !important;
         }
 
         .btn-absen.btn-warning {
@@ -133,6 +150,14 @@
         .spinner-border-sm {
             width: 1rem;
             height: 1rem;
+        }
+
+        .status-badge-custom {
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
         }
     </style>
 @endsection
@@ -161,66 +186,88 @@
     <!-- Card Absensi Hari Ini -->
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h5 class="fs-4 mb-2 fw-normal">Absensi Hari Ini :</h5>
-                    <h3 class="fw-semibold mb-0">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</h3>
-                    <p class="text-muted mb-0">{{ \Carbon\Carbon::now()->format('H:i') }} WIB</p>
-                </div>
-                <div>
+            <!-- Row 1: Title and Date -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0 text-dark">Absensi Hari Ini :</h2>
+                <h4 class="fw-semibold mb-0 text-dark text-end">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                </h4>
+            </div>
+
+            <!-- Row 2: Status, Location, and Button -->
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <!-- Status Badge (Left) -->
+                <div style="min-width: 140px;">
                     @if($todayAttendance)
-                        <span class="badge px-4 py-2 rounded-2 fs-6 fw-semibold {{ $todayAttendance->status->color() }}">
+                        <span
+                            class="badge px-4 py-2 rounded-2 fs-6 fw-semibold {{ $todayAttendance->status->color() }} w-100 status-badge-custom">
                             {{ ucfirst($todayAttendance->status->label()) }}
                         </span>
                     @else
-                        <span class="badge px-4 py-2 rounded-2 fs-6 fw-semibold" style="background-color: #E6E6E6; color: #555;">
-                            Belum Absen
-                        </span>
+                        @php
+                            $currentTime = now()->format('H:i');
+                            $isLate = $currentTime > $timeConfig['late_limit'];
+                        @endphp
+
+                        @if($todayPermission)
+                            <span
+                                class="badge px-4 py-2 rounded-2 fs-6 fw-semibold bg-light-info text-info w-100 status-badge-custom">
+                                {{ ucfirst($todayPermission->permission_type->label()) }}
+                            </span>
+                        @elseif($isLate)
+                            <span
+                                class="badge px-4 py-2 rounded-2 fs-6 fw-semibold bg-light-danger text-danger w-100 status-badge-custom">
+                                Alpha
+                            </span>
+                        @else
+                            <span class="badge px-4 py-2 rounded-2 fs-6 fw-semibold w-100 status-badge-custom"
+                                style="background-color: #E6E6E6; color: #555;">
+                                Belum Absen
+                            </span>
+                        @endif
                     @endif
                 </div>
-            </div>
 
-            <!-- GPS Location Status -->
-            <div id="location-status" class="location-status loading">
+                <!-- Location & Action (Right) -->
                 <div class="d-flex align-items-center gap-3">
-                    <div class="spinner-border spinner-border-sm" role="status" id="location-spinner">
-                        <span class="visually-hidden">Loading...</span>
+                    <!-- Location Status Box -->
+                    <div id="location-status" class="location-status loading mb-0 text-center" style="border-radius: 8px;">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <div class="spinner-border spinner-border-sm" role="status" id="location-spinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div id="location-detail" class="small fw-semibold">Mengambil lokasi...</div>
+                        </div>
                     </div>
-                    <div>
-                        <strong id="location-title">Mengambil lokasi...</strong>
-                        <p class="mb-0 small" id="location-detail">Pastikan GPS aktif dan izinkan akses lokasi</p>
+
+                    <!-- Action Buttons -->
+                    <div style="min-width: 200px;">
+                        @if(!$todayAttendance)
+                            <button type="button" id="btn-checkin"
+                                class="btn btn-absen btn-success w-100 d-flex align-items-center justify-content-center gap-2"
+                                disabled>
+                                <svg width="19" height="13" viewBox="0 0 19 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M6.49795 10.1626L16.9112 0.347439C17.1569 0.115813 17.4436 0 17.7713 0C18.099 0 18.3856 0.115813 18.6314 0.347439C18.8771 0.579065 19 0.854313 19 1.17318C19 1.49206 18.8771 1.76692 18.6314 1.99777L7.35804 12.6526C7.1123 12.8842 6.8256 13 6.49795 13C6.17029 13 5.8836 12.8842 5.63786 12.6526L0.354434 7.67261C0.108693 7.44098 -0.00926253 7.16612 0.000567093 6.84802C0.0103967 6.52992 0.138591 6.25467 0.385151 6.02227C0.63171 5.78987 0.923733 5.67406 1.26122 5.67483C1.5987 5.6756 1.89031 5.79142 2.13605 6.02227L6.49795 10.1626Z"
+                                        fill="white" />
+                                </svg>
+                                <span id="btn-checkin-text">Absen Sekarang</span>
+                            </button>
+                        @elseif(!$todayAttendance->checkout)
+                            <button type="button" id="btn-checkout"
+                                class="btn btn-absen btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
+                                disabled>
+                                <i class="ti ti-logout fs-5"></i>
+                                <span id="btn-checkout-text">Check Out Pulang</span>
+                            </button>
+                        @else
+                            <div class="alert alert-success mb-0 d-flex align-items-center justify-content-center gap-2 py-2 px-3 w-100"
+                                style="border-radius: 10px;">
+                                <i class="ti ti-check fs-5"></i>
+                                <span class="small fw-semibold">Absensi Lengkap</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex gap-3 flex-wrap">
-                @if(!$todayAttendance)
-                    <button type="button" id="btn-checkin" class="btn btn-absen btn-success d-flex align-items-center gap-2">
-                        <svg width="19" height="13" viewBox="0 0 19 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6.49795 10.1626L16.9112 0.347439C17.1569 0.115813 17.4436 0 17.7713 0C18.099 0 18.3856 0.115813 18.6314 0.347439C18.8771 0.579065 19 0.854313 19 1.17318C19 1.49206 18.8771 1.76692 18.6314 1.99777L7.35804 12.6526C7.1123 12.8842 6.8256 13 6.49795 13C6.17029 13 5.8836 12.8842 5.63786 12.6526L0.354434 7.67261C0.108693 7.44098 -0.00926253 7.16612 0.000567093 6.84802C0.0103967 6.52992 0.138591 6.25467 0.385151 6.02227C0.63171 5.78987 0.923733 5.67406 1.26122 5.67483C1.5987 5.6756 1.89031 5.79142 2.13605 6.02227L6.49795 10.1626Z" fill="white"/>
-                        </svg>
-                        <span id="btn-checkin-text">Absen Masuk</span>
-                    </button>
-
-                    <a href="{{ route('employee.permission.create') }}" id="btn-permission" class="btn btn-absen btn-warning d-flex align-items-center gap-2" style="display: none !important;">
-                        <i class="ti ti-file-text fs-5"></i>
-                        <span>Ajukan Izin / Sakit / Dinas</span>
-                    </a>
-                @elseif(!$todayAttendance->checkout)
-                    <button type="button" id="btn-checkout" class="btn btn-absen btn-primary d-flex align-items-center gap-2">
-                        <i class="ti ti-logout fs-5"></i>
-                        <span id="btn-checkout-text">Check Out Pulang</span>
-                    </button>
-                    <div class="d-flex align-items-center">
-                        <span class="text-muted">Masuk: <strong>{{ \Carbon\Carbon::parse($todayAttendance->checkin)->format('H:i') }}</strong></span>
-                    </div>
-                @else
-                    <div class="alert alert-success mb-0 d-flex align-items-center gap-2">
-                        <i class="ti ti-check fs-5"></i>
-                        <span>Absensi hari ini sudah lengkap! Masuk: <strong>{{ \Carbon\Carbon::parse($todayAttendance->checkin)->format('H:i') }}</strong> - Pulang: <strong>{{ \Carbon\Carbon::parse($todayAttendance->checkout)->format('H:i') }}</strong></span>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -232,8 +279,7 @@
                     <h4 class="mb-0">Riwayat Absensi</h4>
                     <form class="d-flex gap-2" method="GET" action="{{ url()->current() }}">
                         <div class="position-relative">
-                            <input type="date" name="date" class="form-control search-chat"
-                                value="{{ request('date') }}">
+                            <input type="date" name="date" class="form-control search-chat" value="{{ request('date') }}">
                         </div>
                         <button type="submit" class="btn btn-primary">Cari</button>
                     </form>
@@ -272,9 +318,15 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge {{ $attendance->status->color() }}">
-                                            {{ $attendance->status->label() }}
-                                        </span>
+                                        @if($attendance->checkout)
+                                            <span class="badge bg-success">
+                                                Hadir (Lengkap)
+                                            </span>
+                                        @else
+                                            <span class="badge {{ $attendance->status->color() }}">
+                                                {{ $attendance->status->label() }}
+                                            </span>
+                                        @endif
                                     </td>
 
                                 </tr>
@@ -282,8 +334,8 @@
                                 <tr>
                                     <td colspan="7" class="text-center align-middle">
                                         <div class="d-flex flex-column justify-content-center align-items-center">
-                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
-                                                alt="" width="300px">
+                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                                width="300px">
                                             <p class="fs-5 text-dark text-center mt-2">
                                                 Belum ada data
                                             </p>
@@ -294,7 +346,9 @@
                         </tbody>
                     </table>
                     <div class="pagination justify-content-end mt-2 mb-0">
-                        {{-- <x-paginate-component :paginator="$attendances" /> --}}
+                        @if ($attendances instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            {{ $attendances->appends(request()->query())->links() }}
+                        @endif
                     </div>
                 </div>
             </div>
@@ -303,241 +357,293 @@
 @endsection
 
 @section('script')
-<script>
-    const schoolConfig = {
-        latitude: {{ $schoolConfig['latitude'] }},
-        longitude: {{ $schoolConfig['longitude'] }},
-        radius: {{ $schoolConfig['radius'] }},
-        name: "{{ $schoolConfig['name'] }}"
-    };
+    <script>
+        const schoolConfig = {
+            latitude: {{ $schoolConfig['latitude'] }},
+            longitude: {{ $schoolConfig['longitude'] }},
+            radius: {{ $schoolConfig['radius'] }},
+            name: "{{ $schoolConfig['name'] }}"
+        };
 
-    let userLocation = null;
-    let userDistance = null;
-    let selectedPermissionStatus = null;
+        const timeConfig = @json($timeConfig);
 
-    function calculateDistance(lat1, lng1, lat2, lng2) {
-        const earthRadius = 6371000;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLng = (lng2 - lng1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earthRadius * c;
-    }
+        let userLocation = null;
+        let userDistance = null;
+        let selectedPermissionStatus = null;
 
-    function updateLocationStatus(status, title, detail, distance = null) {
-        const statusEl = document.getElementById('location-status');
-        const titleEl = document.getElementById('location-title');
-        const detailEl = document.getElementById('location-detail');
-        const spinnerEl = document.getElementById('location-spinner');
-        const btnCheckin = document.getElementById('btn-checkin');
-        const btnPermission = document.getElementById('btn-permission');
-
-        statusEl.className = 'location-status ' + status;
-        titleEl.textContent = title;
-        detailEl.innerHTML = detail;
-        
-        if (status === 'loading') {
-            spinnerEl.style.display = 'block';
-        } else {
-            spinnerEl.style.display = 'none';
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const earthRadius = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return earthRadius * c;
         }
 
-        if (btnCheckin) {
-            if (status === 'in-range') {
-                btnCheckin.disabled = false;
-                btnCheckin.classList.remove('btn-warning');
-                btnCheckin.classList.add('btn-success');
-                if (btnPermission) btnPermission.style.display = 'none';
-            } else if (status === 'out-range') {
-                btnCheckin.disabled = true;
-                if (btnPermission) btnPermission.style.display = 'flex';
+        function isWithinTimeRange(type) {
+            const now = new Date();
+            const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(
+                2, '0');
+
+            if (type === 'check-in') {
+                return currentTimeStr >= timeConfig.check_in_start && currentTimeStr <= timeConfig.late_limit;
+            } else if (type === 'check-out') {
+                return currentTimeStr >= timeConfig.check_out_start && currentTimeStr <= timeConfig.check_out_end;
+            }
+            return false;
+        }
+
+        function updateLocationStatus(status, title, detail, distance = null) {
+            const statusEl = document.getElementById('location-status');
+            const detailEl = document.getElementById('location-detail');
+            const spinnerEl = document.getElementById('location-spinner');
+            const btnCheckin = document.getElementById('btn-checkin');
+            const btnCheckout = document.getElementById('btn-checkout');
+            const btnPermission = document.getElementById('btn-permission');
+
+            statusEl.className = 'location-status ' + status + ' mb-0 text-center';
+            detailEl.innerHTML = detail;
+
+            if (status === 'loading') {
+                spinnerEl.style.display = 'block';
             } else {
-                btnCheckin.disabled = true;
-                if (btnPermission) btnPermission.style.display = 'none';
+                spinnerEl.style.display = 'none';
             }
-        }
-    }
 
-    function getLocation() {
-        if (!navigator.geolocation) {
-            updateLocationStatus('out-range', 'GPS tidak didukung', 'Browser Anda tidak mendukung geolocation');
-            return;
-        }
+            // Button Disabling Logic
+            if (btnCheckin) {
+                const inRange = (status === 'in-range');
+                const inTime = isWithinTimeRange('check-in');
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                userLocation = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                };
-
-                userDistance = calculateDistance(
-                    userLocation.latitude,
-                    userLocation.longitude,
-                    schoolConfig.latitude,
-                    schoolConfig.longitude
-                );
-
-                if (userDistance <= schoolConfig.radius) {
-                    updateLocationStatus(
-                        'in-range',
-                        'Anda berada di area sekolah',
-                        `Jarak: <strong>${Math.round(userDistance)} meter</strong> dari ${schoolConfig.name}`,
-                        userDistance
-                    );
+                if (inRange && inTime) {
+                    btnCheckin.disabled = false;
+                    btnCheckin.classList.remove('btn-secondary');
+                    btnCheckin.classList.add('btn-success');
                 } else {
-                    updateLocationStatus(
-                        'out-range',
-                        'Anda di luar area sekolah',
-                        `Jarak: <strong>${Math.round(userDistance)} meter</strong> (maksimal ${schoolConfig.radius}m). Silakan pilih izin/dinas.`,
-                        userDistance
-                    );
+                    btnCheckin.disabled = true;
+                    btnCheckin.classList.add('btn-secondary');
+                    btnCheckin.classList.remove('btn-success');
+
+                    if (!inTime && status !== 'loading') {
+                        const now = new Date();
+                        const currentStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                        let timeMsg = "";
+                        if (currentStr < timeConfig.check_in_start) {
+                            timeMsg = `Belum waktunya absen. Jadwal: ${timeConfig.check_in_start} - ${timeConfig.late_limit}`;
+                        } else {
+                            timeMsg = `Batas absen berakhir (Alpha). Jadwal: ${timeConfig.check_in_start} - ${timeConfig.late_limit}`;
+                        }
+
+                        // If we have distance info, keep it and append time warning
+                        if (status === 'in-range' || status === 'out-range') {
+                            detailEl.innerHTML = detail + ` <br><span class="text-danger small fw-bold">${timeMsg}</span>`;
+                        } else {
+                            detailEl.innerHTML = timeMsg;
+                        }
+                    }
                 }
-            },
-            (error) => {
-                let message = 'Gagal mengambil lokasi';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        message = 'Akses lokasi ditolak. Silakan izinkan akses GPS di browser.';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        message = 'Informasi lokasi tidak tersedia.';
-                        break;
-                    case error.TIMEOUT:
-                        message = 'Waktu permintaan lokasi habis.';
-                        break;
+
+                if (btnCheckout) {
+                    const inRange = (status === 'in-range');
+                    const inTime = isWithinTimeRange('check-out');
+
+                    if (inRange && inTime) {
+                        btnCheckout.disabled = false;
+                        btnCheckout.classList.remove('btn-secondary');
+                        btnCheckout.classList.add('btn-primary');
+                    } else {
+                        btnCheckout.disabled = true;
+                        btnCheckout.classList.add('btn-secondary');
+                        btnCheckout.classList.remove('btn-primary');
+
+                        if (!inTime && status !== 'loading') {
+                            detailEl.innerHTML = `Belum waktunya checkout. Jadwal: ${timeConfig.check_out_start} - ${timeConfig.check_out_end}`;
+                        }
+                    }
                 }
-                updateLocationStatus('out-range', 'Gagal mengambil lokasi', message);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
             }
-        );
-    }
+        }
 
-    document.getElementById('btn-checkin')?.addEventListener('click', async function() {
-        const btn = this;
-        const textEl = document.getElementById('btn-checkin-text');
-        const originalText = textEl.textContent;
-
-        // Jika lokasi belum tersedia, coba ambil dulu
-        if (!userLocation) {
-            btn.disabled = true;
-            textEl.textContent = 'Mengambil lokasi...';
-            
-            try {
-                // Request GPS secara aktif
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true,
-                        timeout: 15000,
-                        maximumAge: 0
-                    });
-                });
-                
-                userLocation = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                };
-            } catch (error) {
-                btn.disabled = false;
-                textEl.textContent = originalText;
-                alert('Gagal mengambil lokasi. Pastikan GPS diaktifkan dan izinkan akses lokasi di browser.');
+        function getLocation() {
+            if (!navigator.geolocation) {
+                updateLocationStatus('out-range', 'GPS tidak didukung', 'Browser Anda tidak mendukung geolocation');
                 return;
             }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+
+                    userDistance = calculateDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        schoolConfig.latitude,
+                        schoolConfig.longitude
+                    );
+
+                    if (userDistance <= schoolConfig.radius) {
+                        updateLocationStatus(
+                            'in-range',
+                            'Anda berada di area sekolah',
+                            `Jarak: <strong>${Math.round(userDistance)} meter</strong> dari ${schoolConfig.name}`,
+                            userDistance
+                        );
+                    } else {
+                        updateLocationStatus(
+                            'out-range',
+                            'Anda di luar area sekolah',
+                            `Jarak: <strong>${Math.round(userDistance)} meter</strong> (maksimal ${schoolConfig.radius}m)`,
+                            userDistance
+                        );
+                    }
+                },
+                (error) => {
+                    let message = 'Gagal mengambil lokasi';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Akses lokasi ditolak. Silakan izinkan akses GPS di browser.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Informasi lokasi tidak tersedia.';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Waktu permintaan lokasi habis.';
+                            break;
+                    }
+                    updateLocationStatus('out-range', 'Gagal mengambil lokasi', message);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
         }
 
-        btn.disabled = true;
-        textEl.textContent = 'Memproses...';
+        document.getElementById('btn-checkin')?.addEventListener('click', async function () {
+            const btn = this;
+            const textEl = document.getElementById('btn-checkin-text');
+            const originalText = textEl.textContent;
 
-        try {
-            const response = await fetch("{{ route('employee.attendance.check-in') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude
-                })
-            });
+            // Jika lokasi belum tersedia, coba ambil dulu
+            if (!userLocation) {
+                btn.disabled = true;
+                textEl.textContent = 'Mengambil lokasi...';
 
-            const data = await response.json();
+                try {
+                    // Request GPS secara aktif
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 0
+                        });
+                    });
 
-            if (data.success) {
-                alert(data.message);
-                window.location.reload();
-            } else {
-                if (data.require_permission) {
-                    if (confirm(data.message + '\n\nKlik OK untuk mengajukan izin/sakit/dinas.')) {
-                        window.location.href = "{{ route('employee.permission.create') }}";
+                    userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                } catch (error) {
+                    btn.disabled = false;
+                    textEl.textContent = originalText;
+                    alert('Gagal mengambil lokasi. Pastikan GPS diaktifkan dan izinkan akses lokasi di browser.');
+                    return;
+                }
+            }
+
+            btn.disabled = true;
+            textEl.textContent = 'Memproses...';
+
+            try {
+                const response = await fetch("{{ route('employee.attendance.check-in') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    if (data.require_permission) {
+                        if (confirm(data.message + '\n\nKlik OK untuk mengajukan izin/sakit/dinas.')) {
+                            window.location.href = "{{ route('employee.permission.create') }}";
+                        }
+                    } else {
+                        alert(data.message);
                     }
+                }
+            } catch (error) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                textEl.textContent = originalText;
+            }
+        });
+
+        document.getElementById('btn-checkout')?.addEventListener('click', async function () {
+            if (!userLocation) {
+                getLocation();
+                alert('Mengambil lokasi... Silakan klik lagi.');
+                return;
+            }
+
+            const btn = this;
+            const originalText = document.getElementById('btn-checkout-text').textContent;
+            btn.disabled = true;
+            document.getElementById('btn-checkout-text').textContent = 'Memproses...';
+
+            try {
+                const response = await fetch("{{ route('employee.attendance.check-out') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
                 } else {
                     alert(data.message);
                 }
+            } catch (error) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                document.getElementById('btn-checkout-text').textContent = originalText;
             }
-        } catch (error) {
-            alert('Terjadi kesalahan. Silakan coba lagi.');
-            console.error(error);
-        } finally {
-            btn.disabled = false;
-            textEl.textContent = originalText;
-        }
-    });
+        });
 
-    document.getElementById('btn-checkout')?.addEventListener('click', async function() {
-        if (!userLocation) {
+        document.addEventListener('DOMContentLoaded', function () {
             getLocation();
-            alert('Mengambil lokasi... Silakan klik lagi.');
-            return;
-        }
 
-        const btn = this;
-        const originalText = document.getElementById('btn-checkout-text').textContent;
-        btn.disabled = true;
-        document.getElementById('btn-checkout-text').textContent = 'Memproses...';
-
-        try {
-            const response = await fetch("{{ route('employee.attendance.check-out') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert(data.message);
-                window.location.reload();
-            } else {
-                alert(data.message);
-            }
-        } catch (error) {
-            alert('Terjadi kesalahan. Silakan coba lagi.');
-            console.error(error);
-        } finally {
-            btn.disabled = false;
-            document.getElementById('btn-checkout-text').textContent = originalText;
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        getLocation();
-        
-        setInterval(getLocation, 30000);
-    });
-</script>
+            setInterval(getLocation, 30000);
+        });
+    </script>
 @endsection

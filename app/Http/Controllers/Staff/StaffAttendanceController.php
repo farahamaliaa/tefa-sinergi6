@@ -6,6 +6,8 @@ use App\Contracts\Interfaces\AttendanceInterface;
 use App\Enums\AttendanceEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\EmployeePermission;
+use App\Enums\StatusPermissionEnum;
 use Illuminate\Http\Request;
 
 class StaffAttendanceController extends Controller
@@ -20,18 +22,50 @@ class StaffAttendanceController extends Controller
     /**
      * Display attendance history for the staff
      */
-    public function index()
+    public function index(Request $request)
     {
-        $attendances = $this->attendance->whereUser(auth()->user()->employee->id, 'App\Models\Employee');
-        $todayAttendance = Attendance::where('model_id', auth()->user()->employee->id)
+        $employeeId = auth()->user()->employee->id;
+        $attendances = $this->attendance->whereUserFiltered($employeeId, 'App\Models\Employee', $request);
+
+        $todayAttendance = Attendance::where('model_id', $employeeId)
             ->where('model_type', 'App\Models\Employee')
             ->whereDate('created_at', now()->format('Y-m-d'))
             ->first();
-        
+
+        // Get today's permission if any
+        $todayPermission = EmployeePermission::where('employee_id', $employeeId)
+            ->where('date', now()->format('Y-m-d'))
+            ->where('status', StatusPermissionEnum::APPROVED)
+            ->first();
+
         $schoolConfig = config('attendance.school');
         $timeConfig = config('attendance.time');
-        
-        return view('staff.pages.attendance-history.index', compact('attendances', 'todayAttendance', 'schoolConfig', 'timeConfig'));
+
+        // Inject virtual alpha record for today if past late limit and no record exists
+        $currentTime = now()->format('H:i');
+        $isTodayFiltered = !$request->date || $request->date == now()->format('Y-m-d');
+
+        if ($isTodayFiltered && !$todayAttendance && !$todayPermission && $currentTime > $timeConfig['late_limit']) {
+            $virtualAlpha = new Attendance();
+            $virtualAlpha->status = AttendanceEnum::ALPHA;
+            $virtualAlpha->created_at = now();
+
+            if ($attendances instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                if ($attendances->currentPage() == 1) {
+                    $items = $attendances->getCollection();
+                    $items->prepend($virtualAlpha);
+                    $attendances->setCollection($items);
+                }
+            } else {
+                if ($attendances instanceof \Illuminate\Support\Collection) {
+                    $attendances->prepend($virtualAlpha);
+                } else {
+                    $attendances = collect($attendances)->prepend($virtualAlpha);
+                }
+            }
+        }
+
+        return view('staff.pages.attendance-history.index', compact('attendances', 'todayAttendance', 'todayPermission', 'schoolConfig', 'timeConfig'));
     }
 
     /**
@@ -72,6 +106,17 @@ class StaffAttendanceController extends Controller
             $schoolLng
         );
 
+        // Check if past late limit
+        $now = now();
+        $lateLimit = config('attendance.time.late_limit', '15:00');
+        if ($now->format('H:i') > $lateLimit) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Batas waktu absensi telah berakhir (Jam ' . $lateLimit . '). Silakan ajukan izin.',
+                'require_permission' => true
+            ], 422);
+        }
+
         // Check if within radius
         if ($distance > $maxRadius) {
             return response()->json([
@@ -83,9 +128,8 @@ class StaffAttendanceController extends Controller
         }
 
         // Determine status (on time or late)
-        $now = now();
-        $lateLimit = config('attendance.time.check_in_end');
-        $status = $now->format('H:i') > $lateLimit ? AttendanceEnum::LATE : AttendanceEnum::PRESENT;
+        $checkInEnd = config('attendance.time.check_in_end', '07:30');
+        $status = $now->format('H:i') > $checkInEnd ? AttendanceEnum::LATE : AttendanceEnum::PRESENT;
 
         // Create attendance record
         Attendance::create([
@@ -138,6 +182,25 @@ class StaffAttendanceController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Anda sudah melakukan check-out hari ini.'
+            ], 422);
+        }
+
+        // Check if within checkout time window
+        $checkOutStart = config('attendance.time.check_out_start', '14:00');
+        $checkOutEnd = config('attendance.time.check_out_end', '22:00');
+        $currentTime = now()->format('H:i');
+
+        if ($currentTime < $checkOutStart) {
+            return response()->json([
+                'success' => false,
+                'message' => "Belum waktunya checkout. Checkout dimulai jam {$checkOutStart}."
+            ], 422);
+        }
+
+        if ($currentTime > $checkOutEnd) {
+            return response()->json([
+                'success' => false,
+                'message' => "Waktu checkout sudah berakhir. Batas maksimal jam {$checkOutEnd}."
             ], 422);
         }
 
