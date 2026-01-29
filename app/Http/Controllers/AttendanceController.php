@@ -67,17 +67,13 @@ class AttendanceController extends Controller
 
         $failedStore = [];
         $updatedCount = 0;
-        // Support both JSON body and form-encoded requests. Prefer decoded JSON, fallback to request input.
         $raw = $request->getContent();
         $payload = null;
         if ($raw && $decoded = json_decode($raw)) {
             $payload = $decoded;
         } else {
-            // convert array to object to keep service expectation of ->attendances
             $payload = (object) $request->all();
         }
-
-        // Validate that attendances array is present
         if (!isset($payload->attendances) || empty($payload->attendances)) {
             return ResponseHelper::jsonResponse('error', 'Field "attendances" diperlukan dan tidak boleh kosong. Format yang diharapkan: {"date": "YYYY-MM-DD", "attendances": [{"id": "rfid", "time": "HH:MM:SS", "type": "student|teacher"}]}', null, 400);
         }
@@ -106,7 +102,8 @@ class AttendanceController extends Controller
                             $successData[] = [
                                 'name' => $attendance['name'] ?? 'Unknown',
                                 'status' => $attendance['status'] ?? 'checkout',
-                                'time' => $attendance['checkin'] ?? $attendance['checkout'] ?? null
+                                'time' => $attendance['checkin'] ?? $attendance['checkout'] ?? null,
+                                'image' => $attendance['image'] ?? null
                             ];
                         }
                     }

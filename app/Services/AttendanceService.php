@@ -111,6 +111,7 @@ class AttendanceService
                     $lateDeadline = $checkinEnd->copy()->addMinutes($max_late == null ? 0 : $max_late->max_late);
 
                     $userName = $rfid->model->user->name ?? 'Unknown';
+                    $imagePath = $rfid->model->image ? request()->root() . '/storage/' . $rfid->model->image : null;
 
                     $activeClassroomStudent = $rfid->model->classroomStudents()
                         ->whereHas('classroom.schoolYear', function ($query) {
@@ -149,8 +150,10 @@ class AttendanceService
                                 'status' => AttendanceEnum::LATE->value,
                                 'point' => 5,
                                 'checkin' => $time->toDateTimeString(),
+                                'checkin' => $time->toDateTimeString(),
                                 'created_at' => $date,
-                                'name' => $userName
+                                'name' => $userName,
+                                'image' => $imagePath
                             ];
                         }
                         
@@ -162,7 +165,8 @@ class AttendanceService
                                     'checkout' => $time->toDateTimeString(),
                                     'created_at' => $date,
                                     'point' => 0,
-                                    'name' => $userName
+                                    'name' => $userName,
+                                    'image' => $imagePath
                                 ];
                             } else {
                                 return [
@@ -183,7 +187,8 @@ class AttendanceService
                             'point' => 10,
                             'checkin' => $time->toDateTimeString(),
                             'created_at' => $date,
-                            'name' => $userName
+                            'name' => $userName,
+                            'image' => $imagePath
                         ];
                     }
 
@@ -195,7 +200,8 @@ class AttendanceService
                             'point' => 5,
                             'checkin' => $time->toDateTimeString(),
                             'created_at' => $date,
-                            'name' => $userName
+                            'name' => $userName,
+                            'image' => $imagePath
                         ];
                     }
 
@@ -207,7 +213,8 @@ class AttendanceService
                             'point' => 0,
                             'checkin' => $time->toDateTimeString(),
                             'created_at' => $date,
-                            'name' => $userName
+                            'name' => $userName,
+                            'image' => $imagePath
                         ];
                     }
 
