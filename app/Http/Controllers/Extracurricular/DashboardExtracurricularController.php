@@ -10,6 +10,7 @@ use App\Traits\UploadTrait;
 use App\Enums\UploadDiskEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Religion;
 
 class DashboardExtracurricularController extends Controller
 {
@@ -63,7 +64,8 @@ class DashboardExtracurricularController extends Controller
     {
         $user = auth()->user();
         $employee = $user->employee;
-        return view('extracurricular.pages.profile', compact('user', 'employee'));
+        $religions = Religion::all();
+        return view('extracurricular.pages.profile', compact('user', 'employee', 'religions'));
     }
 
     public function updateProfile(Request $request)
@@ -71,56 +73,101 @@ class DashboardExtracurricularController extends Controller
         $user = auth()->user();
         $employee = $user->employee;
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number' => 'nullable|string|max:13',
-            'gender' => 'required|in:male,female',
-            'address' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'current_password' => 'nullable|required_with:password|string',
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        // Check if this is a password update or profile update
+        if ($request->filled('current_password') || $request->filled('password')) {
+            // Password Update Logic
+            $request->validate([
+                'current_password' => 'required|string',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/[a-z]/',
+                    'regex:/[A-Z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[@$!%*#?&]/',
+                ],
+            ], [
+                'current_password.required' => 'Password lama wajib diisi.',
+                'password.required' => 'Password baru wajib diisi.',
+                'password.confirmed' => 'Konfirmasi password tidak cocok dengan password baru.',
+                'password.min' => 'Password harus minimal 8 karakter.',
+                'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus (@$!%*#?&).',
+            ]);
 
-        if ($request->filled('password')) {
             if (!Hash::check($request->current_password, $user->password)) {
                 return redirect()->back()->withErrors(['current_password' => 'Password lama tidak sesuai'])->withInput();
             }
-        }
 
-        try {
-            DB::transaction(function () use ($request, $user, $employee) {
-                $dataUser = [
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'gender' => $request->gender,
-                ];
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
 
-                if ($request->hasFile('image')) {
-                    if ($user->image) {
-                        $this->remove($user->image);
+            return redirect()->back()->with('success', 'Password berhasil diperbarui');
+        } else {
+            // Profile Info Update Logic
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone_number' => 'nullable|string|max:13',
+                'gender' => 'required|in:male,female',
+                'address' => 'nullable|string',
+                'birth_date' => 'nullable|date',
+                'birth_place' => 'nullable|string|max:255',
+                'religion_id' => 'required|exists:religions,id',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ], [
+                'name.required' => 'Nama lengkap wajib diisi.',
+                'name.max' => 'Nama lengkap maksimal :max karakter.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'email.unique' => 'Email sudah digunakan.',
+                'phone_number.max' => 'Nomor telepon maksimal :max karakter.',
+                'gender.required' => 'Jenis kelamin wajib dipilih.',
+                'gender.in' => 'Jenis kelamin tidak valid.',
+                'religion_id.required' => 'Agama wajib dipilih.',
+                'religion_id.exists' => 'Agama tidak valid.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
+            ]);
+
+            try {
+                DB::transaction(function () use ($request, $user, $employee) {
+                    $dataUser = [
+                        'name' => $request->name,
+                        'email' => $request->email,
+                    ];
+
+                    $user->update($dataUser);
+
+                    if ($employee) {
+                        $dataEmployee = [
+                            'phone_number' => $request->phone_number,
+                            'address' => $request->address,
+                            'gender' => $request->gender,
+                            'birth_date' => $request->birth_date,
+                            'birth_place' => $request->birth_place,
+                            'religion_id' => $request->religion_id,
+                        ];
+
+                        if ($request->hasFile('image')) {
+                            if ($employee->image) {
+                                $this->remove($employee->image);
+                            }
+                            $dataEmployee['image'] = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
+                        }
+
+                        $employee->update($dataEmployee);
                     }
-                    $dataUser['image'] = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
-                }
+                });
 
-                if ($request->filled('password')) {
-                    $dataUser['password'] = Hash::make($request->password);
-                }
-
-                $user->update($dataUser);
-
-                if ($employee) {
-                    $employee->update([
-                        'phone_number' => $request->phone_number,
-                        'address' => $request->address,
-                        'gender' => $request->gender,
-                    ]);
-                }
-            });
-
-            return redirect()->back()->with('success', 'Profil berhasil diperbarui');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+                return redirect()->back()->with('success', 'Profil berhasil diperbarui');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+            }
         }
     }
+
 }
