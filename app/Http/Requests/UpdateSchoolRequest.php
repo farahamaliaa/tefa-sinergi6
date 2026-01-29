@@ -59,6 +59,7 @@ class UpdateSchoolRequest extends FormRequest
             'head_school.required' => 'Nama kepala sekolah wajib diisi.',
             'nip.required' => 'NIP wajib diisi.',
             'accreditation.required' => 'Akreditasi harus diisi',
+            'website_school.url' => 'Format website tidak valid (contoh: https://sekolah.sch.id).',
         ];
     }
 }

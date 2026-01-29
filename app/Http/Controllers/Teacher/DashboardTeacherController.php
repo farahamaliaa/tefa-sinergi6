@@ -77,14 +77,18 @@ class DashboardTeacherController extends Controller
         // Get filled journals
         $filledJournals = $this->teacherJournal->getByTeacher(auth()->user()->employee->id);
 
-        // Get unfilled schedules logic (similar to TeacherJournalController)
+        // Unfilled schedules are now only shown in the journals page table
+        // Dashboard only shows filled journal history
         $unfilledSchedules = collect();
         $employee = auth()->user()->employee;
 
         if ($employee) {
             $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
-            // Get all schedules
+            // Get all schedules for active school year
             $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
+                ->whereHas('classroom.schoolYear', function ($query) {
+                    $query->where('active', true);
+                })
                 ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
                 ->get();
 
@@ -102,13 +106,14 @@ class DashboardTeacherController extends Controller
                 'Saturday' => 6,
                 'saturday' => 6,
                 'Sunday' => 0,
-                'sunday' => 0
+                'sunday' => 0,
             ];
 
             foreach ($allSchedules as $schedule) {
                 $dayOfWeek = $dayMapping[$schedule->day] ?? null;
-                if ($dayOfWeek === null)
+                if ($dayOfWeek === null) {
                     continue;
+                }
 
                 $startDate = now()->subDays(30);
                 $currentDate = $startDate->copy();
@@ -119,9 +124,9 @@ class DashboardTeacherController extends Controller
                             return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
                         });
 
-                        if (!$journalExists) {
+                        if (! $journalExists) {
                             // Create a fake object for unfilled schedule
-                            $unfilled = new \stdClass();
+                            $unfilled = new \stdClass;
                             $unfilled->id = null;
                             $unfilled->lesson_schedule_id = $schedule->id;
                             $unfilled->lessonSchedule = $schedule;
@@ -142,10 +147,15 @@ class DashboardTeacherController extends Controller
         // Merge and sort
         $teacherJournals = $filledJournals->toBase()->map(function ($journal) {
             $journal->is_filled = true;
+
             return $journal;
         })->merge($unfilledSchedules)->sortByDesc('date')->values();
 
         $classroom = $this->classroom->whereEmployeeId(auth()->user()->employee->id);
+        // Check if classroom belongs to active school year
+        if ($classroom && ! ($classroom->schoolYear->active ?? false)) {
+            $classroom = null;
+        }
 
         return view('teacher.pages.dashboard.index', compact(
             'notifications',
@@ -195,7 +205,7 @@ class DashboardTeacherController extends Controller
                 'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus (@$!%*#?&).',
             ]);
 
-            if (!Hash::check($request->current_password, $user->password)) {
+            if (! Hash::check($request->current_password, $user->password)) {
                 return redirect()->back()->withErrors(['current_password' => 'Password lama tidak sesuai'])->withInput();
             }
 
@@ -208,7 +218,7 @@ class DashboardTeacherController extends Controller
             // Profile Info Update Logic
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
+                'email' => 'required|email|unique:users,email,'.$user->id,
                 'phone_number' => 'nullable|string|max:13',
                 'gender' => 'required|in:male,female',
                 'address' => 'nullable|string',
@@ -231,7 +241,6 @@ class DashboardTeacherController extends Controller
                 'image.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
                 'image.max' => 'Ukuran gambar maksimal 2MB.',
             ]);
-
 
             try {
                 DB::transaction(function () use ($request, $user, $employee) {
@@ -265,7 +274,7 @@ class DashboardTeacherController extends Controller
 
                 return redirect()->back()->with('success', 'Profil berhasil diperbarui');
             } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Gagal memperbarui profil: '.$e->getMessage());
             }
         }
     }
@@ -308,8 +317,17 @@ class DashboardTeacherController extends Controller
 
                 // Update Attendance
                 // Check if attendance exists for that date
+                $activeCS = $permission->student->classroomStudents()
+                    ->whereHas('classroom.schoolYear', function ($query) {
+                        $query->where('active', true);
+                    })->first();
+
+                if (! $activeCS) {
+                    throw new \Exception('Siswa tidak terdaftar di kelas aktif pada tahun ajaran ini.');
+                }
+
                 $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
-                    ->where('model_id', $permission->student->classroomStudents->first()->id) // simplified, usually safer lookup needed
+                    ->where('model_id', $activeCS->id)
                     ->whereDate('created_at', $permission->date)
                     ->first();
 
@@ -322,7 +340,7 @@ class DashboardTeacherController extends Controller
                 } else {
                     \App\Models\Attendance::create([
                         'model_type' => 'App\Models\ClassroomStudent',
-                        'model_id' => $permission->student->classroomStudents->first()->id,
+                        'model_id' => $activeCS->id,
                         'status' => $statusEnum,
                         'point' => 10, // Default point
                         'created_at' => \Carbon\Carbon::parse($permission->date),
@@ -333,7 +351,7 @@ class DashboardTeacherController extends Controller
 
             return redirect()->back()->with('success', 'Permission approved and attendance updated.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error approving: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error approving: '.$e->getMessage());
         }
     }
 

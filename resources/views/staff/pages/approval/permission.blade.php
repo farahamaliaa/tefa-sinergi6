@@ -245,7 +245,7 @@
                                         data-name="{{ $permission->employee->user->name ?? 'Unknown' }}"
                                         data-date="{{ Carbon\Carbon::parse($permission->date)->format('d/m/Y') }}"
                                         data-type="{{ $permission->permission_type->label() ?? $permission->permission_type->value }}"
-                                        data-proof="{{ $permission->proof }}"
+                                        data-proof="{{ $permission->proof }}" data-duration="{{ $permission->duration }}"
                                         data-proof-image="{{ $permission->proof_image ? asset('storage/' . $permission->proof_image) : '' }}"
                                         data-status="{{ $permission->status->value }}"
                                         data-url-approve="{{ route('employee.approval.permission.approve', $permission->id) }}"
@@ -289,6 +289,7 @@
                 const date = button.getAttribute('data-date');
                 const type = button.getAttribute('data-type');
                 const proof = button.getAttribute('data-proof');
+                const duration = button.getAttribute('data-duration');
                 const proofImage = button.getAttribute('data-proof-image');
                 const status = button.getAttribute('data-status');
 
@@ -296,6 +297,7 @@
                 modal.querySelector('#modal-staff-name').value = name;
                 modal.querySelector('#modal-date').value = date;
                 modal.querySelector('#modal-type').value = type;
+                modal.querySelector('#modal-duration').value = duration || '-';
                 modal.querySelector('#modal-proof').value = proof || '-';
 
                 // Update proof image

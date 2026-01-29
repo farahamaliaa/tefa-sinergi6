@@ -214,15 +214,50 @@ class TeacherApiController extends Controller
             return ResponseHelper::error('Anda tidak memiliki akses untuk menyetujui izin ini', 403);
         }
 
-        $permission->update([
-            'status' => 'approved',
-            'approved_by' => $user->id,
-        ]);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($permission, $user) {
+                $permission->update([
+                    'status' => 'approved',
+                    'approved_by' => $user->id,
+                ]);
 
-        return ResponseHelper::success(
-            new TeacherPermissionResource($permission->fresh(['student.user', 'classroom', 'submittedBy', 'approvedBy'])),
-            'Izin berhasil disetujui'
-        );
+                $activeCS = $permission->student->classroomStudents()
+                    ->whereHas('classroom.schoolYear', function ($query) {
+                        $query->where('active', true);
+                    })->first();
+
+                if ($activeCS) {
+                    $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
+                        ->where('model_id', $activeCS->id)
+                        ->whereDate('created_at', $permission->date)
+                        ->first();
+
+                    $statusEnum = $permission->permission_type == 'sick'
+                        ? \App\Enums\AttendanceEnum::SICK
+                        : \App\Enums\AttendanceEnum::PERMIT;
+
+                    if ($attendance) {
+                        $attendance->update(['status' => $statusEnum]);
+                    } else {
+                        \App\Models\Attendance::create([
+                            'model_type' => 'App\Models\ClassroomStudent',
+                            'model_id' => $activeCS->id,
+                            'status' => $statusEnum,
+                            'point' => 0,
+                            'created_at' => \Carbon\Carbon::parse($permission->date),
+                            'proof' => $permission->proof_image,
+                        ]);
+                    }
+                }
+            });
+
+            return ResponseHelper::success(
+                new TeacherPermissionResource($permission->fresh(['student.user', 'classroom', 'submittedBy', 'approvedBy'])),
+                'Izin berhasil disetujui dan absensi diperbarui'
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Gagal menyetujui izin: ' . $e->getMessage(), 500);
+        }
     }
 
     /**

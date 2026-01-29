@@ -21,7 +21,10 @@ class StudentViolationImport implements ToModel
         $student = Student::with('user')->get()->where('user.name', $row[0])->first();
         $regulation = Regulation::where('violation', $row[1])->first();
 
-        $classroomStudent = ClassroomStudent::where('student_id', $student->id)->first();
+        $classroomStudent = ClassroomStudent::where('student_id', $student->id)
+            ->whereHas('classroom.schoolYear', function($q) {
+                $q->where('active', true);
+            })->first();
 
         $user = Student::find($student->id);
         $user->point += $regulation->point;

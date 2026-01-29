@@ -78,7 +78,9 @@ class ExtracurricularApiController extends Controller
 
         $students = $extracurricular->extracurricularStudents->map(function ($es) {
             $student = $es->student;
-            $classroom = $student->classroomStudents->first()?->classroom;
+            $classroom = $student->classroomStudents()
+                ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                ->first()?->classroom;
 
             return [
                 'id' => $es->id,

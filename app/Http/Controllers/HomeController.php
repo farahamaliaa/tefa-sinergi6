@@ -41,6 +41,6 @@ class HomeController extends Controller
 
     public function cek_rfid()
     {
-        dd(ModelHasRfid::where('model_type', null)->where('model_id', null)->get());
+        //
     }
 }

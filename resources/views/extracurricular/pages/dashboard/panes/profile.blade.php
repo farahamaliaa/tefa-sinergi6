@@ -94,12 +94,11 @@
                             </div>
                         </div>
                     @else
-                        <div class="w-100 text-center align-self-center">
-                            <h6 class="mb-4 fw-bold text-dark text-start" style="font-size: 20px;">Mengajar Ekskul :
-                            </h6>
-                            <div class="py-3">
-                                <h4 class="text-muted">Belum ada ekstrakurikuler yang dibina</h4>
-                            </div>
+                        <div class="pt-1 ps-1">
+                            <h6 class="mb-4 fw-bolder text-dark" style="font-size: 20px;">Mengajar Ekskul :</h6>
+                            <h2 class="fw-bold mb-3 text-muted" style="font-size: 24px;">
+                                Belum ada ekstrakurikuler yang dibina
+                            </h2>
                         </div>
                     @endif
                 </div>

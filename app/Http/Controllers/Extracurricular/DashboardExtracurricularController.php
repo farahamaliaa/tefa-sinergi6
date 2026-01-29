@@ -134,32 +134,38 @@ class DashboardExtracurricularController extends Controller
             ]);
 
             try {
-                DB::transaction(function () use ($request, $user, $employee) {
+                DB::transaction(function () use ($request, $user, &$employee) {
                     $dataUser = [
                         'name' => $request->name,
                         'email' => $request->email,
+                        'gender' => $request->gender,
                     ];
 
                     $user->update($dataUser);
 
-                    if ($employee) {
-                        $dataEmployee = [
-                            'phone_number' => $request->phone_number,
-                            'address' => $request->address,
-                            'gender' => $request->gender,
-                            'birth_date' => $request->birth_date,
-                            'birth_place' => $request->birth_place,
-                            'religion_id' => $request->religion_id,
-                        ];
+                    $dataEmployee = [
+                        'phone_number' => $request->phone_number,
+                        'address' => $request->address,
+                        'gender' => $request->gender,
+                        'birth_date' => $request->birth_date,
+                        'birth_place' => $request->birth_place,
+                        'religion_id' => $request->religion_id,
+                    ];
 
-                        if ($request->hasFile('image')) {
-                            if ($employee->image) {
-                                $this->remove($employee->image);
-                            }
-                            $dataEmployee['image'] = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
+                    if ($request->hasFile('image')) {
+                        if ($employee && $employee->image) {
+                            $this->remove($employee->image);
                         }
+                        $dataEmployee['image'] = $this->upload(UploadDiskEnum::TEACHER->value, $request->file('image'));
+                    }
 
+                    if ($employee) {
                         $employee->update($dataEmployee);
+                    } else {
+                        // Create new employee if not exists
+                        $dataEmployee['user_id'] = $user->id;
+                        $dataEmployee['status'] = 'Pembina Ekskul';
+                        $employee = \App\Models\Employee::create($dataEmployee);
                     }
                 });
 

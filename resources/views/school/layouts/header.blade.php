@@ -11,7 +11,7 @@
             <a class="d-flex align-items-center gap-2 text-decoration-none" href="#" id="profileDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
 
-                <img src="{{ Auth::user()->school->image && Storage::exists('public/' . Auth::user()->school->image) 
+                <img src="{{ Auth::user()->school->image && Storage::disk('public')->exists(Auth::user()->school->image)
                     ? asset('storage/' . Auth::user()->school->image)
                     : asset('assets/images/default-user.jpeg') }}"
                     class="rounded-circle" width="38" height="38" style="object-fit: cover" />
