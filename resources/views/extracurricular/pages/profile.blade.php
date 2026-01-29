@@ -187,13 +187,13 @@
                     <div class="card-body text-center pt-2">
                         <!-- Read View for Profile Image -->
                         <div id="profile-img-read" class="profile-img-container">
-                            <img src="{{ $employee->image ? asset('storage/' . $employee->image) : asset('assets/images/default-user.jpeg') }}"
+                            <img src="{{ $employee?->image ? asset('storage/' . $employee->image) : asset('assets/images/default-user.jpeg') }}"
                                 alt="Profile" class="profile-img">
                         </div>
 
                         <!-- Edit View for Profile Image -->
                         <div id="profile-img-edit" class="profile-img-container d-none position-relative">
-                            <img src="{{ $employee->image ? asset('storage/' . $employee->image) : asset('assets/images/default-user.jpeg') }}"
+                            <img src="{{ $employee?->image ? asset('storage/' . $employee->image) : asset('assets/images/default-user.jpeg') }}"
                                 alt="Profile" class="profile-img" id="preview-image">
                             <label for="image-upload"
                                 class="btn btn-primary position-absolute rounded-circle p-0 d-flex justify-content-center align-items-center"
@@ -204,7 +204,7 @@
 
                         <h4 class="fw-bold mb-1 text-dark">{{ $user->name }} <span
                                 class="status-badge bg-light-primary">Aktif</span></h4>
-                        <p class="text-muted mb-4 fs-3">{{ $employee->status ?? 'Pembina Ekskul' }}</p>
+                        <p class="text-muted mb-4 fs-3">{{ $employee?->status ?? 'Pembina Ekskul' }}</p>
 
                         <div class="nav flex-column nav-custom text-start mt-4" id="v-pills-tab" role="tablist"
                             aria-orientation="vertical">
@@ -283,7 +283,7 @@
                                         <div class="col-md-6">
                                             <label class="form-label-custom">NIP</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->nip ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->nip ?? '-' }}" readonly disabled>
                                         </div>
 
                                         <div class="col-md-12">
@@ -295,48 +295,48 @@
                                         <div class="col-md-6">
                                             <label class="form-label-custom">NIK</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->nik ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->nik ?? '-' }}" readonly disabled>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Jenis Kelamin</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $user->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}" readonly
-                                                disabled>
+                                                value="{{ ($user->gender ?? '') == 'male' ? 'Laki-laki' : 'Perempuan' }}"
+                                                readonly disabled>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Tanggal Lahir</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->birth_date ? \Carbon\Carbon::parse($employee->birth_date)->translatedFormat('d F, Y') : '-' }}"
+                                                value="{{ $employee?->birth_date ? \Carbon\Carbon::parse($employee->birth_date)->translatedFormat('d F, Y') : '-' }}"
                                                 readonly disabled>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Tempat Lahir</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->birth_place ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->birth_place ?? '-' }}" readonly disabled>
                                         </div>
 
                                         <div class="col-md-12">
                                             <label class="form-label-custom">Alamat</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->address ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->address ?? '-' }}" readonly disabled>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Nomor Telepon</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->phone_number ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->phone_number ?? '-' }}" readonly disabled>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Agama</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->religion->name ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->religion?->name ?? '-' }}" readonly disabled>
                                         </div>
 
                                         <div class="col-md-12">
                                             <label class="form-label-custom">Jabatan</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->status ?? '-' }}" readonly disabled>
+                                                value="{{ $employee?->status ?? '-' }}" readonly disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -359,7 +359,7 @@
                                         <div class="col-md-6">
                                             <label class="form-label-custom">NIP</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->nip ?? '-' }}" readonly>
+                                                value="{{ $employee?->nip ?? '-' }}" readonly>
                                         </div>
 
                                         <div class="col-md-12">
@@ -372,7 +372,7 @@
                                         <div class="col-md-6">
                                             <label class="form-label-custom">NIK</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->nik ?? '-' }}" readonly>
+                                                value="{{ $employee?->nik ?? '-' }}" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Jenis Kelamin <span
@@ -391,26 +391,26 @@
                                             <label class="form-label-custom">Tanggal Lahir</label>
                                             <input type="date" name="birth_date"
                                                 class="form-control form-control-custom"
-                                                value="{{ old('birth_date', $employee->birth_date ?? '') }}">
+                                                value="{{ old('birth_date', $employee?->birth_date ?? '') }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Tempat Lahir</label>
                                             <input type="text" name="birth_place"
                                                 class="form-control form-control-custom"
-                                                value="{{ old('birth_place', $employee->birth_place ?? '') }}">
+                                                value="{{ old('birth_place', $employee?->birth_place ?? '') }}">
                                         </div>
 
                                         <div class="col-md-12">
                                             <label class="form-label-custom">Alamat</label>
                                             <input type="text" name="address" class="form-control form-control-custom"
-                                                value="{{ old('address', $employee->address ?? '') }}">
+                                                value="{{ old('address', $employee?->address ?? '') }}">
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Nomor Telepon</label>
                                             <input type="text" name="phone_number"
                                                 class="form-control form-control-custom"
-                                                value="{{ old('phone_number', $employee->phone_number ?? '') }}">
+                                                value="{{ old('phone_number', $employee?->phone_number ?? '') }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Agama <span
@@ -420,7 +420,7 @@
                                                 @isset($religions)
                                                     @foreach ($religions as $religion)
                                                         <option value="{{ $religion->id }}"
-                                                            {{ old('religion_id', $employee->religion_id ?? '') == $religion->id ? 'selected' : '' }}>
+                                                            {{ old('religion_id', $employee?->religion_id ?? '') == $religion->id ? 'selected' : '' }}>
                                                             {{ $religion->name }}
                                                         </option>
                                                     @endforeach
@@ -431,7 +431,7 @@
                                         <div class="col-md-12">
                                             <label class="form-label-custom">Jabatan</label>
                                             <input type="text" class="form-control form-control-custom"
-                                                value="{{ $employee->status ?? '-' }}" readonly>
+                                                value="{{ $employee?->status ?? '-' }}" readonly>
                                         </div>
                                     </div>
 
