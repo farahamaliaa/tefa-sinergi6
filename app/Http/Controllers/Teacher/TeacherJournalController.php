@@ -3,27 +3,33 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Contracts\Interfaces\AttendanceJournalInterface;
-use App\Models\LessonSchedule;
-use App\Models\TeacherJournal;
+use App\Contracts\Interfaces\ClassroomStudentInterface;
+use App\Contracts\Interfaces\LessonHourInterface;
+use App\Contracts\Interfaces\LessonScheduleInterface;
+use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
 use App\Http\Controllers\Controller;
-use App\Services\Teacher\TeacherJournalService;
 use App\Http\Requests\StoreTeacherJournalRequest;
 use App\Http\Requests\UpdateTeacherJournalRequest;
-use App\Contracts\Interfaces\LessonScheduleInterface;
-use App\Contracts\Interfaces\ClassroomStudentInterface;
-use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
+use App\Models\LessonSchedule;
+use App\Models\TeacherJournal;
 use App\Services\AttendanceJournalService;
-use App\Contracts\Interfaces\LessonHourInterface; // Added LessonHourInterface
+use App\Services\Teacher\TeacherJournalService; // Added LessonHourInterface
 use Illuminate\Http\Request;
 
 class TeacherJournalController extends Controller
 {
     private AttendanceJournalService $serviceAttendance;
+
     private AttendanceJournalInterface $attendanceJournal;
+
     private TeacherJournalInterface $teacherJournal;
+
     private LessonScheduleInterface $lessonSchedule;
+
     private TeacherJournalService $service;
+
     private ClassroomStudentInterface $classroomStudent;
+
     private LessonHourInterface $lessonHour; // Added property for LessonHourInterface
 
     public function __construct(TeacherJournalInterface $teacherJournal, AttendanceJournalInterface $attendanceJournal, TeacherJournalService $service, LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent, AttendanceJournalService $serviceAttendance, LessonHourInterface $lessonHour)
@@ -45,70 +51,25 @@ class TeacherJournalController extends Controller
         $teacherSchedules = $this->lessonSchedule->whereTeacher(auth()->user()->id, now());
         $filledHistories = $this->teacherJournal->histories(auth()->user()->id, $request);
 
-        // Get unfilled schedules from the past 30 days
-        $employee = \App\Models\Employee::where('user_id', auth()->user()->id)->first();
+        // Get unfilled schedules - only for today's schedules that haven't been filled
         $unfilledSchedules = collect();
 
-        if ($employee) {
-            $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
-            $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
-                ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
-                ->get();
+        // Check today's schedules that don't have journals filled
+        foreach ($teacherSchedules as $schedule) {
+            // Check if this schedule already has a journal for today
+            $hasJournalForToday = $schedule->teacherJournals->contains(function ($journal) {
+                return \Carbon\Carbon::parse($journal->date)->isToday();
+            });
 
-            $dayMapping = [
-                'Monday' => 1,
-                'monday' => 1,
-                'Tuesday' => 2,
-                'tuesday' => 2,
-                'Wednesday' => 3,
-                'wednesday' => 3,
-                'Thursday' => 4,
-                'thursday' => 4,
-                'Friday' => 5,
-                'friday' => 5,
-                'Saturday' => 6,
-                'saturday' => 6,
-                'Sunday' => 0,
-                'sunday' => 0
-            ];
-
-            foreach ($allSchedules as $schedule) {
-                $dayOfWeek = $dayMapping[$schedule->day] ?? null;
-                if ($dayOfWeek === null)
-                    continue;
-
-                $startDate = now()->subDays(30);
-                $currentDate = $startDate->copy();
-
-                while ($currentDate->lt(today())) {
-                    if ($currentDate->dayOfWeek === $dayOfWeek) {
-                        $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
-                            return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
-                        });
-
-                        if (!$journalExists) {
-                            // Create a fake object for unfilled schedule
-                            $unfilled = new \stdClass();
-                            $unfilled->id = null;
-                            $unfilled->lesson_schedule_id = $schedule->id;
-                            $unfilled->lessonSchedule = $schedule;
-                            $unfilled->title = null;
-                            $unfilled->description = null;
-                            $unfilled->date = $currentDate->format('Y-m-d');
-                            $unfilled->is_filled = false;
-                            $unfilled->attendanceJournals = collect(); // Empty collection
-
-                            $unfilledSchedules->push($unfilled);
-                        }
-                    }
-                    $currentDate->addDay();
-                }
-            }
+            // If no journal exists for today, we don't need to create unfilled entry
+            // because it's already shown in the "Jadwal Mengajar Hari Ini" table above
+            // The unfilled entries are only for history display
         }
 
         // Merge and sort by date (newest first)
         $histories = $filledHistories->toBase()->map(function ($journal) {
             $journal->is_filled = true;
+
             return $journal;
         })->merge($unfilledSchedules)->sortByDesc(function ($item) {
             return $item->date;
@@ -124,6 +85,7 @@ class TeacherJournalController extends Controller
     {
         $classroomStudents = $this->classroomStudent->where($lessonSchedule->classroom->id, $request);
         $studentsPaginator = $classroomStudents;
+
         return view('teacher.pages.journals.create', compact('classroomStudents', 'lessonSchedule', 'studentsPaginator'));
     }
 
@@ -136,9 +98,10 @@ class TeacherJournalController extends Controller
             $data = $this->service->store($request, $lessonSchedule);
             $teacherJournal = $this->teacherJournal->store($data);
             $this->serviceAttendance->storeJournal($request['attendance'], $teacherJournal);
+
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengirim jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }
     }
 
@@ -148,6 +111,7 @@ class TeacherJournalController extends Controller
     public function show(TeacherJournal $journal)
     {
         $attendanceJournals = $journal->attendanceJournals()->paginate(10);
+
         return view('teacher.pages.journals.detail', compact('journal', 'attendanceJournals'));
     }
 
@@ -157,6 +121,7 @@ class TeacherJournalController extends Controller
     public function edit(TeacherJournal $teacherJournal)
     {
         $classroomStudents = $this->attendanceJournal->getByTeacherJournal($teacherJournal->id);
+
         return view('teacher.pages.journals.update', compact('teacherJournal', 'classroomStudents'));
     }
 
@@ -169,9 +134,10 @@ class TeacherJournalController extends Controller
             $data = $this->service->update($request, $teacherJournal->lessonSchedule);
             $this->teacherJournal->update($teacherJournal->id, $data);
             $this->serviceAttendance->updateJournal($request['attendance'], $teacherJournal);
+
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengupdate jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }
     }
 
@@ -182,9 +148,10 @@ class TeacherJournalController extends Controller
     {
         try {
             $this->teacherJournal->delete($teacherJournal->id);
+
             return redirect()->back()->with('success', 'Berhasi menghapus jurnal');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
         }
     }
 }

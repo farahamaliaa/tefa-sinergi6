@@ -77,67 +77,9 @@ class DashboardTeacherController extends Controller
         // Get filled journals
         $filledJournals = $this->teacherJournal->getByTeacher(auth()->user()->employee->id);
 
-        // Get unfilled schedules logic (similar to TeacherJournalController)
+        // Unfilled schedules are now only shown in the journals page table
+        // Dashboard only shows filled journal history
         $unfilledSchedules = collect();
-        $employee = auth()->user()->employee;
-
-        if ($employee) {
-            $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
-            // Get all schedules
-            $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
-                ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
-                ->get();
-
-            $dayMapping = [
-                'Monday' => 1,
-                'monday' => 1,
-                'Tuesday' => 2,
-                'tuesday' => 2,
-                'Wednesday' => 3,
-                'wednesday' => 3,
-                'Thursday' => 4,
-                'thursday' => 4,
-                'Friday' => 5,
-                'friday' => 5,
-                'Saturday' => 6,
-                'saturday' => 6,
-                'Sunday' => 0,
-                'sunday' => 0
-            ];
-
-            foreach ($allSchedules as $schedule) {
-                $dayOfWeek = $dayMapping[$schedule->day] ?? null;
-                if ($dayOfWeek === null)
-                    continue;
-
-                $startDate = now()->subDays(30);
-                $currentDate = $startDate->copy();
-
-                while ($currentDate->lt(today())) {
-                    if ($currentDate->dayOfWeek === $dayOfWeek) {
-                        $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
-                            return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
-                        });
-
-                        if (!$journalExists) {
-                            // Create a fake object for unfilled schedule
-                            $unfilled = new \stdClass();
-                            $unfilled->id = null;
-                            $unfilled->lesson_schedule_id = $schedule->id;
-                            $unfilled->lessonSchedule = $schedule;
-                            $unfilled->title = null;
-                            $unfilled->description = null;
-                            $unfilled->date = $currentDate->format('Y-m-d');
-                            $unfilled->is_filled = false;
-                            $unfilled->attendanceJournals = collect(); // Empty collection
-
-                            $unfilledSchedules->push($unfilled);
-                        }
-                    }
-                    $currentDate->addDay();
-                }
-            }
-        }
 
         // Merge and sort
         $teacherJournals = $filledJournals->toBase()->map(function ($journal) {
