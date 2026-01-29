@@ -27,7 +27,7 @@ class ProcessAttendanceStatus extends Command
      *
      * @var string
      */
-    protected $description = 'Process daily attendance status (Auto-Alpha for missing check-ins, auto-present for teachers with journals)';
+    protected $description = 'Process daily student attendance status (Auto-Alpha for missing check-ins)';
 
     /**
      * Execute the console command.

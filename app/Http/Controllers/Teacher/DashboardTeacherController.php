@@ -80,7 +80,6 @@ class DashboardTeacherController extends Controller
         // Unfilled schedules are now only shown in the journals page table
         // Dashboard only shows filled journal history
         $unfilledSchedules = collect();
-<<<<<<< HEAD
         $employee = auth()->user()->employee;
 
         if ($employee) {
@@ -143,8 +142,7 @@ class DashboardTeacherController extends Controller
                 }
             }
         }
-=======
->>>>>>> 4a3a9c0ea2bd59621bb49269c83feee16644095e
+
 
         // Merge and sort
         $teacherJournals = $filledJournals->toBase()->map(function ($journal) {

@@ -140,6 +140,19 @@ class AttendanceService
                                 'name' => 'Sudah absen pulang'
                             ];
                         }
+
+                        // Hande Alpha / No Checkin record -> Update to Late
+                        if ($existingAttendance->status === AttendanceEnum::ALPHA->value || $existingAttendance->checkin === null) {
+                            return [
+                                'model_id' => $activeClassroomStudent->id,
+                                'model_type' => "App\Models\ClassroomStudent",
+                                'status' => AttendanceEnum::LATE->value,
+                                'point' => 5,
+                                'checkin' => $time->toDateTimeString(),
+                                'created_at' => $date,
+                                'name' => $userName
+                            ];
+                        }
                         
                         if ($existingAttendance->checkin) {
                             if ($time->greaterThanOrEqualTo($checkoutStart)) {
@@ -199,13 +212,12 @@ class AttendanceService
                     }
 
                     if ($time->greaterThan($checkoutStart)) {
+                        // After checkout time but no check-in - reject
                         return [
-                            'model_id' => $activeClassroomStudent->id,
-                            'model_type' => "App\Models\ClassroomStudent",
-                            'checkout' => $time->toDateTimeString(),
-                            'created_at' => $date,
-                            'point' => 0,
-                            'name' => $userName
+                            'model_id' => null,
+                            'invalid' => true,
+                            'rfid' => $attendance->id ?? null,
+                            'name' => 'Belum absen masuk'
                         ];
                     }
 
