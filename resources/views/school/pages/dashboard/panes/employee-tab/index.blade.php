@@ -146,7 +146,8 @@
         <div class="stat-card border">
             <div>
                 <div class="stat-title">Jumlah Staff Izin/Sakit</div>
-                <div class="stat-badge bg-warning-soft" id="employee-permit-count">{{ $totalPermit_teacher }} Guru</div>
+                <div class="stat-badge bg-warning-soft" id="employee-permit-count">{{ $totalPermit_teacher }} Staff
+                </div>
             </div>
             <div class="icon-box bg-warning-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none"
@@ -163,8 +164,8 @@
     <div class="col-md-6 col-lg-4">
         <div class="stat-card border">
             <div>
-                <div class="stat-title">Jumlah Guru Alfa</div>
-                <div class="stat-badge bg-danger-soft" id="employee-alpha-count">{{ $alpha_teacher->count() }} Guru
+                <div class="stat-title">Jumlah Staff Alfa</div>
+                <div class="stat-badge bg-danger-soft" id="employee-alpha-count">{{ $alpha_teacher->count() }} Staff
                 </div>
             </div>
             <div class="icon-box bg-danger-soft">
