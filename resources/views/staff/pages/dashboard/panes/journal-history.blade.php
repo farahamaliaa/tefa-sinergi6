@@ -5,7 +5,7 @@
                 <div class="card w-100 shadow-sm" style="border-radius: 12px; border: 1px solid #e0e0e0; overflow: hidden;">
                     <div class="card-header" style="color: #0896D1 !important; background-color: #0896D1 !important;">
                         <h4 class="mb-0 text-white card-title">
-                            TU - Administrasi Sekolah
+                            Jurnal - Staff
                         </h4>
                         <div class="position-absolute top-0 end-0" style="padding: 0px; position: relative;">
                             <img src="{{ asset('assets/images/background/arrow-leftwarning1.png') }}" alt="Description"

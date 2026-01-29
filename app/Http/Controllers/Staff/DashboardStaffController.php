@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
 use App\Enums\UploadDiskEnum;
+use App\Models\EmployeePermission;
+use App\Enums\StatusPermissionEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -64,7 +66,23 @@ class DashboardStaffController extends Controller
         // Use service to get history including gaps, take only limited amount for dashboard if needed
         $employeeJournals = $this->journalService->getHistory(auth()->user(), 3);
 
-        return view('staff.pages.dashboard.dashboard', compact('countViolation', 'countRepair', 'studentViolation', 'studentHighPoint', 'employeeJournals'));
+        // Get today's attendance for the logged in employee
+        $employee = auth()->user()->employee;
+        $todayAttendance = null;
+        $todayPermission = null;
+        if ($employee) {
+            $todayAttendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
+
+            // Get today's approved permission
+            $todayPermission = EmployeePermission::where('employee_id', $employee->id)
+                ->where('date', now()->format('Y-m-d'))
+                ->where('status', StatusPermissionEnum::APPROVED)
+                ->first();
+        }
+
+        $timeConfig = config('attendance.time');
+
+        return view('staff.pages.dashboard.dashboard', compact('countViolation', 'countRepair', 'studentViolation', 'studentHighPoint', 'employeeJournals', 'todayAttendance', 'todayPermission', 'timeConfig'));
     }
 
     public function profile()

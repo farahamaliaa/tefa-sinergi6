@@ -15,12 +15,16 @@ use App\Enums\AttendanceEnum;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EmployeeJournalResource;
+use App\Http\Resources\HistoryAttendanceResource;
 use App\Http\Resources\PopularViolationResource;
 use App\Http\Resources\RegulationResource;
 use App\Http\Resources\RepairStudentResource;
 use App\Http\Resources\StudentPermissionResource;
 use App\Http\Resources\StudentPointResource;
 use App\Models\User;
+use App\Models\Attendance;
+use App\Models\EmployeePermission;
+use App\Enums\StatusPermissionEnum;
 use App\Services\EmployeeJournalService;
 use App\Services\StaffChartService;
 use Carbon\Carbon;
@@ -273,5 +277,157 @@ class StafApiController extends Controller
         } catch (\Throwable $th) {
             return ResponseHelper::error('Data Kosong' . $th->getMessage(), 400);
         }
+    }
+
+    public function get_config()
+    {
+        return ResponseHelper::success([
+            'school' => config('attendance.school'),
+            'time' => config('attendance.time'),
+        ]);
+    }
+
+    public function attendance_history(User $user)
+    {
+        if ($user->id !== auth()->id()) {
+            return ResponseHelper::unauthorized();
+        }
+
+        $employee = $this->employee->getByUser($user->id);
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
+
+        $history_attendance = $this->attendance->whereUser($employee->id, 'App\Models\Employee');
+        $single_attendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
+
+        // Get today's permission if any
+        $todayPermission = EmployeePermission::where('employee_id', $employee->id)
+            ->where('date', now()->format('Y-m-d'))
+            ->where('status', StatusPermissionEnum::APPROVED)
+            ->first();
+
+        $timeConfig = config('attendance.time');
+        $currentTime = now()->format('H:i');
+
+        $statusLabel = 'Belum Absen';
+        if ($single_attendance) {
+            $statusLabel = $single_attendance->status->label();
+        } elseif ($todayPermission) {
+            $statusLabel = $todayPermission->permission_type->label();
+        } elseif ($currentTime > $timeConfig['late_limit']) {
+            $statusLabel = 'Alpha';
+
+            // Inject virtual Alpha to history
+            $virtualAlpha = new Attendance();
+            $virtualAlpha->status = AttendanceEnum::ALPHA;
+            $virtualAlpha->created_at = now();
+
+            if ($history_attendance instanceof \Illuminate\Support\Collection) {
+                $history_attendance->prepend($virtualAlpha);
+            } else {
+                $history_attendance = collect($history_attendance)->prepend($virtualAlpha);
+            }
+        }
+
+        return ResponseHelper::success([
+            'attendance_now' => [
+                'day' => now()->translatedFormat('l'),
+                'date' => now()->translatedFormat('d'),
+                'month' => now()->translatedFormat('M'),
+                'date_complate' => now()->translatedFormat('l, j F Y'),
+                'check_in' => $single_attendance ? ($single_attendance->checkin ? Carbon::parse($single_attendance->checkin)->format('H:i') : '-') : '-',
+                'check_out' => $single_attendance ? ($single_attendance->checkout ? Carbon::parse($single_attendance->checkout)->format('H:i') : '-') : '-',
+                'status' => $statusLabel,
+                'is_late' => $single_attendance ? ($single_attendance->status == \App\Enums\AttendanceEnum::LATE) : false,
+            ],
+            'attendance_history' => $history_attendance->count() > 0 ? HistoryAttendanceResource::collection($history_attendance) : [],
+        ]);
+    }
+
+    public function check_in(Request $request)
+    {
+        $user = auth()->user();
+        $employee = $this->employee->getByUser($user->id);
+
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
+
+        $today = $this->attendance->userToday('App\Models\Employee', $employee->id);
+        if ($today) {
+            return ResponseHelper::error('Anda sudah absen masuk hari ini', 400);
+        }
+
+        // Check if past late limit
+        $timeConfig = config('attendance.time');
+        $currentTime = now()->format('H:i');
+        if ($currentTime > $timeConfig['late_limit']) {
+            return ResponseHelper::error('Batas waktu absensi telah berakhir (Jam ' . $timeConfig['late_limit'] . '). Silakan ajukan izin.', 422);
+        }
+
+        // Rule: Late if after config time
+        $checkInEnd = config('attendance.time.check_in_end', '07:30');
+
+        $status = AttendanceEnum::PRESENT;
+        if ($currentTime > $checkInEnd) {
+            $status = AttendanceEnum::LATE;
+        }
+
+        $data = [
+            'model_type' => 'App\Models\Employee',
+            'model_id' => $employee->id,
+            'checkin' => now(),
+            'status' => $status->value,
+            'point' => 0,
+            'proof' => null,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'location_address' => $request->address,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+
+        $this->attendance->insert($data);
+
+        return ResponseHelper::success(null, 'Absen masuk berhasil' . ($status == AttendanceEnum::LATE ? ' (Terlambat)' : ''));
+    }
+
+    public function check_out(Request $request)
+    {
+        $user = auth()->user();
+        $employee = $this->employee->getByUser($user->id);
+
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
+
+        $today = $this->attendance->userToday('App\Models\Employee', $employee->id);
+        if (!$today) {
+            return ResponseHelper::error('Anda belum absen masuk hari ini', 400);
+        }
+
+        if ($today->checkout) {
+            return ResponseHelper::error('Anda sudah absen pulang hari ini', 400);
+        }
+
+        // Check if within checkout time window
+        $checkOutStart = config('attendance.time.check_out_start', '14:00');
+        $checkOutEnd = config('attendance.time.check_out_end', '22:00');
+        $currentTime = now()->format('H:i');
+
+        if ($currentTime < $checkOutStart) {
+            return ResponseHelper::error("Belum waktunya checkout. Checkout dimulai jam {$checkOutStart}.", 400);
+        }
+
+        if ($currentTime > $checkOutEnd) {
+            return ResponseHelper::error("Waktu checkout sudah berakhir. Batas maksimal jam {$checkOutEnd}.", 400);
+        }
+
+        $this->attendance->update($today->id, [
+            'checkout' => now(),
+        ]);
+
+        return ResponseHelper::success(null, 'Absen pulang berhasil');
     }
 }
