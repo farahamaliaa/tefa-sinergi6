@@ -10,11 +10,16 @@ use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherJournalRequest;
 use App\Http\Requests\UpdateTeacherJournalRequest;
+use Illuminate\Http\Request;
 use App\Models\LessonSchedule;
 use App\Models\TeacherJournal;
 use App\Services\AttendanceJournalService;
-use App\Services\Teacher\TeacherJournalService; // Added LessonHourInterface
-use Illuminate\Http\Request;
+use App\Services\Teacher\TeacherJournalService;
+use App\Models\SchoolYear;
+use App\Services\SemesterService;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+
 
 class TeacherJournalController extends Controller
 {
@@ -30,9 +35,11 @@ class TeacherJournalController extends Controller
 
     private ClassroomStudentInterface $classroomStudent;
 
-    private LessonHourInterface $lessonHour; // Added property for LessonHourInterface
+    private LessonHourInterface $lessonHour;
 
-    public function __construct(TeacherJournalInterface $teacherJournal, AttendanceJournalInterface $attendanceJournal, TeacherJournalService $service, LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent, AttendanceJournalService $serviceAttendance, LessonHourInterface $lessonHour)
+    private SemesterService $semesterService;
+
+    public function __construct(TeacherJournalInterface $teacherJournal, AttendanceJournalInterface $attendanceJournal, TeacherJournalService $service, LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent, AttendanceJournalService $serviceAttendance, LessonHourInterface $lessonHour, SemesterService $semesterService)
     {
         $this->serviceAttendance = $serviceAttendance;
         $this->attendanceJournal = $attendanceJournal;
@@ -40,7 +47,8 @@ class TeacherJournalController extends Controller
         $this->lessonSchedule = $lessonSchedule;
         $this->service = $service;
         $this->classroomStudent = $classroomStudent;
-        $this->lessonHour = $lessonHour; // Initialize the LessonHourInterface property
+        $this->lessonHour = $lessonHour;
+        $this->semesterService = $semesterService;
     }
 
     /**
@@ -51,29 +59,83 @@ class TeacherJournalController extends Controller
         $teacherSchedules = $this->lessonSchedule->whereTeacher(auth()->user()->id, now());
         $filledHistories = $this->teacherJournal->histories(auth()->user()->id, $request);
 
-        // Get unfilled schedules - only for today's schedules that haven't been filled
-        $unfilledSchedules = collect();
+        $filledJournalDates = TeacherJournal::query()
+            ->whereRelation('lessonSchedule.teacherSubject.employee.user', 'id', auth()->user()->id)
+            ->whereHas('lessonSchedule.classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
+            ->get(['lesson_schedule_id', 'date']);
 
-        // Check today's schedules that don't have journals filled
-        foreach ($teacherSchedules as $schedule) {
-            // Check if this schedule already has a journal for today
-            $hasJournalForToday = $schedule->teacherJournals->contains(function ($journal) {
-                return \Carbon\Carbon::parse($journal->date)->isToday();
-            });
-
-            // If no journal exists for today, we don't need to create unfilled entry
-            // because it's already shown in the "Jadwal Mengajar Hari Ini" table above
-            // The unfilled entries are only for history display
+        $filledLookup = [];
+        foreach ($filledJournalDates as $j) {
+            $d = Carbon::parse($j->date)->format('Y-m-d');
+            $filledLookup[$j->lesson_schedule_id . '_' . $d] = true;
         }
 
-        // Merge and sort by date (newest first)
+        $allSchedules = $this->lessonSchedule->getByTeacher(auth()->user()->id);
+
+        $activeSchoolYear = SchoolYear::where('active', true)->first();
+        $startDate = $activeSchoolYear ? $activeSchoolYear->created_at : now(); 
+        
+        if ($request->date) {
+            $startDate = Carbon::parse($request->date);
+            $endDate = Carbon::parse($request->date);
+        } else {
+            $endDate = now()->subDay();
+        }
+
+        $missingJournals = collect();
+
+        if ($startDate->lte($endDate) && !$request->search) {
+            $period = CarbonPeriod::create($startDate, $endDate);
+            \Log::info("Journal Debug: period Start={$startDate->toDateString()}, End={$endDate->toDateString()}");
+
+            foreach ($period as $date) {
+                \Log::info("Journal Debug: iteration date=" . $date->toDateString());
+                $dayName = strtolower($date->format('l'));
+                
+                if (isset($allSchedules[$dayName])) {
+                    foreach ($allSchedules[$dayName] as $schedule) {
+                        // Safeguard: Only show missing journals for dates on or after the schedule was created
+                        if ($date->lt(Carbon::parse($schedule->created_at)->startOfDay())) {
+                            continue;
+                        }
+
+                        $key = $schedule->id . '_' . $date->format('Y-m-d');
+                        
+                        if (!isset($filledLookup[$key])) {
+                            $fake = new TeacherJournal();
+                            $fake->id = 'missing_' . $key;
+                            $fake->lesson_schedule_id = $schedule->id;
+                            $fake->date = $date->format('Y-m-d H:i:s');
+                            $fake->is_filled = false;
+                            
+                            $fake->setRelation('lessonSchedule', $schedule);
+                            $fake->setRelation('attendanceJournals', collect());
+                            
+                            $missingJournals->push($fake);
+                        }
+                    }
+                }
+            }
+        }
+
         $histories = $filledHistories->toBase()->map(function ($journal) {
             $journal->is_filled = true;
-
             return $journal;
-        })->merge($unfilledSchedules)->sortByDesc(function ($item) {
-            return $item->date;
-        })->values();
+        })->merge($missingJournals);
+        
+        if ($request->filter === 'terlama') {
+             $histories = $histories->sortBy(function ($item) {
+                return Carbon::parse($item->date)->timestamp;
+            });
+        } else {
+            $histories = $histories->sortByDesc(function ($item) {
+                return Carbon::parse($item->date)->timestamp;
+            });
+        }
+        
+        $histories = $histories->values();
 
         return view('teacher.pages.journals.index', compact('teacherSchedules', 'histories'));
     }
@@ -94,7 +156,6 @@ class TeacherJournalController extends Controller
      */
     public function store(StoreTeacherJournalRequest $request, LessonSchedule $lessonSchedule)
     {
-        // Check if trying to fill journal for a different day - reject
         $todayDayName = strtolower(now()->format('l'));
         $scheduleDayName = strtolower($lessonSchedule->day);
         

@@ -82,6 +82,9 @@
                                         d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
                                 </svg>
                                 {{ \Carbon\Carbon::parse($teacherJournal->date)->isoFormat('DD MMMM YYYY') }}
+                                <span class="ms-2 badge bg-light text-dark" style="font-size: 11px;">
+                                    T.A {{ app(App\Services\SemesterService::class)->getSchoolYearLabel($teacherJournal->date) }}
+                                </span>
                             </span>
                         </div>
                     </div>

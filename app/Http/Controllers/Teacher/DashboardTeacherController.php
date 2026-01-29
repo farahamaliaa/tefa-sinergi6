@@ -120,6 +120,12 @@ class DashboardTeacherController extends Controller
 
                 while ($currentDate->lt(today())) {
                     if ($currentDate->dayOfWeek === $dayOfWeek) {
+                        // Safeguard: Only show missing journals for dates on or after the schedule was created
+                        if ($currentDate->lt(\Carbon\Carbon::parse($schedule->created_at)->startOfDay())) {
+                            $currentDate->addDay();
+                            continue;
+                        }
+
                         $journalExists = $schedule->teacherJournals->contains(function ($journal) use ($currentDate) {
                             return \Carbon\Carbon::parse($journal->date)->isSameDay($currentDate);
                         });
