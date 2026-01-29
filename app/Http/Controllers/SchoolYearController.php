@@ -109,14 +109,50 @@ class SchoolYearController extends Controller
     public function setActive(SchoolYear $schoolYear)
     {
         try {
+            $oldActiveYear = SchoolYear::where('active', true)->first();
+
             $this->schoolYear->setNonactive();
             $this->schoolYear->update($schoolYear->id, ['active' => 1]);
-            
-            \App\Models\Classroom::query()->update(['school_year_id' => $schoolYear->id]);
-            
-            return back()->with('success', 'Berhasil mengaktifkan tahun ajaran dan memindahkan kelas');
+
+            if ($oldActiveYear && $oldActiveYear->id !== $schoolYear->id) {
+                $oldClassrooms = \App\Models\Classroom::where('school_year_id', $oldActiveYear->id)->get();
+
+                foreach ($oldClassrooms as $oldClassroom) {
+                    $exists = \App\Models\Classroom::where('school_year_id', $schoolYear->id)
+                        ->where('name', $oldClassroom->name)
+                        ->exists();
+
+                    if (!$exists) {
+                        $newClassroom = $oldClassroom->replicate();
+                        $newClassroom->id = \Faker\Provider\Uuid::uuid();
+                        $newClassroom->school_year_id = $schoolYear->id;
+                        $newClassroom->save();
+
+                        $oldStudents = \App\Models\ClassroomStudent::where('classroom_id', $oldClassroom->id)->get();
+                        foreach ($oldStudents as $oldStudent) {
+                            \App\Models\ClassroomStudent::create([
+                                'student_id' => $oldStudent->student_id,
+                                'classroom_id' => $newClassroom->id,
+                            ]);
+                        }
+
+                        $oldSchedules = \App\Models\LessonSchedule::where('classroom_id', $oldClassroom->id)
+                            ->where('school_year_id', $oldActiveYear->id)
+                            ->get();
+
+                        foreach ($oldSchedules as $oldSchedule) {
+                            $newSchedule = $oldSchedule->replicate();
+                            $newSchedule->classroom_id = $newClassroom->id;
+                            $newSchedule->school_year_id = $schoolYear->id;
+                            $newSchedule->save();
+                        }
+                    }
+                }
+            }
+
+            return back()->with('success', 'Berhasil mengaktifkan tahun ajaran dan memigrasi data kelas');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
         }
     }
 }

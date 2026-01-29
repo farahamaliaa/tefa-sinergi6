@@ -29,7 +29,10 @@ class StudentRepairImport implements ToModel
         // $user->point -= $row[2];
         // $user->save();
 
-        $classroomStudent = ClassroomStudent::where('student_id', $student->id)->first();
+        $classroomStudent = ClassroomStudent::where('student_id', $student->id)
+            ->whereHas('classroom.schoolYear', function($q) {
+                $q->where('active', true);
+            })->first();
         $start_date = $row[3] ? Carbon::instance(Date::excelToDateTimeObject($row[3])) : null;
         $end_date = $row[4] ? Carbon::instance(Date::excelToDateTimeObject($row[4])) : null;
 

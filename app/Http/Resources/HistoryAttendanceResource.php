@@ -15,6 +15,11 @@ class HistoryAttendanceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $studentImage = null;
+        if ($this->model_type === 'App\\Models\\ClassroomStudent' && $this->model) {
+            $studentImage = $this->model->student->image ?? null;
+        }
+        
         return [
             'day' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('l'),
             'date' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('d'),
@@ -23,6 +28,9 @@ class HistoryAttendanceResource extends JsonResource
             'check_in' => $this->checkin == null ? '-' : \Carbon\Carbon::parse($this->checkin)->format('H:i'),
             'check_out' => $this->checkout == null ? '-' : \Carbon\Carbon::parse($this->checkout)->format('H:i'),
             'status' => $this->status == null ? '-' : $this->status->label(),
+            'image' => $studentImage 
+                ? asset('storage/' . $studentImage) 
+                : asset('admin_assets/dist/images/profile/user-1.jpg'),
         ];
     }
 }

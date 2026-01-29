@@ -122,6 +122,14 @@ class LessonScheduleApiController extends Controller
      */
     public function store(LessonSchedule $lessonSchedule, StoreTeacherJournalRequest $request)
     {
+        // Check if trying to fill journal for a different day - reject
+        $todayDayName = strtolower(now()->format('l'));
+        $scheduleDayName = strtolower($lessonSchedule->day);
+        
+        if ($todayDayName !== $scheduleDayName) {
+            return ResponseHelper::error('Tidak dapat mengisi jurnal untuk hari yang sudah lewat', 403);
+        }
+
         $data = $this->serviceJournal->store($request, $lessonSchedule);
         $teacherJournal = $this->teacherJournal->store($data);
         $this->serviceAttendance->storeJournal($request['attendance'], $teacherJournal);

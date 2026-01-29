@@ -65,6 +65,9 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     {
         return $this->model->query()
             ->whereRelation('teacherSubject.employee.user', 'id', $id)
+            ->whereHas('classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->with('teacherJournals', function ($query) use ($day) {
                 $query->whereDay('created_at', $day);
             })
@@ -76,6 +79,9 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     {
         return $this->model->query()
             ->whereRelation('teacherSubject.employee.user', 'id', $id)
+            ->whereHas('classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->get()
             ->groupBy('day');
     }
@@ -85,6 +91,9 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
         return $this->model->query()
             ->whereDoesntHave('teacherJournals')
             ->whereRelation('teacherSubject.employee.user', 'id', $id)
+            ->whereHas('classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->where('day', strtolower($day->format('l')))
             ->get();
     }
@@ -130,6 +139,9 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
     public function export(Request $request): mixed
     {
         return $this->model->query()
+            ->whereHas('classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->when($request->start, function ($q) use ($request) {
                 $q->whereBetween('created_at', [$request->start . ' 00:00:00', $request->end . ' 23:59:59']);
             })

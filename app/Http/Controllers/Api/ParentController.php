@@ -51,7 +51,9 @@ class ParentController extends Controller
                     return [
                         'id' => $s->id,
                         'name' => $s->user->name ?? $s->name ?? 'Unknown',
-                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? 'No Class'
+                        'classroom' => $s->classroomStudents()
+                            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                            ->first()?->classroom?->name ?? 'No Class'
                     ];
                 });
             return view('school.pages.parent.index', compact('parents', 'students'));
@@ -251,7 +253,9 @@ class ParentController extends Controller
         ])->get();
         
         $childrenData = $children->map(function ($student) {
-            $currentClassroom = $student->classroomStudents->first();
+            $currentClassroom = $student->classroomStudents()
+                ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                ->first();
             $homeroomTeacher = $currentClassroom?->classroom?->employee;
             
             return [
@@ -285,7 +289,9 @@ class ParentController extends Controller
             ], 403);
         }
         
-        $classroomStudent = $student->classroomStudents()->with('classroom')->first();
+        $classroomStudent = $student->classroomStudents()
+            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->with('classroom')->first();
         
         if (!$classroomStudent) {
             return response()->json([
@@ -373,7 +379,9 @@ class ParentController extends Controller
         
         $student = Student::find($validated['student_id']);
         
-        $classroomStudent = $student->classroomStudents()->first();
+        $classroomStudent = $student->classroomStudents()
+            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->first();
         
         if (!$classroomStudent) {
             return response()->json([
@@ -477,7 +485,9 @@ class ParentController extends Controller
             'children_count' => $childrenCount,
             'pending_permissions' => $pendingPermissions,
             'children_summary' => $children->map(function ($child) {
-                $classroom = $child->classroomStudents->first()?->classroom;
+                $classroom = $child->classroomStudents()
+                    ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                    ->first()?->classroom;
                 return [
                     'id' => $child->id,
                     'name' => $child->user->name ?? $child->name ?? null,
@@ -531,7 +541,9 @@ class ParentController extends Controller
         }
 
         $student->load(['user', 'religion', 'classroomStudents.classroom']);
-        $classroomStudent = $student->classroomStudents->first();
+        $classroomStudent = $student->classroomStudents()
+            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->first();
         $fullDomain = request()->root();
 
         return ResponseHelper::success([
@@ -578,7 +590,9 @@ class ParentController extends Controller
             ], 403);
         }
 
-        $classroomStudent = $student->classroomStudents()->first();
+        $classroomStudent = $student->classroomStudents()
+            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->first();
         
         if (!$classroomStudent) {
             return response()->json([

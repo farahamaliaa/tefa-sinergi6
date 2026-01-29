@@ -83,8 +83,11 @@ class DashboardTeacherController extends Controller
 
         if ($employee) {
             $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
-            // Get all schedules
+            // Get all schedules for active school year
             $allSchedules = \App\Models\LessonSchedule::whereIn('teacher_subject_id', $teacherSubjectIds)
+                ->whereHas('classroom.schoolYear', function ($query) {
+                    $query->where('active', true);
+                })
                 ->with(['classroom', 'teacherSubject.subject', 'teacherJournals'])
                 ->get();
 
@@ -146,6 +149,11 @@ class DashboardTeacherController extends Controller
         })->merge($unfilledSchedules)->sortByDesc('date')->values();
 
         $classroom = $this->classroom->whereEmployeeId(auth()->user()->employee->id);
+        // Filter classroom to active school year if needed, assuming the repository does this? 
+        // If not, we should filter here.
+        $classroom = $classroom->filter(function($c) {
+            return $c->schoolYear->active ?? false;
+        });
 
         return view('teacher.pages.dashboard.index', compact(
             'notifications',
@@ -308,8 +316,17 @@ class DashboardTeacherController extends Controller
 
                 // Update Attendance
                 // Check if attendance exists for that date
+                $activeCS = $permission->student->classroomStudents()
+                    ->whereHas('classroom.schoolYear', function ($query) {
+                        $query->where('active', true);
+                    })->first();
+
+                if (!$activeCS) {
+                    throw new \Exception("Siswa tidak terdaftar di kelas aktif pada tahun ajaran ini.");
+                }
+
                 $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
-                    ->where('model_id', $permission->student->classroomStudents->first()->id) // simplified, usually safer lookup needed
+                    ->where('model_id', $activeCS->id) 
                     ->whereDate('created_at', $permission->date)
                     ->first();
 
@@ -322,7 +339,7 @@ class DashboardTeacherController extends Controller
                 } else {
                     \App\Models\Attendance::create([
                         'model_type' => 'App\Models\ClassroomStudent',
-                        'model_id' => $permission->student->classroomStudents->first()->id,
+                        'model_id' => $activeCS->id,
                         'status' => $statusEnum,
                         'point' => 10, // Default point
                         'created_at' => \Carbon\Carbon::parse($permission->date),

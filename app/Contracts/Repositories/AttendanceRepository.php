@@ -63,16 +63,28 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
 
     public function updateWithAttribute(array $attribute, array $data): mixed
     {
-        // Use updateOrCreate to handle both new and existing attendance records
-        // This will create a new record if not found, or update the existing one
-        return $this->model->query()->updateOrCreate(
-            [
-                'model_type' => $attribute['model_type'],
-                'model_id' => $attribute['model_id'],
-                'created_at' => $attribute['created_at']
-            ],
-            $data
-        );
+        // Only allow updating these specific attendance fields
+        $allowedFields = ['checkin', 'checkout', 'status', 'point', 'proof'];
+        $updateData = array_intersect_key($data, array_flip($allowedFields));
+
+        // First, find existing attendance record for the same model on the same date
+        // Use whereDate to properly compare dates (ignoring time portion)
+        $existing = $this->model->query()
+            ->where('model_type', $attribute['model_type'])
+            ->where('model_id', $attribute['model_id'])
+            ->whereDate('created_at', $attribute['created_at'])
+            ->first();
+
+        if ($existing) {
+            // Update existing record with only allowed fields
+            $existing->update($updateData);
+            return $existing;
+        } else {
+            // Create new record
+            $updateData['model_type'] = $attribute['model_type'];
+            $updateData['model_id'] = $attribute['model_id'];
+            return $this->model->query()->create($updateData);
+        }
     }
 
     public function delete(mixed $id): mixed

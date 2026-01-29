@@ -132,6 +132,14 @@ class TeacherJournalController extends Controller
      */
     public function store(StoreTeacherJournalRequest $request, LessonSchedule $lessonSchedule)
     {
+        // Check if trying to fill journal for a different day - reject
+        $todayDayName = strtolower(now()->format('l'));
+        $scheduleDayName = strtolower($lessonSchedule->day);
+        
+        if ($todayDayName !== $scheduleDayName) {
+            return redirect()->back()->with('error', 'Tidak dapat mengisi jurnal untuk hari yang sudah lewat');
+        }
+
         try {
             $data = $this->service->store($request, $lessonSchedule);
             $teacherJournal = $this->teacherJournal->store($data);
