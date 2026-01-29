@@ -463,9 +463,27 @@
                         if (window.studentStatisticChart && data.charts.student) {
                             var stuData = data.charts.student;
                             window.studentStatisticChart.updateSeries([
-                                stuData.chartSick, // Izin/Sakit
-                                stuData.chartLate, // Telat
-                                stuData.chartAlpha // Alfa
+                                stuData.chartSick,
+                                stuData.chartLate,
+                                stuData.chartAlpha
+                            ]);
+                        }
+
+                        if (window.employeeStatisticChart && data.charts.employee) {
+                            var empData = data.charts.employee;
+                            window.employeeStatisticChart.updateSeries([
+                                empData.chartSick,
+                                empData.chartLate,
+                                empData.chartAlpha
+                            ]);
+                        }
+
+                        if (window.extraStatisticChart && data.charts.extra) {
+                            var extData = data.charts.extra;
+                            window.extraStatisticChart.updateSeries([
+                                extData.chartSick,
+                                extData.chartLate,
+                                extData.chartAlpha
                             ]);
                         }
 

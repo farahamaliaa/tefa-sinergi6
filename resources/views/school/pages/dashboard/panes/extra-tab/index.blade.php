@@ -211,7 +211,7 @@
                     <div id="late-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-late-table">
-                                @include('school.pages.dashboard.panes.student-tab.late-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.late-tab')
                             </div>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                     <div id="permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-permit-table">
-                                @include('school.pages.dashboard.panes.student-tab.permisson-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.permission-tab')
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                     <div id="alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-alpha-table">
-                                @include('school.pages.dashboard.panes.student-tab.alpha-tab')
+                                @include('school.pages.dashboard.panes.employee-sub-tab.alpha-tab')
                             </div>
                         </div>
                     </div>
@@ -240,9 +240,9 @@
         <div class="card w-100 h-100 overflow-hidden border">
             <div class="card-body">
                 <div class="row align-items-center">
-                    <h5 class="card-title fw-semibold">Statistik Absensi Siswa</h5>
+                    <h5 class="card-title fw-semibold">Statistik Absensi Pembina</h5>
                     <h6 class="mb-3">Hari ini</h6>
-                    <div id="chart-student" class="d-flex justify-content-center"></div>
+                    <div id="chart-extra" class="d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>

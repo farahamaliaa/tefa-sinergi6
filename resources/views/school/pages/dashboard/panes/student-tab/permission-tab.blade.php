@@ -10,25 +10,30 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($permit as $data)
+            @php
+                $merged = $sick->merge($permit);
+            @endphp
+            @forelse ($merged as $data)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $data->model->student->user->name }}</td>
                     <td>{{ $data->model->classroom->name }}</td>
                     @if ($data->proof)
-                        <td><img src="{{ asset('storage/'.$data->proof) }}" alt="" width="100px"></td>
+                        <td><img src="{{ asset('storage/' . $data->proof) }}" alt="" width="100px"></td>
                     @else
                         <td>Tidak ada</td>
                     @endif
                     <td>
-                        <span class="badge bg-light-warning text-warning fw-semibold fs-2">Izin</span>
+                        <span
+                            class="badge {{ $data->status->color() }} fw-semibold fs-2">{{ $data->status->label() }}</span>
                     </td>
                 </tr>
             @empty
                 <tr>
                     <td colspan="5" class="text-center align-middle">
                         <div class="d-flex flex-column justify-content-center align-items-center">
-                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
+                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                width="300px">
                             <p class="fs-5 text-dark text-center mt-2">Belum ada data</p>
                         </div>
                     </td>

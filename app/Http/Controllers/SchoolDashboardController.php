@@ -117,11 +117,13 @@ class SchoolDashboardController extends Controller
         $totalPermit_teacher = $merged_teacher->count();
 
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
+        $employeeChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
+        $extraChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher); // Use teacher data for extra as well
 
         return view('school.pages.dashboard.dashboard', compact(
             'lates', 'alpha', 'sick', 'permit', 'totalPermit',
             'lates_teacher', 'alpha_teacher', 'sick_teacher', 'permit_teacher', 'totalPermit_teacher',
-            'studentChart', 'fill', 'notfill', 'classrooms', 'violations',
+            'studentChart', 'employeeChart', 'extraChart', 'fill', 'notfill', 'classrooms', 'violations',
             'schoolYear', 'currentSemesterType',
             'attendanceChart', 'alumni',
             'teachers', 'employees', 'students',
@@ -174,12 +176,12 @@ class SchoolDashboardController extends Controller
         // In dashboard.blade.php: @include('school.pages.dashboard.panes.student-tab.permisson-tab')
         // Let's check that file content? I haven't seen it yet. I saw 'late-tab.blade.php'.
         // I will assume it uses $sick and $permit variables.
-        $studentPermitTable = view('school.pages.dashboard.panes.student-tab.permisson-tab', compact('sick', 'permit'))->render();
+        $studentPermitTable = view('school.pages.dashboard.panes.student-tab.permission-tab', compact('sick', 'permit'))->render();
         $studentAlphaTable = view('school.pages.dashboard.panes.student-tab.alpha-tab', compact('alpha'))->render();
 
-        $employeeLateTable = view('school.pages.dashboard.panes.employee-sub-tab.late-tab', ['lates' => $lates_teacher])->render();
-        $employeePermitTable = view('school.pages.dashboard.panes.employee-sub-tab.permission-tab', ['sick' => $sick_teacher, 'permit' => $permit_teacher])->render();
-        $employeeAlphaTable = view('school.pages.dashboard.panes.employee-sub-tab.alpha-tab', ['alpha' => $alpha_teacher])->render();
+        $employeeLateTable = view('school.pages.dashboard.panes.employee-sub-tab.late-tab', compact('lates_teacher'))->render();
+        $employeePermitTable = view('school.pages.dashboard.panes.employee-sub-tab.permission-tab', compact('sick_teacher', 'permit_teacher'))->render();
+        $employeeAlphaTable = view('school.pages.dashboard.panes.employee-sub-tab.alpha-tab', compact('alpha_teacher'))->render();
 
         $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('teachers', 'fill', 'notfill'))->render();
         $teacherJournalPane = view('school.pages.dashboard.panes.teacher-journal', compact('fill', 'notfill'))->render();
@@ -188,6 +190,8 @@ class SchoolDashboardController extends Controller
         $attendanceChart = $this->schoolChart->ChartAttendance($this->attendance);
         $violationChart = $this->schoolChart->ChartViolation($this->studentViolation);
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
+        $employeeChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
+        $extraChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
 
         return response()->json([
             'counts' => [
@@ -214,6 +218,8 @@ class SchoolDashboardController extends Controller
                 'attendance' => $attendanceChart,
                 'violation' => $violationChart,
                 'student' => $studentChart,
+                'employee' => $employeeChart,
+                'extra' => $extraChart,
                 'journal' => [
                     'fill' => $fill->count(),
                     'notfill' => $notfill->count(),

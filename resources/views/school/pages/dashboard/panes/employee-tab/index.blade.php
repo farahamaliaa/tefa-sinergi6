@@ -243,7 +243,7 @@
                 <div class="row align-items-center">
                     <h5 class="card-title fw-semibold">Statistik Absensi Pegawai</h5>
                     <h6 class="mb-3">Hari ini</h6>
-                    <div id="chart-student" class="d-flex justify-content-center"></div>
+                    <div id="chart-employee" class="d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
