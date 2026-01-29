@@ -21,7 +21,13 @@
 
                 <div class="mt-3">
                     <h3 class="fw-bold text-dark mb-1">{{ auth()->user()->name }}</h3>
-                    <p class="text-muted fs-4 mb-2">Staff Tata Usaha</p>
+                    <p class="text-muted fs-4 mb-2">
+                        @if(auth()->user()->employee && auth()->user()->employee->position == 'ketua_tu')
+                            Kepala Tata Usaha
+                        @else
+                            Staff Tata Usaha
+                        @endif
+                    </p>
                     <p class="text-dark fw-bold mb-0" style="letter-spacing: 0.5px;">NIP :
                         {{ auth()->user()->employee ? auth()->user()->employee->nip : '-' }}
                     </p>

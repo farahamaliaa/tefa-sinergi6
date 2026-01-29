@@ -92,6 +92,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('staf/check-in', [StafApiController::class, 'check_in']);
     Route::post('staf/check-out', [StafApiController::class, 'check_out']);
 
+    // Staff Permissions API
+    Route::get('staf/permissions/my', [StafApiController::class, 'my_permissions']);
+    Route::get('staf/permissions/all', [StafApiController::class, 'all_permissions']);
+    Route::post('staf/permissions/store', [StafApiController::class, 'store_permission']);
+    Route::post('staf/permissions/{id}/approve', [StafApiController::class, 'approve_permission']);
+    Route::post('staf/permissions/{id}/reject', [StafApiController::class, 'reject_permission']);
+
     // Teacher Routes - requires teacher role
     Route::middleware(['role:teacher'])->prefix('teacher')->group(function () {
         Route::get('class/{user}', [TeacherApiController::class, 'class']);

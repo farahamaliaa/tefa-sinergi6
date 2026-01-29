@@ -27,8 +27,33 @@ class EmployeeJournalService
         $history = collect([]);
         $now = \Carbon\Carbon::now();
 
+        // Temukan batas bawah tanggal (tanggal employee masuk/dibuat)
+        $employee = $this->employee->getByUser($user->id);
+
+        // Gunakan startOfDay agar pembandingannya konsisten (jam 00:00)
+        $floorDate = $employee ? $employee->created_at->copy()->startOfDay() : $now->copy()->subDays($days)->startOfDay();
+
+        // Jika ada jurnal yang lebih tua dari floorDate (misal data lama di database), tetap ijinkan floorDate mundur
+        $earliestJournal = $existingJournals->isEmpty() ? null : \Carbon\Carbon::parse($existingJournals->min('created_at'))->copy()->startOfDay();
+        if ($earliestJournal && $earliestJournal->isBefore($floorDate)) {
+            $floorDate = $earliestJournal;
+        }
+
         for ($i = 0; $i < $days; $i++) {
             $date = $now->copy()->subDays($i);
+
+            // Jika tanggal pengecekan sudah lebih lama dari floorDate, stop generate unfilled
+            if ($date->startOfDay()->isBefore($floorDate)) {
+                // Kecuali jika ada jurnal nyata di tanggal tsb
+                $dateStr = $date->format('Y-m-d');
+                $journal = $existingJournals->first(function ($item) use ($dateStr) {
+                    return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') === $dateStr;
+                });
+                if ($journal) {
+                    $history->push($journal);
+                }
+                continue;
+            }
 
             // Skip Sundays
             if ($date->isSunday())

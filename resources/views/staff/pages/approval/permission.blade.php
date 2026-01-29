@@ -161,28 +161,25 @@
         <div class="card-body">
             <h4>Perizinan Staff</h4>
             <div class="row">
-                <div class="col-12 col-lg-5 mt-3 mb-4">
+                <div class="col-12 col-lg-7 mt-3 mb-4">
                     <form class="d-flex gap-2 flex-column flex-lg-row align-items-stretch align-items-lg-center"
                         method="GET" action="{{ url()->current() }}">
-                        <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
+                         <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
                             <input type="text" name="search" class="form-control search-chat py-2 px-4 ps-5"
                                 id="search-name" placeholder="Cari..." value="{{ request('search') }}">
                             <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
                         </div>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1" style="min-width: 120px;">
                             <select name="status" class="form-select" id="search-status">
-                                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Pilih</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
-                                </option>
-                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui
-                                </option>
-                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak
-                                </option>
+                                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Pilih Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                             </select>
                         </div>
                         <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
-                            <input type="date" name="search" class="form-control search-chat" id="search-name"
-                                placeholder="Cari..." value="{{ request('search') }}">
+                            <input type="date" name="date" class="form-control search-chat" id="search-date"
+                                 value="{{ request('date') }}">
                         </div>
                         <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
                     </form>

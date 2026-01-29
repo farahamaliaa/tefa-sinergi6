@@ -394,6 +394,21 @@ class TeacherApiController extends Controller
         $historyJournal = $this->teacherJournal->getByTeacher($employee->id);
         $filledData = HistoryJournalResource::collection($historyJournal)->resolve();
 
+        // Determine floor date (when the employee was created)
+        $floorDate = $employee->created_at->copy()->startOfDay();
+
+        // If there are journals older than employee creation (data migration case), use the oldest journal date
+        $earliestJournal = $historyJournal->isEmpty() ? null : \Carbon\Carbon::parse($historyJournal->min('date'))->copy()->startOfDay();
+        if ($earliestJournal && $earliestJournal->isBefore($floorDate)) {
+            $floorDate = $earliestJournal;
+        }
+
+        // Limit range to max 30 days for performance, but not before floorDate
+        $limitDate = now()->subDays(30)->startOfDay();
+        if ($limitDate->isAfter($floorDate)) {
+            $floorDate = $limitDate;
+        }
+
         $teacherSubjectIds = \App\Models\TeacherSubject::where('employee_id', $employee->id)->pluck('id');
 
         // Get all lesson schedules with their journals
@@ -420,14 +435,13 @@ class TeacherApiController extends Controller
             'sunday' => 0
         ];
 
-        // Check each schedule for missing journals in the past 30 days
+        // Check each schedule for missing journals from floorDate until today
         foreach ($allSchedules as $schedule) {
             $dayOfWeek = $dayMapping[$schedule->day] ?? null;
             if ($dayOfWeek === null)
                 continue;
 
-            $startDate = now()->subDays(30);
-            $currentDate = $startDate->copy();
+            $currentDate = $floorDate->copy();
 
             while ($currentDate->lt(today())) {
                 if ($currentDate->dayOfWeek === $dayOfWeek) {

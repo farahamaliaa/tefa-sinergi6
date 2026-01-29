@@ -40,6 +40,7 @@ class LoginApiController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->roles->first()->name ?? 'unknown',
+                    'jabatan' => $user->employee->position ?? null,
                     'token' => $token,
                     'image' => match ($user->roles->first()->name ?? 'unknown') {
                         'student' => $user->student && $user->student->image

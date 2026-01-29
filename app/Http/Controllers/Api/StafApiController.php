@@ -19,6 +19,7 @@ use App\Http\Resources\HistoryAttendanceResource;
 use App\Http\Resources\PopularViolationResource;
 use App\Http\Resources\RegulationResource;
 use App\Http\Resources\RepairStudentResource;
+use App\Http\Resources\StaffPermissionResource;
 use App\Http\Resources\StudentPermissionResource;
 use App\Http\Resources\StudentPointResource;
 use App\Models\User;
@@ -26,6 +27,7 @@ use App\Models\Attendance;
 use App\Models\EmployeePermission;
 use App\Enums\StatusPermissionEnum;
 use App\Services\EmployeeJournalService;
+use App\Enums\PermissionTypeEnum;
 use App\Services\StaffChartService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -429,5 +431,125 @@ class StafApiController extends Controller
         ]);
 
         return ResponseHelper::success(null, 'Absen pulang berhasil');
+    }
+
+    public function my_permissions()
+    {
+        try {
+            $employee = $this->employee->getByUser(auth()->id());
+            if (!$employee) {
+                return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+            }
+
+            $permissions = EmployeePermission::where('employee_id', $employee->id)
+                ->with('employee.user')
+                ->latest()
+                ->get();
+
+            return ResponseHelper::success(StaffPermissionResource::collection($permissions));
+        } catch (\Exception $e) {
+            \Log::error('Error fetching my permissions: ' . $e->getMessage());
+            return ResponseHelper::error('Gagal memuat data perizinan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function all_permissions()
+    {
+        try {
+            $permissions = EmployeePermission::with('employee.user')
+                ->latest()
+                ->get();
+
+            return ResponseHelper::success(StaffPermissionResource::collection($permissions));
+        } catch (\Exception $e) {
+            \Log::error('Error fetching all permissions: ' . $e->getMessage());
+            return ResponseHelper::error('Gagal memuat data perizinan: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function store_permission(Request $request)
+    {
+        $employee = $this->employee->getByUser(auth()->id());
+        if (!$employee) {
+            return ResponseHelper::notFound('Data pegawai tidak ditemukan');
+        }
+
+        $request->validate([
+            'permission_type' => 'required',
+            'date' => 'required|date',
+            'duration' => 'required|string',
+            'proof' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $data = [
+            'employee_id' => $employee->id,
+            'permission_type' => $request->permission_type,
+            'date' => $request->date,
+            'duration' => $request->duration,
+            'proof' => $request->proof,
+            'status' => StatusPermissionEnum::PENDING->value,
+        ];
+
+        if ($request->hasFile('image')) {
+            $data['proof_image'] = $request->file('image')->store('employee-permissions', 'public');
+        }
+
+        EmployeePermission::create($data);
+
+        return ResponseHelper::success(null, 'Berhasil mengajukan izin.');
+    }
+
+    public function approve_permission($id)
+    {
+        $permission = EmployeePermission::findOrFail($id);
+        $permission->update([
+            'status' => StatusPermissionEnum::APPROVED->value,
+            'approved_by' => auth()->id()
+        ]);
+
+        $statusMap = [
+            PermissionTypeEnum::SICK->value => AttendanceEnum::SICK,
+            PermissionTypeEnum::PERMIT->value => AttendanceEnum::PERMIT,
+            PermissionTypeEnum::DINAS->value => AttendanceEnum::DINAS,
+            PermissionTypeEnum::OTHER->value => AttendanceEnum::PERMIT,
+        ];
+
+        $attendanceStatus = $statusMap[$permission->permission_type->value] ?? AttendanceEnum::PERMIT;
+
+        $existingAttendance = Attendance::where('model_id', $permission->employee_id)
+            ->where('model_type', 'App\Models\Employee')
+            ->whereDate('created_at', $permission->date)
+            ->first();
+
+        if (!$existingAttendance) {
+            $attendanceData = [
+                'model_id' => $permission->employee_id,
+                'model_type' => 'App\Models\Employee',
+                'status' => $attendanceStatus->value,
+                'proof' => $permission->proof,
+                'created_at' => $permission->date,
+                'updated_at' => now(),
+            ];
+
+            if ($permission->permission_type->value === PermissionTypeEnum::DINAS->value) {
+                $attendanceData['checkin'] = '08:00:00';
+            }
+
+            Attendance::create($attendanceData);
+        }
+
+        return ResponseHelper::success(null, 'Izin berhasil disetujui.');
+    }
+
+    public function reject_permission($id)
+    {
+        $permission = EmployeePermission::findOrFail($id);
+        $permission->update([
+            'status' => StatusPermissionEnum::REJECTED->value,
+            'approved_by' => auth()->id()
+        ]);
+
+        return ResponseHelper::success(null, 'Izin berhasil ditolak.');
     }
 }
