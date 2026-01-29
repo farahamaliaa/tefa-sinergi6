@@ -299,7 +299,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ $user->avatar ?? asset('assets/images/default-user.jpeg') }}"
+                                        <img src="{{ $student && $student->image ? asset('storage/' . $student->image) : asset('assets/images/default-user.jpeg') }}"
                                             class="rounded-circle" width="40" height="40"
                                             style="object-fit: cover">
                                         <div class="ms-3">

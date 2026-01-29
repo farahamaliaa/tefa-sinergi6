@@ -465,9 +465,9 @@
                     </div>
                 </div>
                 <div class="card-body text-center pt-0 mt-n5 position-relative">
-                    <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : asset('assets/images/default-user.jpeg') }}"
+                    <img src="{{ auth()->user()->student && auth()->user()->student->image ? asset('storage/' . auth()->user()->student->image) : asset('assets/images/default-user.jpeg') }}"
                         alt="user" class="rounded-circle border border-3 border-white mb-3" width="100"
-                        height="100">
+                        height="100" style="object-fit: cover;">
                     <h5 class="fw-semibold">{{ auth()->user()->name }}</h5>
                     <span class="badge bg-light-primary text-primary rounded-pill px-3 py-1">Student</span>
 
@@ -527,7 +527,8 @@
                             <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" class="rounded-circle"
                                 width="45" height="45" alt="">
                             <div class="ms-3">
-                                <h6 class="mb-0 fw-semibold">{{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</h6>
+                                <h6 class="mb-0 fw-semibold">
+                                    {{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</h6>
                                 <span class="fs-2 text-muted">Tahun Ajaran
                                     {{ $studentClasses->classroom->schoolYear->school_year }}</span>
                             </div>

@@ -160,7 +160,7 @@
                                 <td>{{ $index + 1 }}.</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ $permission->extracurricularStudent->student->user->avatar ?? asset('assets/images/default-user.jpeg') }}"
+                                        <img src="{{ $permission->extracurricularStudent->student->image ? asset('storage/' . $permission->extracurricularStudent->student->image) : asset('assets/images/default-user.jpeg') }}"
                                             class="rounded-circle" width="40" height="40" style="object-fit: cover">
                                         <div class="ms-3">
                                             <h6 class="fs-4 fw-semibold mb-0">
