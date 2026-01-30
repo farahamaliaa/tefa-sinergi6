@@ -154,56 +154,13 @@
                     </div>
                 </div>
 
-                {{-- Attendance --}}
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <h5 class="fw-semibold mb-3">Absensi Siswa</h5>
-                        <p class="text-muted">Total siswa: {{ $extracurricularStudents->count() }}</p>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="text-white" style="background-color: #0896D1;">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Siswa</th>
-                                <th class="text-center">Status Kehadiran</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($extracurricularStudents as $index => $esStudent)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $esStudent->student->user->name ?? '-' }}</td>
-                                    <td>
-                                        <div class="d-flex gap-2 flex-wrap justify-content-center">
-                                            <input type="radio" name="attendance[{{ $esStudent->id }}]" value="hadir"
-                                                class="attendance-radio" id="hadir_{{ $esStudent->id }}" checked>
-                                            <label for="hadir_{{ $esStudent->id }}" class="attendance-label hadir">Hadir</label>
-
-                                            <input type="radio" name="attendance[{{ $esStudent->id }}]" value="sakit"
-                                                class="attendance-radio" id="sakit_{{ $esStudent->id }}">
-                                            <label for="sakit_{{ $esStudent->id }}" class="attendance-label sakit">Sakit</label>
-
-                                            <input type="radio" name="attendance[{{ $esStudent->id }}]" value="izin"
-                                                class="attendance-radio" id="izin_{{ $esStudent->id }}">
-                                            <label for="izin_{{ $esStudent->id }}" class="attendance-label izin">Izin</label>
-
-                                            <input type="radio" name="attendance[{{ $esStudent->id }}]" value="alpha"
-                                                class="attendance-radio" id="alpha_{{ $esStudent->id }}">
-                                            <label for="alpha_{{ $esStudent->id }}" class="attendance-label alpha">Alpha</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center py-4">Tidak ada siswa terdaftar</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                {{-- Attendance (Hidden - Automatic via RFID) --}}
+                @foreach ($extracurricularStudents as $esStudent)
+                    @php
+                        $status = $existingAttendances->get($esStudent->id)?->status ?? 'hadir';
+                    @endphp
+                    <input type="hidden" name="attendance[{{ $esStudent->id }}]" value="{{ $status }}">
+                @endforeach
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
                     <a href="{{ route('extracurricular.journal.index', ['extracurricular' => $extracurricular->id]) }}"

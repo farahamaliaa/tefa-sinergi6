@@ -200,11 +200,17 @@ class StaffExtracurricularController extends Controller
         $extracurricularStudents = $extracurricular->extracurricularStudents()
             ->with('student.user', 'student.classroomStudents.classroom')
             ->get();
-            
+
+        $existingAttendances = ExtracurricularAttendance::whereIn('extracurricular_student_id', $extracurricularStudents->pluck('id'))
+            ->whereDate('date', now()->toDateString())
+            ->get()
+            ->keyBy('extracurricular_student_id');
+
         return view('staff.pages.extracurricular-journal.create', compact(
             'extracurricular',
             'extracurricularStudents',
-            'schedule'
+            'schedule',
+            'existingAttendances'
         ));
     }
 
@@ -318,23 +324,21 @@ class StaffExtracurricularController extends Controller
                     'extracurricular_student_id' => $permission->extracurricular_student_id,
                 ],
                 [
-                    'status' => $permission->type
+                    'status' => $permission->type,
+                    'date' => $permission->date,
                 ]
             );
         } else {
-            // Create journal if not exists
-            $journal = $permission->extracurricular->journals()->create([
-                'schedule_id' => $permission->schedule_id,
-                'date' => $permission->date,
-                'description' => 'Jurnal absensi',
-                'image' => null,
-            ]);
-
-            ExtracurricularAttendance::create([
-                'extracurricular_journal_id' => $journal->id,
-                'extracurricular_student_id' => $permission->extracurricular_student_id,
-                'status' => $permission->type,
-            ]);
+            ExtracurricularAttendance::updateOrCreate(
+                [
+                    'extracurricular_journal_id' => null,
+                    'extracurricular_student_id' => $permission->extracurricular_student_id,
+                    'date' => $permission->date,
+                ],
+                [
+                    'status' => $permission->type,
+                ]
+            );
         }
 
         return redirect()->back()->with('success', 'Izin disetujui dan status kehadiran diperbarui');
@@ -380,11 +384,16 @@ class StaffExtracurricularController extends Controller
 
         // Create attendances
         foreach ($request->attendance as $studentId => $status) {
-            ExtracurricularAttendance::create([
-                'extracurricular_journal_id' => $journal->id,
-                'extracurricular_student_id' => $studentId,
-                'status' => $status,
-            ]);
+            ExtracurricularAttendance::updateOrCreate(
+                [
+                    'extracurricular_student_id' => $studentId,
+                    'date' => $journal->date,
+                ],
+                [
+                    'extracurricular_journal_id' => $journal->id,
+                    'status' => $status,
+                ]
+            );
         }
 
         return redirect()->route('employee.extracurricular-journal.index', ['extracurricular' => $request->extracurricular_id])

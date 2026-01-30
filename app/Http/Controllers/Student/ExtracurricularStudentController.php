@@ -270,23 +270,34 @@ class ExtracurricularStudentController extends Controller
                     'extracurricular_student_id' => $enrollment->id,
                 ],
                 [
-                    'status' => 'hadir'
+                    'status' => 'hadir',
+                    'date' => now()->toDateString(),
                 ]
             );
         } else {
-            // Create a simple journal entry for attendance tracking
-            $journal = $extracurricular->journals()->create([
-                'schedule_id' => $schedule->id,
-                'date' => now()->toDateString(),
-                'description' => 'Absensi mandiri siswa',
-                'image' => null, // Will be filled by pembina later
-            ]);
+            // Check if already attended (without journal)
+            $existingAttendance = ExtracurricularAttendance::where('extracurricular_student_id', $enrollment->id)
+                ->whereDate('date', now()->toDateString())
+                ->first();
 
-            ExtracurricularAttendance::create([
-                'extracurricular_journal_id' => $journal->id,
-                'extracurricular_student_id' => $enrollment->id,
-                'status' => 'hadir',
-            ]);
+            if ($existingAttendance && $existingAttendance->status === 'hadir') {
+                session()->flash('warning', 'Anda sudah melakukan absensi hari ini');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda sudah melakukan absensi hari ini'
+                ], 400);
+            }
+
+            ExtracurricularAttendance::updateOrCreate(
+                [
+                    'extracurricular_journal_id' => null,
+                    'extracurricular_student_id' => $enrollment->id,
+                    'date' => now()->toDateString(),
+                ],
+                [
+                    'status' => 'hadir',
+                ]
+            );
         }
 
         $successMessage = 'Absensi berhasil dicatat! Jarak Anda: ' . round($distance) . 'm';
