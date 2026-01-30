@@ -327,8 +327,9 @@
                             <div class="card-body">
                                 <h5 class="mb-4"><b>Wali Kelasmu</b></h5>
                                 <div class="d-flex flex-column flex-sm-row align-items-center mb-3">
-                                    <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" alt=""
-                                        class="rounded-circle img-fluid mb-2" style="max-width: 100px; height: auto;">
+                                    <img src="{{ $studentClasses->classroom->employee?->image ? asset('storage/' . $studentClasses->classroom->employee->image) : asset('admin_assets/dist/images/profile/user-4.jpg') }}"
+                                        alt="" class="rounded-circle img-fluid mb-2"
+                                        style="max-width: 100px; height: auto; object-fit: cover;">
 
                                     <div class="ms-3 text-center text-sm-start">
                                         <h4><b>{{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</b></h4>
@@ -524,8 +525,9 @@
                     <div class="card-body p-3">
                         <h5 class="fw-semibold mb-3">Wali Kelasmu</h5>
                         <div class="d-flex align-items-center">
-                            <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" class="rounded-circle"
-                                width="45" height="45" alt="">
+                            <img src="{{ $studentClasses->classroom->employee?->image ? asset('storage/' . $studentClasses->classroom->employee->image) : asset('admin_assets/dist/images/profile/user-4.jpg') }}"
+                                class="rounded-circle" width="45" height="45" alt=""
+                                style="object-fit: cover;">
                             <div class="ms-3">
                                 <h6 class="mb-0 fw-semibold">
                                     {{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</h6>
