@@ -70,10 +70,40 @@ class StudentPermissionController extends Controller
             }
         }
 
-        $permission->update([
-            'status' => 'approved',
-            'approved_by' => auth()->id(),
-        ]);
+        \DB::transaction(function () use ($permission) {
+            $permission->update([
+                'status' => 'approved',
+                'approved_by' => auth()->id(),
+            ]);
+
+            $activeCS = $permission->student->classroomStudents()
+                ->whereHas('classroom.schoolYear', fn($q) => $q->where('active', true))
+                ->first();
+
+            if ($activeCS) {
+                $statusEnum = $permission->permission_type == 'sick'
+                    ? \App\Enums\AttendanceEnum::SICK
+                    : \App\Enums\AttendanceEnum::PERMIT;
+
+                $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
+                    ->where('model_id', $activeCS->id)
+                    ->whereDate('created_at', $permission->date)
+                    ->first();
+
+                if ($attendance) {
+                    $attendance->update(['status' => $statusEnum]);
+                } else {
+                    \App\Models\Attendance::create([
+                        'model_type' => 'App\Models\ClassroomStudent',
+                        'model_id' => $activeCS->id,
+                        'status' => $statusEnum,
+                        'point' => 10,
+                        'created_at' => \Carbon\Carbon::parse($permission->date),
+                        'proof' => $permission->proof_image,
+                    ]);
+                }
+            }
+        });
 
         return ResponseHelper::success(null, 'Permission approved successfully');
     }

@@ -47,12 +47,17 @@ class SchoolYearController extends Controller
     public function store(StoreSchoolYearRequest $request)
     {
         try {
-            $this->schoolYear->setNonactive();
-            $this->schoolYear->store(['school_year' => $request->school_year]);
+            $activeYear = \App\Models\SchoolYear::where('active', true)->first();
             
-            return redirect()->back()->with('success', 'Berhasil menambahkan tahun ajaran');
+            if ($activeYear) {
+                $activeYear->update(['school_year' => $request->school_year]);
+            } else {
+                $this->schoolYear->store(['school_year' => $request->school_year, 'active' => true]);
+            }
+            
+            return redirect()->back()->with('success', 'Berhasil mengubah tahun ajaran');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$th->getMessage());
         }
     }
 
