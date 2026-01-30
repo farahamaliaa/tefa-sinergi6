@@ -85,22 +85,29 @@ class StudentPermissionController extends Controller
                     ? \App\Enums\AttendanceEnum::SICK
                     : \App\Enums\AttendanceEnum::PERMIT;
 
-                $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
-                    ->where('model_id', $activeCS->id)
-                    ->whereDate('created_at', $permission->date)
-                    ->first();
+                $duration = $permission->duration ?? 3;
+                $startDate = \Carbon\Carbon::parse($permission->date);
 
-                if ($attendance) {
-                    $attendance->update(['status' => $statusEnum]);
-                } else {
-                    \App\Models\Attendance::create([
-                        'model_type' => 'App\Models\ClassroomStudent',
-                        'model_id' => $activeCS->id,
-                        'status' => $statusEnum,
-                        'point' => 10,
-                        'created_at' => \Carbon\Carbon::parse($permission->date),
-                        'proof' => $permission->proof_image,
-                    ]);
+                for ($i = 0; $i < $duration; $i++) {
+                    $currentDate = $startDate->copy()->addDays($i);
+
+                    $attendance = \App\Models\Attendance::where('model_type', 'App\Models\ClassroomStudent')
+                        ->where('model_id', $activeCS->id)
+                        ->whereDate('created_at', $currentDate)
+                        ->first();
+
+                    if ($attendance) {
+                        $attendance->update(['status' => $statusEnum]);
+                    } else {
+                        \App\Models\Attendance::create([
+                            'model_type' => 'App\Models\ClassroomStudent',
+                            'model_id' => $activeCS->id,
+                            'status' => $statusEnum,
+                            'point' => 10,
+                            'created_at' => $currentDate,
+                            'proof' => $permission->proof_image,
+                        ]);
+                    }
                 }
             }
         });

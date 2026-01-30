@@ -165,7 +165,7 @@
                             <th class="text-white" style="background-color: #098FC6;">No</th>
                             <th class="text-white" style="background-color: #098FC6;">Nama Siswa</th>
                             <th class="text-white" style="background-color: #098FC6;">Tanggal</th>
-                            <th class="text-white" style="background-color: #098FC6;">Durasi</th>
+                            {{-- <th class="text-white" style="background-color: #098FC6;">Durasi</th> --}}
                             <th class="text-white" style="background-color: #098FC6;">Jenis</th>
                             <th class="text-white text-center" style="background-color: #098FC6;">Bukti Surat</th>
                             <th class="text-white text-center" style="background-color: #098FC6;">Status & Aksi</th>
@@ -213,7 +213,7 @@
                                     </div>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($permission->date)->locale('id')->translatedFormat('d F Y') }}</td>
-                                <td>1 Hari</td>
+                                {{-- <td>{{ $permission->duration ?? 1 }} Hari</td> --}}
                                 <td>
                                     <span class="badge px-4 py-2 rounded-2 fw-semibold"
                                         style="background-color: {{ $currentTypeColor['bg'] }}; color: {{ $currentTypeColor['text'] }};">

@@ -20,6 +20,7 @@ class StudentPermission extends Model
         'approved_by',
         'status',
         'date',
+        'duration',
     ];
     
     public function submittedBy()

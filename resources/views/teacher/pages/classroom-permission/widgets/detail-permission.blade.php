@@ -40,11 +40,11 @@
                                 class="ti ti-calendar position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                         <label class="form-label fw-semibold text-dark">Durasi</label>
-                        <input type="text" class="form-control" value="1 Hari" readonly
+                        <input type="text" class="form-control" value="{{ $permission->duration ?? 1 }} Hari" readonly
                             style="background-color: #F9FAFB; border-color: #E5E7EB; color: #6B7280;">
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="row mb-4 align-items-start">

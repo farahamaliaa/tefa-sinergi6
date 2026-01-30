@@ -369,6 +369,7 @@ class ParentController extends Controller
             'proof' => 'nullable|string',
             'proof_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'date' => 'required|date',
+            'duration' => 'nullable|integer|min:1|max:30',
         ]);
         
         $isMyChild = $parent->students()->where('students.id', $validated['student_id'])->exists();
@@ -404,6 +405,7 @@ class ParentController extends Controller
             'submitted_by' => $user->id,
             'status' => 'pending',
             'date' => $validated['date'],
+            'duration' => $validated['duration'] ?? 3,
         ]);
         
         return ResponseHelper::created(
@@ -441,6 +443,9 @@ class ParentController extends Controller
                         default => $permission->permission_type,
                     },
                     'proof' => $permission->proof,
+                    'proof_image' => $permission->proof_image 
+                        ? asset('storage/' . $permission->proof_image) 
+                        : null,
                     'status' => $permission->status,
                     'status_label' => match($permission->status) {
                         'pending' => 'Menunggu Persetujuan',
@@ -449,6 +454,7 @@ class ParentController extends Controller
                         default => $permission->status,
                     },
                     'date' => $permission->date,
+                    'duration' => $permission->duration ?? 1,
                     'submitted_at' => $permission->created_at,
                     'approved_by' => $permission->approvedBy ? $permission->approvedBy->name : null,
                 ];
