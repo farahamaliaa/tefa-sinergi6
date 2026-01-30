@@ -18,7 +18,7 @@
                     <td>{{ $item->extracurricularStudent->student->user->name }}</td>
                     <td>{{ $item->extracurricularStudent->extracurricular->name }}</td>
                     <td>
-                        @if ($item->status == \App\Enums\AttendanceEnum::SICK->value)
+                        @if ($item->status == 'sakit')
                             <span class="badge bg-light-info text-info fw-semibold fs-2">Sakit</span>
                         @else
                             <span class="badge bg-light-warning text-warning fw-semibold fs-2">Izin</span>
