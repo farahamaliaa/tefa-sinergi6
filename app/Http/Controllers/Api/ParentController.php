@@ -264,6 +264,7 @@ class ParentController extends Controller
                 'nis' => $student->nis ?? null,
                 'nisn' => $student->nisn ?? null,
                 'gender' => $student->gender,
+                'image' => $student->image ? request()->root() . '/storage/' . $student->image : null,
                 'classroom' => $currentClassroom ? [
                     'id' => $currentClassroom->classroom->id,
                     'name' => $currentClassroom->classroom->name,
@@ -444,7 +445,7 @@ class ParentController extends Controller
                     },
                     'proof' => $permission->proof,
                     'proof_image' => $permission->proof_image 
-                        ? asset('storage/' . $permission->proof_image) 
+                        ? request()->root() . '/storage/' . $permission->proof_image 
                         : null,
                     'status' => $permission->status,
                     'status_label' => match($permission->status) {
@@ -522,8 +523,8 @@ class ParentController extends Controller
             'phone' => $parent?->phone ?? null,
             'address' => $parent?->address ?? null,
             'image' => $user->image 
-                ? asset($fullDomain . '/storage/' . $user->image) 
-                : asset($fullDomain . '/public/admin_assets/dist/images/profile/user-1.jpg'),
+                ? request()->root() . '/storage/' . $user->image 
+                : request()->root() . '/public/admin_assets/dist/images/profile/user-1.jpg',
         ]);
     }
 
@@ -560,7 +561,7 @@ class ParentController extends Controller
             'nisn' => $student->nisn,
             'nik' => $student->nik,
             'image' => $student->image 
-                ? asset($fullDomain . '/storage/' . $student->image) 
+                ? request()->root() . '/storage/' . $student->image 
                 : null,
             'gender' => $student->gender?->value,
             'gender_label' => $student->gender ? $student->gender->label() : null,
