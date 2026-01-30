@@ -189,20 +189,20 @@
                 <h5 class="mb-4"><b>Data Absensi Siswa Ekstrakurikuler</b></h5>
                 <ul class="nav nav-pills mb-4 p-1 rounded-pill bg-light d-inline-flex">
                     <li class="nav-item">
-                        <a href="#present-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2 active"
-                            id="present">
+                        <a href="#extra-present-content" data-bs-toggle="tab"
+                            class="nav-link rounded-pill px-4 py-2 active" id="extra-present-tab">
                             Hadir
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#permission-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
-                            id="permission">
+                        <a href="#extra-permission-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
+                            id="extra-permission-tab">
                             Izin
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#alpha-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
-                            id="alpha">
+                        <a href="#extra-alpha-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
+                            id="extra-alpha-tab">
                             Alfa
                         </a>
                     </li>
@@ -210,7 +210,7 @@
 
 
                 <div class="tab-content">
-                    <div id="present-content" class="tab-pane fade show active">
+                    <div id="extra-present-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-student-present-table">
                                 @include('school.pages.dashboard.panes.extra-tab.present-student-tab', [
@@ -220,7 +220,7 @@
                         </div>
                     </div>
 
-                    <div id="permission-content" class="tab-pane fade">
+                    <div id="extra-permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-student-permit-table">
                                 @include('school.pages.dashboard.panes.extra-tab.permission-student-tab', [
@@ -231,7 +231,7 @@
                         </div>
                     </div>
 
-                    <div id="alpha-content" class="tab-pane fade">
+                    <div id="extra-alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
                             <div class="col-12" id="extra-student-alpha-table">
                                 @include('school.pages.dashboard.panes.extra-tab.alpha-student-tab', [
