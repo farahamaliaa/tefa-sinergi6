@@ -18,4 +18,12 @@ class ExtracurricularSchedule extends Model
     {
         return $this->belongsTo(Extracurricular::class);
     }
+
+    /**
+     * Get the journals for the schedule.
+     */
+    public function journals()
+    {
+        return $this->hasMany(ExtracurricularJournal::class, 'schedule_id');
+    }
 }

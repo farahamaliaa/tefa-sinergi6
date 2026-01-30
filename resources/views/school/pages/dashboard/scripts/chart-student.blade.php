@@ -1,8 +1,14 @@
 <script>
-    function createAttendanceChart(selector, data) {
+    function createAttendanceChart(selector, data, type = 'default') {
+        var firstLabel = type === 'extra' ? 'Hadir' : 'Telat';
         var late = data.chartLate;
         var sick = data.chartSick;
         var alpha = data.chartAlpha;
+
+        var chartColors = ['#3ABFF8', '#FFAE1F', '#F73131']; // Default: Sick (Blue), Late (Yellow)
+        if (type === 'extra') {
+            chartColors = ['#FFAE1F', '#5d87ff', '#F73131']; // Extra: Sick (Yellow), Hadir (Blue)
+        }
 
         var options = {
             series: [sick, late, alpha],
@@ -10,8 +16,8 @@
                 type: 'donut',
                 width: 450
             },
-            labels: ['Izin/Sakit', 'Telat', 'Alfa'],
-            colors: ['#3ABFF8', '#FFAE1F', '#F73131'],
+            labels: ['Izin/Sakit', firstLabel, 'Alfa'],
+            colors: chartColors,
             legend: {
                 position: 'bottom',
                 horizontalAlign: 'center',
@@ -57,7 +63,7 @@
             window.employeeStatisticChart = createAttendanceChart("#chart-employee", employeeData);
         }
         if (document.querySelector("#chart-extra")) {
-            window.extraStatisticChart = createAttendanceChart("#chart-extra", extraData);
+            window.extraStatisticChart = createAttendanceChart("#chart-extra", extraData, 'extra');
         }
     });
 </script>

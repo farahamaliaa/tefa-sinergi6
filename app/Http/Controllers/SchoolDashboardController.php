@@ -20,6 +20,8 @@ use App\Enums\RoleEnum;
 use App\Models\School;
 use App\Services\SchoolChartService;
 use App\Services\SemesterService;
+use App\Models\ExtracurricularSchedule;
+use App\Models\ExtracurricularAttendance;
 use Illuminate\Http\Request;
 
 class SchoolDashboardController extends Controller
@@ -100,6 +102,16 @@ class SchoolDashboardController extends Controller
         $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
         $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
 
+        $extraFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
+            ->whereHas('journals', function ($query) {
+                $query->whereDate('date', now());
+            })->get();
+
+        $extraNotFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
+            ->whereDoesntHave('journals', function ($query) {
+                $query->whereDate('date', now());
+            })->get();
+
         $lates = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::LATE->value, $request);
         $alpha = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::ALPHA->value, $request);
         $sick = $this->attendance->AttendanceDasboard('App\Models\ClassroomStudent', AttendanceEnum::SICK->value, $request);
@@ -116,14 +128,62 @@ class SchoolDashboardController extends Controller
         $merged_teacher = $sick_teacher->merge($permit_teacher);
         $totalPermit_teacher = $merged_teacher->count();
 
+        $extraPresentStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'hadir')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $extraLatesStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'telat')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $extraAlphaStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'alpha')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $extraSickStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'sakit')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $extraPermitStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'izin')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $totalPermitExtraStudent = $extraSickStudent->count() + $extraPermitStudent->count();
+
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
         $employeeChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
-        $extraChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher); // Use teacher data for extra as well
+        $extraChart = $this->schoolChart->chartStudentAttendance($extraPresentStudent, $totalPermitExtraStudent, $extraAlphaStudent);
 
         return view('school.pages.dashboard.dashboard', compact(
             'lates', 'alpha', 'sick', 'permit', 'totalPermit',
             'lates_teacher', 'alpha_teacher', 'sick_teacher', 'permit_teacher', 'totalPermit_teacher',
-            'studentChart', 'employeeChart', 'extraChart', 'fill', 'notfill', 'classrooms', 'violations',
+            'studentChart', 'employeeChart', 'extraChart', 'fill', 'notfill', 'extraFill', 'extraNotFill', 'classrooms', 'violations',
+            'extraPresentStudent', 'extraLatesStudent', 'extraAlphaStudent', 'extraSickStudent', 'extraPermitStudent', 'totalPermitExtraStudent',
             'schoolYear', 'currentSemesterType',
             'attendanceChart', 'alumni',
             'teachers', 'employees', 'students',
@@ -164,10 +224,64 @@ class SchoolDashboardController extends Controller
         $merged_teacher = $sick_teacher->merge($permit_teacher);
         $totalPermit_teacher = $merged_teacher->count();
 
+        $extraPresentStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'hadir')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $extraLatesStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'telat')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+        $extraAlphaStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'alpha')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+        $extraSickStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'sakit')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+        $extraPermitStudent = ExtracurricularAttendance::with('extracurricularStudent.student.user', 'extracurricularStudent.extracurricular')
+            ->where('status', 'izin')
+            ->where(function ($query) {
+                $query->whereDate('date', now())
+                    ->orWhereHas('journal', function ($query) {
+                        $query->whereDate('date', now());
+                    });
+            })->get();
+
+        $totalPermitExtraStudent = $extraSickStudent->count() + $extraPermitStudent->count();
+
         $teachers = $this->employee->where(RoleEnum::TEACHER->value);
 
         $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
         $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
+
+        $extraFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
+            ->whereHas('journals', function ($query) {
+                $query->whereDate('date', now());
+            })->get();
+
+        $extraNotFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
+            ->whereDoesntHave('journals', function ($query) {
+                $query->whereDate('date', now());
+            })->get();
 
         $studentLateTable = view('school.pages.dashboard.panes.student-tab.late-tab', compact('lates'))->render();
         // For permit, we need to combine sick and permit if that's what the view expects.
@@ -183,15 +297,20 @@ class SchoolDashboardController extends Controller
         $employeePermitTable = view('school.pages.dashboard.panes.employee-sub-tab.permission-tab', compact('sick_teacher', 'permit_teacher'))->render();
         $employeeAlphaTable = view('school.pages.dashboard.panes.employee-sub-tab.alpha-tab', compact('alpha_teacher'))->render();
 
+        $extraPresentTable = view('school.pages.dashboard.panes.extra-tab.present-student-tab', ['present' => $extraPresentStudent])->render();
+        $extraPermitTable = view('school.pages.dashboard.panes.extra-tab.permission-student-tab', ['sick' => $extraSickStudent, 'permit' => $extraPermitStudent])->render();
+        $extraAlphaTable = view('school.pages.dashboard.panes.extra-tab.alpha-student-tab', ['alpha' => $extraAlphaStudent])->render();
+
         $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('teachers', 'fill', 'notfill'))->render();
         $teacherJournalPane = view('school.pages.dashboard.panes.teacher-journal', compact('fill', 'notfill'))->render();
+        $extraJournalPane = view('school.pages.dashboard.panes.extra-journal', compact('extraFill', 'extraNotFill'))->render();
 
         // Charts Data
         $attendanceChart = $this->schoolChart->ChartAttendance($this->attendance);
         $violationChart = $this->schoolChart->ChartViolation($this->studentViolation);
         $studentChart = $this->schoolChart->chartStudentAttendance($lates, $totalPermit, $alpha);
         $employeeChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
-        $extraChart = $this->schoolChart->chartStudentAttendance($lates_teacher, $totalPermit_teacher, $alpha_teacher);
+        $extraChart = $this->schoolChart->chartStudentAttendance($extraPresentStudent, $totalPermitExtraStudent, $extraAlphaStudent);
 
         return response()->json([
             'counts' => [
@@ -203,6 +322,11 @@ class SchoolDashboardController extends Controller
                 'employee_alpha' => $alpha_teacher->count(),
                 'journal_fill' => $fill->count(),
                 'journal_notfill' => $notfill->count(),
+                'extra_journal_fill' => $extraFill->count(),
+                'extra_journal_notfill' => $extraNotFill->count(),
+                'extra_student_present' => $extraPresentStudent->count(),
+                'extra_student_permit' => $totalPermitExtraStudent,
+                'extra_student_alpha' => $extraAlphaStudent->count(),
             ],
             'panes' => [
                 'student_late' => $studentLateTable,
@@ -213,6 +337,10 @@ class SchoolDashboardController extends Controller
                 'employee_alpha' => $employeeAlphaTable,
                 'staff_journal' => $staffJournalPane,
                 'teacher_journal' => $teacherJournalPane,
+                'extra_journal' => $extraJournalPane,
+                'extra_student_present' => $extraPresentTable,
+                'extra_student_permit' => $extraPermitTable,
+                'extra_student_alpha' => $extraAlphaTable,
             ],
             'charts' => [
                 'attendance' => $attendanceChart,
