@@ -88,7 +88,7 @@ class LoginApiController extends Controller
             return ResponseHelper::success([
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $parent->phone ?? '-',
+                'phone_number' => $parent->phone_number ?? '-',
                 'address' => $parent->address ?? '-',
                 'role' => 'Wali Murid',
             ]);

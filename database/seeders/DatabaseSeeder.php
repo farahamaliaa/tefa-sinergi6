@@ -25,14 +25,15 @@ class DatabaseSeeder extends Seeder
             LevelClassSeeder::class,
             EmployeeSeeder::class,
             StudentSeeder::class,
-            //ClassroomSeeder::class,
-            //ClassroomStudentSeeder::class,
-            // AttendanceSeeder::class,
+                //ClassroomSeeder::class,
+                //ClassroomStudentSeeder::class,
+                // AttendanceSeeder::class,
             ExtracurricularSeeder::class,
             AttendanceRuleSeeder::class,
             SubjectSeeder::class,
             SchoolPointSeeder::class,
             MaxLateSeeder::class,
+            ParentSeeder::class,
         ]);
     }
 }

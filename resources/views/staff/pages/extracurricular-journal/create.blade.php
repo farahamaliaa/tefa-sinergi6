@@ -135,7 +135,9 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Tanggal</label>
-                        <input type="text" class="form-control" readonly value="{{ now()->format('d F Y') }}">
+                        <input type="hidden" name="date" value="{{ $date }}">
+                        <input type="text" class="form-control" readonly
+                            value="{{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y') }}">
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="form-label">Deskripsi Kegiatan <span class="text-danger">*</span></label>
