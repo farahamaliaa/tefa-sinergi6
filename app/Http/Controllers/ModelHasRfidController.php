@@ -78,6 +78,15 @@ class ModelHasRfidController extends Controller
     public function store(StoreModelHasRfidRequest $request)
     {
         try {
+            $response = Http::get(config('api.check_rfid'), [
+                'rfid' => $request->rfid
+            ]);
+
+            $data = $response->json();
+            $statusCode = $response->status();
+
+            if ($statusCode >= 400) return redirect()->back()->with('error', $data['error']);
+
             $exist = $this->service->check($request);
             $data = $request->validated();
 
