@@ -52,6 +52,24 @@
     .sidebar-nav .two-level .sidebar-item .sidebar-link {
         padding-left: 30px !important;
     }
+
+    /* Logo toggle for collapsed/expanded sidebar */
+    .logo-collapsed {
+        display: none;
+    }
+
+    .logo-full {
+        display: inline-block;
+    }
+
+    /* When sidebar is collapsed (mini-sidebar) */
+    .mini-sidebar .logo-full {
+        display: none;
+    }
+
+    .mini-sidebar .logo-collapsed {
+        display: inline-block;
+    }
 </style>
 
 <aside class="left-sidebar">
@@ -59,7 +77,10 @@
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="/" class="text-nowrap logo-img">
-                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" width="180px" alt="">
+                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" width="180px" alt=""
+                    class="logo-full">
+                <img src="{{ asset('landing_assets/images/logo/sinergi6-logo-only.png') }}" width="40px" alt=""
+                    class="logo-collapsed">
             </a>
             <div class="close-btn d-lg-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-8 text-muted"></i>

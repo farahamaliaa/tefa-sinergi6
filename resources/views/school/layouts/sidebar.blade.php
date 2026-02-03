@@ -47,13 +47,36 @@
         color: #1191C6 !important;
         stroke: #1191C6 !important;
     }
+
+    /* Logo toggle for collapsed/expanded sidebar */
+    .logo-collapsed {
+        display: none;
+    }
+
+    .logo-full {
+        display: inline-block;
+    }
+
+    /* When sidebar is collapsed (mini-sidebar) */
+    .mini-sidebar .logo-full {
+        display: none;
+    }
+
+    .mini-sidebar .logo-collapsed {
+        display: inline-block;
+    }
 </style>
 <aside class="left-sidebar">
     <!-- Sidebar scroll-->
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="/" class="text-nowrap logo-img">
-                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" width="180px" alt="">
+                {{-- Logo full (shown when sidebar expanded) --}}
+                <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" width="180px" alt=""
+                    class="logo-full">
+                {{-- Logo icon only (shown when sidebar collapsed) --}}
+                <img src="{{ asset('landing_assets/images/logo/sinergi6-logo-only.png') }}" width="50px" alt=""
+                    class="logo-collapsed">
             </a>
             <div class="close-btn d-lg-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-8 text-muted"></i>
@@ -179,7 +202,8 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link {{ request()->routeIs('school.extra-instructor.*') ? 'active' : '' }}" href="{{ route('school.extra-instructor.index') }}" aria-expanded="false">
+                    <a class="sidebar-link {{ request()->routeIs('school.extra-instructor.*') ? 'active' : '' }}"
+                        href="{{ route('school.extra-instructor.index') }}" aria-expanded="false">
                         <span>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
