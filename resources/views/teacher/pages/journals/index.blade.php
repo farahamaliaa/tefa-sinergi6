@@ -281,16 +281,16 @@
                                 class="img-fluid" style="max-width: 268px; height: auto; position: relative;">
                             <span class="d-flex align-items-center justify-content-end pe-4"
                                 style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; color: white; font-weight: bold; font-size: 13px">
-                                
+
                                 <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="18" height="18"
                                     viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
                                 </svg>
                                 {{ \Carbon\Carbon::parse($journal->date)->isoFormat('DD MMMM YYYY') }}
-                                <span class="ms-2 badge bg-light text-dark" style="font-size: 11px;">
+                                {{-- <span class="ms-2 badge bg-light text-dark" style="font-size: 11px;">
                                     T.A {{ app(App\Services\SemesterService::class)->getSchoolYearLabel($journal->date) }}
-                                </span>
+                                </span> --}}
                             </span>
                         </div>
                     </div>
@@ -300,7 +300,7 @@
                             <div class="col-lg-8" style="border-right: 1px solid #c0c0c0;">
                                 <div class="pe-3">
                                     <h5 class="card-title mb-4">Deskripsi:</h5>
-                                    @if(isset($journal->is_filled) && $journal->is_filled)
+                                    @if (isset($journal->is_filled) && $journal->is_filled)
                                         <p>{{ \Illuminate\Support\Str::limit($journal->description, 100) }}</p>
                                     @else
                                         <p class="text-muted">-</p>
@@ -313,40 +313,56 @@
                                     <div class="row px-3">
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($journal->is_filled) && $journal->is_filled)
-                                                    <span class="badge bg-light-success text-success fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::PRESENT)->count() }}</span>
+                                                @if (isset($journal->is_filled) && $journal->is_filled)
+                                                    <span
+                                                        class="badge bg-light-success text-success fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::PRESENT)->count() }}</span>
                                                 @else
-                                                    <span class="badge bg-light-success text-success fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">-</span>
+                                                    <span
+                                                        class="badge bg-light-success text-success fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">-</span>
                                                 @endif
                                                 <p>Masuk</p>
                                             </div>
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($journal->is_filled) && $journal->is_filled)
-                                                    <span class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::PERMIT)->count() }}</span>
+                                                @if (isset($journal->is_filled) && $journal->is_filled)
+                                                    <span
+                                                        class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::PERMIT)->count() }}</span>
                                                 @else
-                                                    <span class="badge bg-light-primary text-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: #0896D1 !important;">-</span>
+                                                    <span
+                                                        class="badge bg-light-primary text-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; color: #0896D1 !important;">-</span>
                                                 @endif
                                                 <p>Izin</p>
                                             </div>
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($journal->is_filled) && $journal->is_filled)
-                                                    <span class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::SICK)->count() }}</span>
+                                                @if (isset($journal->is_filled) && $journal->is_filled)
+                                                    <span
+                                                        class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::SICK)->count() }}</span>
                                                 @else
-                                                    <span class="badge bg-light-primary text-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: #0896D1 !important;">-</span>
+                                                    <span
+                                                        class="badge bg-light-primary text-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px; color: #0896D1 !important;">-</span>
                                                 @endif
                                                 <p>Sakit</p>
                                             </div>
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($journal->is_filled) && $journal->is_filled)
-                                                    <span class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::ALPHA)->count() }}</span>
+                                                @if (isset($journal->is_filled) && $journal->is_filled)
+                                                    <span
+                                                        class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">{{ $journal->attendanceJournals->where('status', AttendanceEnum::ALPHA)->count() }}</span>
                                                 @else
-                                                    <span class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">-</span>
+                                                    <span
+                                                        class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">-</span>
                                                 @endif
                                                 <p>Alfa</p>
                                             </div>
@@ -358,8 +374,9 @@
                         </div>
 
                         <div>
-                            @if(isset($journal->is_filled) && $journal->is_filled)
-                                <a href="{{ route('teacher.journals.show', $journal->id) }}" class="btn btn-primary mt-3">
+                            @if (isset($journal->is_filled) && $journal->is_filled)
+                                <a href="{{ route('teacher.journals.show', $journal->id) }}"
+                                    class="btn btn-primary mt-3">
                                     Lihat Detail Jurnal
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="mb-1"
                                         viewBox="0 0 24 24">

@@ -82,9 +82,9 @@
                                         d="M12 12h5v5h-5zm7-9h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 2v2H5V5zM5 19V9h14v10z" />
                                 </svg>
                                 {{ \Carbon\Carbon::parse($teacherJournal->date)->isoFormat('DD MMMM YYYY') }}
-                                <span class="ms-2 badge bg-light text-dark" style="font-size: 11px;">
+                                {{-- <span class="ms-2 badge bg-light text-dark" style="font-size: 11px;">
                                     T.A {{ app(App\Services\SemesterService::class)->getSchoolYearLabel($teacherJournal->date) }}
-                                </span>
+                                </span> --}}
                             </span>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                             <div class="col-lg-8" style="border-right: 1px solid #c0c0c0;">
                                 <div class="pe-3">
                                     <h5 class="card-title mb-4">Deskripsi:</h5>
-                                    @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                                    @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                         <p>{{ \Illuminate\Support\Str::limit($teacherJournal->description, 100) }}</p>
                                     @else
                                         <p class="text-muted">-</p>
@@ -107,7 +107,7 @@
                                     <div class="row px-3">
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                                                @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                                     <span
                                                         class="badge bg-light-success text-success fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
                                                         style="width: 40px; height: 40px;">{{ $teacherJournal->attendanceJournals->where('status', App\Enums\AttendanceEnum::PRESENT)->count() }}</span>
@@ -121,7 +121,7 @@
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                                                @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                                     <span
                                                         class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
                                                         style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $teacherJournal->attendanceJournals->where('status', App\Enums\AttendanceEnum::PERMIT)->count() }}</span>
@@ -135,7 +135,7 @@
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                                                @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                                     <span
                                                         class="badge bg-light-primary fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
                                                         style="width: 40px; height: 40px; color: #0896D1 !important;">{{ $teacherJournal->attendanceJournals->where('status', App\Enums\AttendanceEnum::SICK)->count() }}</span>
@@ -149,7 +149,7 @@
                                         </div>
                                         <div class="col-lg-3">
                                             <div class="text-center">
-                                                @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                                                @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                                     <span
                                                         class="badge bg-light-danger text-danger fs-7 fw-semibold mb-1 d-inline-flex align-items-center justify-content-center"
                                                         style="width: 40px; height: 40px;">{{ $teacherJournal->attendanceJournals->where('status', App\Enums\AttendanceEnum::ALPHA)->count() }}</span>
@@ -168,7 +168,7 @@
                         </div>
 
                         <div>
-                            @if(isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
+                            @if (isset($teacherJournal->is_filled) && $teacherJournal->is_filled)
                                 <a href="{{ route('teacher.journals.show', $teacherJournal->id) }}"
                                     class="btn btn-primary mt-3">
                                     Lihat Detail Jurnal
