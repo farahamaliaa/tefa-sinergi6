@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('dashboard/{user}', [TeacherApiController::class, 'dashboard']);
         Route::get('profile/{user}', [TeacherApiController::class, 'profile']);
         Route::get('weekly-schedule/{user}', [TeacherApiController::class, 'weeklySchedule']);
+        Route::get('homeroom-weekly-schedule/{user}', [TeacherApiController::class, 'homeroomWeeklySchedule']);
         Route::get('class-student-attendance/{user}', [TeacherApiController::class, 'classStudentAttendance']);
         Route::get('class-permissions/{user}', [TeacherApiController::class, 'classPermissions']);
         Route::post('permissions/{permission}/approve/{user}', [TeacherApiController::class, 'approvePermission']);

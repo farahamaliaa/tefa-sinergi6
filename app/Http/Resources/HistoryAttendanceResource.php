@@ -21,6 +21,7 @@ class HistoryAttendanceResource extends JsonResource
         }
 
         return [
+            'student_name' => $this->model?->student?->user?->name ?? '-',
             'day' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('l'),
             'date' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('d'),
             'month' => $this->created_at == null ? '-' : Carbon::parse($this->created_at)->translatedFormat('M'),

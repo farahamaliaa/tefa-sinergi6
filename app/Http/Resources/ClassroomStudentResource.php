@@ -38,8 +38,8 @@ class ClassroomStudentResource extends JsonResource
             'nisn' => $student->nisn,
             'nik' => $student->nik,
             'image' => $student->image
-                ? request()->root() . '/storage/' . $student->image
-                : request()->root() . '/public/admin_assets/dist/images/profile/user-1.jpg',
+                ? asset('storage/' . $student->image)
+                : asset('admin_assets/dist/images/profile/user-1.jpg'),
             'image_path' => $student->image,
 
             // Personal Information

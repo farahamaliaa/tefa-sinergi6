@@ -110,7 +110,7 @@ class TeacherApiController extends Controller
     }
 
     /**
-     * Get weekly lesson schedule for teacher
+     * Get weekly lesson schedule for teacher (Teaching Schedule)
      */
     public function weeklySchedule(User $user)
     {
@@ -131,6 +131,40 @@ class TeacherApiController extends Controller
         });
 
         return ResponseHelper::success($groupedSchedules);
+    }
+
+    /**
+     * Get weekly lesson schedule for homeroom class
+     */
+    public function homeroomWeeklySchedule(User $user)
+    {
+        if ($user->id !== auth()->id()) {
+            return ResponseHelper::unauthorized();
+        }
+        $employee = $this->employee->getByUser($user->id);
+        $classroom = $this->classroom->whereEmployeeId($employee->id);
+
+        if (!$classroom) {
+            return ResponseHelper::error('Anda bukan wali kelas', 403);
+        }
+
+        $schedules = \App\Models\LessonSchedule::where('classroom_id', $classroom->id)
+            ->with(['classroom', 'teacherSubject.subject', 'start', 'end', 'teacherSubject.employee.user'])
+            ->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")
+            ->orderBy('lesson_hour_start')
+            ->get();
+
+        $groupedSchedules = $schedules->groupBy('day')->map(function ($daySchedules) {
+            return WeeklyScheduleResource::collection($daySchedules);
+        });
+
+        return ResponseHelper::success([
+            'classroom' => [
+                'id' => $classroom->id,
+                'name' => $classroom->name,
+            ],
+            'schedules' => $groupedSchedules
+        ]);
     }
 
     /**
@@ -545,7 +579,7 @@ class TeacherApiController extends Controller
             'name' => $student->user->name ?? null,
             'email' => $student->user->email ?? null,
             'nisn' => $student->nisn,
-            'image' => $student->image ? asset($fullDomain . '/storage/' . $student->image) : null,
+            'image' => $student->image ? asset('storage/' . $student->image) : asset('admin_assets/dist/images/profile/user-1.jpg'),
             'image_path' => $student->image,
             'gender' => $student->gender?->value,
             'gender_label' => $student->gender?->label(),
