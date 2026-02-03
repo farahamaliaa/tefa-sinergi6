@@ -355,7 +355,7 @@ class ExtracurricularManagementController extends Controller
             'extracurricular_id' => $request->extracurricular_id,
             'schedule_id' => $request->schedule_id,
             'date' => now()->toDateString(),
-            'description' => $request->description,
+            'description' => $request->title . "\n\n" . $request->description,
             'image' => $imagePath,
         ]);
 
