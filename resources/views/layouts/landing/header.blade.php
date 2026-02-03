@@ -105,7 +105,8 @@
 <div class="navbar-dynamic">
     <nav class="navbar navbar-expand-lg navbar-pill">
         <a class="navbar-brand" href="{{ url('/') }}">
-            <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" alt="Sinergi6">
+            <img src="{{ asset('landing_assets/images/logo/sinergi6.png') }}" style="height: 50px; width: auto;"
+                alt="Sinergi6">
         </a>
 
         <button class="navbar-toggler border-0 p-0" type="button" data-toggle="collapse" data-target="#landingNavbar">
