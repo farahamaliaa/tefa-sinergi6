@@ -228,7 +228,7 @@
                             fill="white" />
                     </svg>
                 </span>
-                <h4 class="ms-3 mb-0">Pengisian Jurnal</h4>
+                <h4 class="ms-3 mb-0">Riwayat Jurnal</h4>
             </div>
         </div>
 
