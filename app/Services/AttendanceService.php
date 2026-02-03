@@ -150,13 +150,12 @@ class AttendanceService
                                 'status' => AttendanceEnum::LATE->value,
                                 'point' => 5,
                                 'checkin' => $time->toDateTimeString(),
-                                'checkin' => $time->toDateTimeString(),
                                 'created_at' => $date,
                                 'name' => $userName,
                                 'image' => $imagePath
                             ];
                         }
-                        
+
                         if ($existingAttendance->checkin) {
                             if ($time->greaterThanOrEqualTo($checkoutStart)) {
                                 return [
@@ -192,25 +191,12 @@ class AttendanceService
                         ];
                     }
 
-                    if ($time->greaterThan($checkinEnd) && $time->lessThanOrEqualTo($lateDeadline)) {
+                    if ($time->greaterThan($checkinEnd) && $time->lessThanOrEqualTo($checkoutStart)) {
                         return [
                             'model_id' => $activeClassroomStudent->id,
                             'model_type' => "App\Models\ClassroomStudent",
                             'status' => AttendanceEnum::LATE->value,
                             'point' => 5,
-                            'checkin' => $time->toDateTimeString(),
-                            'created_at' => $date,
-                            'name' => $userName,
-                            'image' => $imagePath
-                        ];
-                    }
-
-                    if ($time->greaterThan($lateDeadline) && $time->lessThanOrEqualTo($checkoutStart)) {
-                        return [
-                            'model_id' => $activeClassroomStudent->id,
-                            'model_type' => "App\Models\ClassroomStudent",
-                            'status' => AttendanceEnum::ALPHA->value,
-                            'point' => 0,
                             'checkin' => $time->toDateTimeString(),
                             'created_at' => $date,
                             'name' => $userName,

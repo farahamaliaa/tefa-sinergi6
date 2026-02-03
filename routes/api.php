@@ -34,7 +34,7 @@ use App\Models\User;
 Route::get('school/detail', [SchoolDetailController::class, 'index']);
 
 // Routes for attendance hardware/device (require API key or move to protected)
-Route::post('attendace/masterkey-check', [AttendanceMasterController::class, 'check'])->name('attendance-test.check');
+Route::post('attendance/masterkey-check', [AttendanceMasterController::class, 'check'])->name('attendance-test.check');
 Route::post('attendance/add', [AttendanceController::class, 'store'])->name('attendance.add');
 Route::get('attendance/hours', [AttendanceRuleApiController::class, 'index'])->name('attendance.hour');
 
@@ -132,7 +132,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{id}/attendance', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'attendance']);
         Route::get('{id}/permissions', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'permissions']);
         Route::post('permissions/{id}/status', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'updatePermissionStatus']);
+        Route::post('permissions', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storePermission']);
         Route::post('attendance', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeAttendance']);
+        Route::post('attendance/check-in', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'studentCheckIn']);
         Route::get('{id}/journals', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'journals']);
         Route::get('journal/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'journalDetail']);
         Route::post('journal', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeJournal']);
