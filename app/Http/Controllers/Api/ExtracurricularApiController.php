@@ -79,7 +79,9 @@ class ExtracurricularApiController extends Controller
         $students = $extracurricular->extracurricularStudents->map(function ($es) {
             $student = $es->student;
             $classroom = $student->classroomStudents()
-                ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                ->whereHas('classroom.schoolYear', function ($q) {
+                    $q->where('active', true);
+                })
                 ->first()?->classroom;
 
             return [
@@ -142,33 +144,97 @@ class ExtracurricularApiController extends Controller
      */
     public function journals($extracurricularId, Request $request)
     {
-        $extracurricular = Extracurricular::find($extracurricularId);
+        $extracurricular = Extracurricular::with('schedules')->find($extracurricularId);
 
         if (!$extracurricular) {
             return ResponseHelper::notFound('Ekstrakurikuler tidak ditemukan');
         }
 
-        $journals = ExtracurricularJournal::where('extracurricular_id', $extracurricularId)
-            ->when($request->input('month'), function ($query) use ($request) {
-                $query->whereMonth('date', $request->input('month'));
-            })
-            ->when($request->input('year'), function ($query) use ($request) {
-                $query->whereYear('date', $request->input('year'));
-            })
-            ->latest('date')
-            ->get()
-            ->map(function ($journal) {
-                return [
-                    'id' => $journal->id,
-                    'title' => $journal->title,
-                    'description' => $journal->description,
-                    'date' => Carbon::parse($journal->date)->translatedFormat('d F'),
-                    'year' => Carbon::parse($journal->date)->format('Y'),
-                    'date_full' => $journal->date,
-                    'location' => $journal->location,
-                    'images' => $journal->images ? collect(json_decode($journal->images))->map(fn($img) => asset('storage/' . $img)) : [],
-                ];
-            });
+        $allHistory = collect();
+        $schedules = $extracurricular->schedules;
+
+        if ($request->input('month') && $request->input('year')) {
+            $month = $request->input('month');
+            $year = $request->input('year');
+            $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+            $endDate = clone $startDate;
+            $endDate->endOfMonth();
+
+            // Don't scan future dates
+            if ($endDate->isAfter(now())) {
+                $endDate = now();
+            }
+        } else {
+            $startDate = now()->subDays(30)->startOfDay();
+            $endDate = now();
+        }
+
+        // 1. Get real journals
+        $realJournals = ExtracurricularJournal::where('extracurricular_id', $extracurricularId)
+            ->with(['schedule', 'attendances'])
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get();
+
+        foreach ($realJournals as $journal) {
+            $allHistory->push((object) [
+                'id' => $journal->id,
+                'title' => $journal->title ?? '-',
+                'description' => $journal->description,
+                'date_full' => $journal->date,
+                'date_display' => Carbon::parse($journal->date)->translatedFormat('d F'),
+                'year' => Carbon::parse($journal->date)->format('Y'),
+                'location' => $journal->location,
+                'images' => $journal->image ? [asset('storage/' . $journal->image)] : [],
+                'is_filled' => true,
+                'schedule' => $journal->schedule,
+                'created_at_dt' => Carbon::parse($journal->date)->startOfDay()
+            ]);
+        }
+
+        // 2. Scan for missed journals
+        for ($date = clone $startDate; $date->lte($endDate); $date->addDay()) {
+            $dayName = strtolower($date->format('l'));
+            $daySchedules = $schedules->where('day', $dayName);
+
+            foreach ($daySchedules as $sch) {
+                $sessionEnded = false;
+                if ($date->lt(now()->startOfDay())) {
+                    $sessionEnded = true;
+                } elseif ($date->isToday()) {
+                    $endTime = Carbon::parse($sch->end_time);
+                    if (now()->gt($endTime)) {
+                        $sessionEnded = true;
+                    }
+                }
+
+                $scheduleExistsOnDate = $date->isAfter($sch->created_at->startOfDay()) || $date->isSameDay($sch->created_at);
+
+                if ($sessionEnded && $scheduleExistsOnDate) {
+                    $dateStr = $date->toDateString();
+                    $exists = $realJournals->where('date', $dateStr)
+                        ->where('schedule_id', $sch->id)
+                        ->isNotEmpty();
+
+                    if (!$exists) {
+                        $allHistory->push((object) [
+                            'id' => null,
+                            'title' => '-',
+                            'description' => '-',
+                            'date_full' => $dateStr,
+                            'date_display' => $date->translatedFormat('d F'),
+                            'year' => $date->format('Y'),
+                            'location' => $sch->location_name ?? $sch->location,
+                            'images' => [],
+                            'is_filled' => false,
+                            'schedule' => $sch,
+                            'created_at_dt' => clone $date
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $journals = $allHistory->sortByDesc('created_at_dt')->values();
 
         return ResponseHelper::success([
             'extracurricular' => [
@@ -253,6 +319,55 @@ class ExtracurricularApiController extends Controller
             return ResponseHelper::notFound('Ekstrakurikuler tidak ditemukan');
         }
 
+        $date = $request->date;
+        $isHistory = !$date;
+
+        if ($isHistory) {
+            $attendancesQuery = ExtracurricularAttendance::whereIn('extracurricular_student_id', $extracurricular->extracurricularStudents->pluck('id'))
+                ->with('extracurricularStudent.student.user')
+                ->orderBy('date', 'desc')
+                ->orderBy('created_at', 'desc');
+
+            if ($request->status) {
+                $attendancesQuery->where('status', $request->status);
+            }
+
+            if ($request->search) {
+                $attendancesQuery->whereHas('extracurricularStudent.student.user', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                });
+            }
+
+            $attendancesPaginator = $attendancesQuery->paginate($request->get('limit', 20));
+
+            $history = collect($attendancesPaginator->items())->map(function ($att) {
+                return [
+                    'id' => $att->id,
+                    'extracurricular_student_id' => $att->extracurricular_student_id,
+                    'name' => $att->extracurricularStudent->student->user->name ?? '-',
+                    'image' => $att->extracurricularStudent->student->image ? asset('storage/' . $att->extracurricularStudent->student->image) : null,
+                    'status' => $att->status,
+                    'date' => $att->date,
+                    'day' => Carbon::parse($att->date)->translatedFormat('l'),
+                    'clock_in' => ($att->status == 'hadir' && $att->created_at->format('H:i') != '00:00') ? $att->created_at->format('H:i') : null,
+                ];
+            });
+
+            return ResponseHelper::success([
+                'extracurricular' => [
+                    'id' => $extracurricular->id,
+                    'name' => $extracurricular->name,
+                ],
+                'attendance' => $history,
+                'meta' => [
+                    'current_page' => $attendancesPaginator->currentPage(),
+                    'last_page' => $attendancesPaginator->lastPage(),
+                    'total' => $attendancesPaginator->total(),
+                ]
+            ]);
+        }
+
+        // Daily View logic (original)
         $date = $request->date ?? Carbon::today()->format('Y-m-d');
         $dateCarbon = Carbon::parse($date);
         $dayName = strtolower($dateCarbon->format('l'));
@@ -263,13 +378,17 @@ class ExtracurricularApiController extends Controller
 
         $isTimePassed = false;
         if ($schedule) {
-            if ($dateCarbon->isPast() && !$dateCarbon->isToday()) {
-                $isTimePassed = true;
-            } elseif ($dateCarbon->isToday()) {
-                // Parse end_time to Carbon today
-                $endTime = Carbon::parse($schedule->end_time);
-                if (Carbon::now()->gt($endTime)) {
+            $scheduleExistsOnDate = $dateCarbon->isAfter($schedule->created_at->startOfDay()) || $dateCarbon->isSameDay($schedule->created_at);
+
+            if ($scheduleExistsOnDate) {
+                if ($dateCarbon->isPast() && !$dateCarbon->isToday()) {
                     $isTimePassed = true;
+                } elseif ($dateCarbon->isToday()) {
+                    // Parse end_time to Carbon today
+                    $endTime = Carbon::parse($schedule->end_time);
+                    if (Carbon::now()->gt($endTime)) {
+                        $isTimePassed = true;
+                    }
                 }
             }
         }
@@ -281,18 +400,66 @@ class ExtracurricularApiController extends Controller
         // LOGIC REMOVED: No auto-create journal if time passed
         // LOGIC REMOVED: No auto-create alpha if time passed
 
+        // Cleanup: Remove invalid auto-alphas that predate schedule or enrollment
+        $invalidAttendanceIds = ExtracurricularAttendance::whereIn('extracurricular_student_id', $extracurricular->extracurricularStudents->pluck('id'))
+            ->where('status', 'alpha')
+            ->whereNull('extracurricular_journal_id')
+            ->get()
+            ->filter(function ($att) use ($extracurricular) {
+                $esStudent = $extracurricular->extracurricularStudents->firstWhere('id', $att->extracurricular_student_id);
+                if (!$esStudent)
+                    return true;
+
+                $attDate = Carbon::parse($att->date)->startOfDay();
+                $dayName = strtolower($attDate->format('l'));
+                $sched = $extracurricular->schedules->where('day', $dayName)->first();
+
+                if (!$sched)
+                    return true;
+
+                return $attDate->lt($sched->created_at->startOfDay()) ||
+                    $attDate->lt($esStudent->created_at->startOfDay());
+            })
+            ->pluck('id');
+
+        if ($invalidAttendanceIds->isNotEmpty()) {
+            ExtracurricularAttendance::whereIn('id', $invalidAttendanceIds)->delete();
+        }
+
         $attendances = collect();
         if ($journal) {
             $attendances = ExtracurricularAttendance::where('extracurricular_journal_id', $journal->id)
                 ->get()
                 ->keyBy('extracurricular_student_id');
+        } else {
+            // Also fetch attendances without journals (like auto-alphas or permissions)
+            $attendances = ExtracurricularAttendance::where('date', $date)
+                ->whereIn('extracurricular_student_id', $extracurricular->extracurricularStudents->pluck('id'))
+                ->get()
+                ->keyBy('extracurricular_student_id');
         }
 
-        $students = $extracurricular->extracurricularStudents->map(function ($es) use ($attendances) {
+        $students = $extracurricular->extracurricularStudents->map(function ($es) use ($attendances, $isTimePassed, $date, $journal) {
             $attendance = $attendances->get($es->id);
-            $status = $attendance?->status ?? null;
+            $status = $attendance?->status;
 
-            // LOGIC REMOVED: No auto-create alpha if journal exists
+            if ($status === null && $isTimePassed) {
+                // Check for approved permission
+                $permission = \App\Models\ExtracurricularPermission::where('extracurricular_student_id', $es->id)
+                    ->where('date', $date)
+                    ->where('status', 'approved')
+                    ->first();
+
+                $status = $permission ? $permission->type : 'alpha';
+
+                // Persist the auto-alpha/permission status
+                ExtracurricularAttendance::create([
+                    'extracurricular_student_id' => $es->id,
+                    'date' => $date,
+                    'status' => $status,
+                    'extracurricular_journal_id' => $journal?->id ?? null,
+                ]);
+            }
 
             return [
                 'id' => $es->id,
@@ -324,7 +491,8 @@ class ExtracurricularApiController extends Controller
             'date' => 'required|date',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'attendance' => 'nullable|array',
         ]);
 
         $imagePath = null;
@@ -348,6 +516,29 @@ class ExtracurricularApiController extends Controller
             ],
             $dataToUpdate
         );
+
+        // Process attendance if provided
+        $attendanceData = $request->input('attendance', []);
+        if (!empty($attendanceData)) {
+            foreach ($attendanceData as $item) {
+                // Handle both array of objects or indexed fields from MultipartRequest
+                $esStudentId = $item['student_id'] ?? null;
+                $status = $item['status'] ?? null;
+
+                if ($esStudentId && $status) {
+                    ExtracurricularAttendance::updateOrCreate(
+                        [
+                            'extracurricular_student_id' => $esStudentId,
+                            'date' => $request->input('date'),
+                        ],
+                        [
+                            'extracurricular_journal_id' => $journal->id,
+                            'status' => $status,
+                        ]
+                    );
+                }
+            }
+        }
 
         return ResponseHelper::success($journal, 'Jurnal berhasil disimpan');
     }

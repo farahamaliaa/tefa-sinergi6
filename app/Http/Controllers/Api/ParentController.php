@@ -8,6 +8,7 @@ use App\Models\Classroom;
 use App\Models\LessonSchedule;
 use App\Models\StudentPermission;
 use App\Models\User;
+use App\Models\Extracurricular;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Imports\ParentImport;
@@ -30,14 +31,14 @@ class ParentController extends Controller
 
         if ($request->filled('name')) {
             $search = $request->name;
-            $query->whereHas('user', function($q) use ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             });
         }
 
         if ($request->filled('class')) {
             $classParam = $request->class;
-            $query->whereHas('students.classroomStudents.classroom', function($q) use ($classParam) {
+            $query->whereHas('students.classroomStudents.classroom', function ($q) use ($classParam) {
                 $q->where('name', 'like', "%{$classParam}%");
             });
         }
@@ -47,17 +48,20 @@ class ParentController extends Controller
         if (!$request->expectsJson()) {
             $students = \App\Models\Student::with(['user', 'classroomStudents.classroom'])
                 ->get()
-                ->map(function($s) {
+                ->map(function ($s) {
                     return [
                         'id' => $s->id,
                         'name' => $s->user->name ?? $s->name ?? 'Unknown',
                         'classroom' => $s->classroomStudents()
-                            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                            ->whereHas('classroom.schoolYear', function ($q) {
+                                $q->where('active', true);
+                            })
                             ->first()?->classroom?->name ?? 'No Class'
                     ];
                 });
             return view('school.pages.parent.index', compact('parents', 'students'));
-        };
+        }
+        ;
 
         return $parents;
     }
@@ -83,7 +87,7 @@ class ParentController extends Controller
 
         try {
             DB::transaction(function () use ($request, $slug, $count) {
-                 $user = User::create([
+                $user = User::create([
                     'name' => $request->name,
                     'slug' => $slug,
                     'email' => $request->email,
@@ -93,7 +97,7 @@ class ParentController extends Controller
                     'image' => $request->hasFile('image') ? $this->upload(UploadDiskEnum::PARENT->value, $request->file('image')) : null,
                 ]);
 
-                $user->assignRole('parent'); 
+                $user->assignRole('parent');
 
                 $parent = Parents::create([
                     'user_id' => $user->id,
@@ -101,13 +105,13 @@ class ParentController extends Controller
                     'phone_number' => $request->phone_number,
                 ]);
 
-                if($request->has('students')) {
+                if ($request->has('students')) {
                     $parent->students()->attach($request->students);
                 }
             });
 
             if ($request->expectsJson()) {
-                 return ResponseHelper::created(null, 'Berhasil menambahkan data orang tua');
+                return ResponseHelper::created(null, 'Berhasil menambahkan data orang tua');
             }
 
             return redirect()->back()->with('success', 'Berhasil menambahkan data orang tua');
@@ -125,7 +129,8 @@ class ParentController extends Controller
 
         if ($request->expectsJson()) {
             return ResponseHelper::success($parent);
-        };
+        }
+        ;
 
         return view('school.pages.parent.show', compact('parent'));
     }
@@ -211,7 +216,7 @@ class ParentController extends Controller
 
             return redirect()->back()->with('success', 'Berhasil menghapus data orang tua');
         } catch (\Exception $e) {
-             if (request()->expectsJson()) {
+            if (request()->expectsJson()) {
                 return ResponseHelper::error('Gagal delete parent: ' . $e->getMessage(), 500);
             }
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -245,22 +250,24 @@ class ParentController extends Controller
     public function getChildren(User $user)
     {
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
-        
+
         $children = $parent->students()->with([
-            'user', 
-            'classroomStudents.classroom.levelClass', 
+            'user',
+            'classroomStudents.classroom.levelClass',
             'classroomStudents.classroom.employee.user'
         ])->get();
-        
+
         $childrenData = $children->map(function ($student) {
             $currentClassroom = $student->classroomStudents()
-                ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                ->whereHas('classroom.schoolYear', function ($q) {
+                    $q->where('active', true);
+                })
                 ->first();
             $homeroomTeacher = $currentClassroom?->classroom?->employee;
-            
+
             return [
                 'id' => $student->id,
-                'name' => $student->user->name ?? $student->name,   
+                'name' => $student->user->name ?? $student->name,
                 'nis' => $student->nis ?? null,
                 'nisn' => $student->nisn ?? null,
                 'gender' => $student->gender,
@@ -274,7 +281,7 @@ class ParentController extends Controller
                 ] : null,
             ];
         });
-        
+
         return ResponseHelper::success($childrenData);
     }
 
@@ -282,33 +289,35 @@ class ParentController extends Controller
     {
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
         $isMyChild = $parent->students()->where('students.id', $student->id)->exists();
-        
+
         if (!$isMyChild) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak memiliki akses ke data siswa ini',
             ], 403);
         }
-        
+
         $classroomStudent = $student->classroomStudents()
-            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->whereHas('classroom.schoolYear', function ($q) {
+                $q->where('active', true);
+            })
             ->with('classroom')->first();
-        
+
         if (!$classroomStudent) {
             return response()->json([
                 'success' => false,
                 'message' => 'Siswa belum terdaftar di kelas manapun',
             ], 404);
         }
-        
+
         $classroom = $classroomStudent->classroom;
-        
+
         $lessonSchedules = LessonSchedule::where('classroom_id', $classroom->id)
             ->with(['teacherSubject.subject', 'teacherSubject.employee.user', 'start', 'end'])
             ->orderBy('day')
             ->orderBy('lesson_hour_start')
             ->get();
-        
+
         $daysMap = [
             'Monday' => 'Senin',
             'Tuesday' => 'Selasa',
@@ -322,17 +331,17 @@ class ParentController extends Controller
         $schedulesByDay = $lessonSchedules->groupBy('day')->map(function ($daySchedules, $dayKey) use ($daysMap) {
             return $daySchedules->map(function ($schedule) {
                 $employee = $schedule->teacherSubject->employee;
-                
+
                 $startHour = $schedule->start ? $this->extractHourNumber($schedule->start->name) : $schedule->lesson_hour_start;
                 $endHour = $schedule->end ? $this->extractHourNumber($schedule->end->name) : $schedule->lesson_hour_end;
-                
+
                 return [
                     'id' => $schedule->id,
                     'day' => $schedule->day,
                     'day_name' => $daysMap[$schedule->day] ?? $schedule->day,
                     'lesson_hour_start' => $startHour,
                     'lesson_hour_end' => $endHour,
-                    'time' => ($schedule->start && $schedule->end) 
+                    'time' => ($schedule->start && $schedule->end)
                         ? \Carbon\Carbon::parse($schedule->start->start)->format('H:i') . ' - ' . \Carbon\Carbon::parse($schedule->end->end)->format('H:i')
                         : null,
                     'subject' => [
@@ -346,7 +355,7 @@ class ParentController extends Controller
                 ];
             });
         });
-        
+
         return ResponseHelper::success([
             'student' => [
                 'id' => $student->id,
@@ -363,7 +372,7 @@ class ParentController extends Controller
     public function createPermission(Request $request, User $user)
     {
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
-        
+
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'permission_type' => 'required|in:sick,permit,other',
@@ -372,31 +381,33 @@ class ParentController extends Controller
             'date' => 'required|date',
             'duration' => 'nullable|integer|min:1|max:30',
         ]);
-        
+
         $isMyChild = $parent->students()->where('students.id', $validated['student_id'])->exists();
-        
+
         if (!$isMyChild) {
             return ResponseHelper::error('Anda tidak memiliki akses untuk mengajukan izin untuk siswa ini', 403);
         }
-        
+
         $student = Student::find($validated['student_id']);
-        
+
         $classroomStudent = $student->classroomStudents()
-            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->whereHas('classroom.schoolYear', function ($q) {
+                $q->where('active', true);
+            })
             ->first();
-        
+
         if (!$classroomStudent) {
             return response()->json([
                 'success' => false,
                 'message' => 'Siswa belum terdaftar di kelas manapun',
             ], 404);
         }
-        
+
         $proofImage = null;
         if ($request->hasFile('proof_image')) {
             $proofImage = $request->file('proof_image')->store('permissions', 'public');
         }
-        
+
         $permission = StudentPermission::create([
             'student_id' => $validated['student_id'],
             'classroom_id' => $classroomStudent->classroom_id,
@@ -408,7 +419,7 @@ class ParentController extends Controller
             'date' => $validated['date'],
             'duration' => $validated['duration'] ?? 3,
         ]);
-        
+
         return ResponseHelper::created(
             $permission->load(['student', 'submittedBy']),
             'Permohonan izin berhasil diajukan dan menunggu persetujuan wali kelas'
@@ -418,9 +429,9 @@ class ParentController extends Controller
     public function getPermissionHistory(User $user)
     {
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
-        
+
         $studentIds = $parent->students()->pluck('students.id');
-        
+
         $permissions = StudentPermission::whereIn('student_id', $studentIds)
             ->with(['student', 'classroom', 'submittedBy', 'approvedBy'])
             ->latest()
@@ -437,18 +448,18 @@ class ParentController extends Controller
                         'name' => $permission->classroom->name,
                     ] : null,
                     'permission_type' => $permission->permission_type,
-                    'permission_type_label' => match($permission->permission_type) {
+                    'permission_type_label' => match ($permission->permission_type) {
                         'sick' => 'Sakit',
                         'permit' => 'Izin',
                         'other' => 'Lainnya',
                         default => $permission->permission_type,
                     },
                     'proof' => $permission->proof,
-                    'proof_image' => $permission->proof_image 
-                        ? request()->root() . '/storage/' . $permission->proof_image 
+                    'proof_image' => $permission->proof_image
+                        ? request()->root() . '/storage/' . $permission->proof_image
                         : null,
                     'status' => $permission->status,
-                    'status_label' => match($permission->status) {
+                    'status_label' => match ($permission->status) {
                         'pending' => 'Menunggu Persetujuan',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
@@ -460,7 +471,7 @@ class ParentController extends Controller
                     'approved_by' => $permission->approvedBy ? $permission->approvedBy->name : null,
                 ];
             });
-        
+
         return ResponseHelper::success($permissions);
     }
 
@@ -474,14 +485,14 @@ class ParentController extends Controller
         }
 
         $parent = Parents::where('user_id', $user->id)->first();
-        
+
         if (!$parent) {
             return ResponseHelper::notFound('Data orang tua tidak ditemukan');
         }
 
         $children = $parent->students()->with(['user', 'classroomStudents.classroom'])->get();
         $childrenCount = $children->count();
-        
+
         $studentIds = $children->pluck('id');
         $pendingPermissions = StudentPermission::whereIn('student_id', $studentIds)
             ->where('status', 'pending')
@@ -493,7 +504,9 @@ class ParentController extends Controller
             'pending_permissions' => $pendingPermissions,
             'children_summary' => $children->map(function ($child) {
                 $classroom = $child->classroomStudents()
-                    ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+                    ->whereHas('classroom.schoolYear', function ($q) {
+                        $q->where('active', true);
+                    })
                     ->first()?->classroom;
                 return [
                     'id' => $child->id,
@@ -522,8 +535,8 @@ class ParentController extends Controller
             'email' => $user->email,
             'phone' => $parent?->phone ?? null,
             'address' => $parent?->address ?? null,
-            'image' => $user->image 
-                ? request()->root() . '/storage/' . $user->image 
+            'image' => $user->image
+                ? request()->root() . '/storage/' . $user->image
                 : request()->root() . '/public/admin_assets/dist/images/profile/user-1.jpg',
         ]);
     }
@@ -539,7 +552,7 @@ class ParentController extends Controller
 
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
         $isMyChild = $parent->students()->where('students.id', $student->id)->exists();
-        
+
         if (!$isMyChild) {
             return response()->json([
                 'success' => false,
@@ -549,7 +562,9 @@ class ParentController extends Controller
 
         $student->load(['user', 'religion', 'classroomStudents.classroom']);
         $classroomStudent = $student->classroomStudents()
-            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->whereHas('classroom.schoolYear', function ($q) {
+                $q->where('active', true);
+            })
             ->first();
         $fullDomain = request()->root();
 
@@ -560,8 +575,8 @@ class ParentController extends Controller
             'email' => optional($student->user)->email,
             'nisn' => $student->nisn,
             'nik' => $student->nik,
-            'image' => $student->image 
-                ? request()->root() . '/storage/' . $student->image 
+            'image' => $student->image
+                ? request()->root() . '/storage/' . $student->image
                 : null,
             'gender' => $student->gender?->value,
             'gender_label' => $student->gender ? $student->gender->label() : null,
@@ -589,7 +604,7 @@ class ParentController extends Controller
 
         $parent = Parents::where('user_id', $user->id)->firstOrFail();
         $isMyChild = $parent->students()->where('students.id', $student->id)->exists();
-        
+
         if (!$isMyChild) {
             return response()->json([
                 'success' => false,
@@ -598,9 +613,11 @@ class ParentController extends Controller
         }
 
         $classroomStudent = $student->classroomStudents()
-            ->whereHas('classroom.schoolYear', function($q) { $q->where('active', true); })
+            ->whereHas('classroom.schoolYear', function ($q) {
+                $q->where('active', true);
+            })
             ->first();
-        
+
         if (!$classroomStudent) {
             return response()->json([
                 'success' => false,
@@ -619,7 +636,7 @@ class ParentController extends Controller
                     'check_in' => $attendance->check_in,
                     'check_out' => $attendance->check_out,
                     'status' => $attendance->status,
-                    'status_label' => match($attendance->status) {
+                    'status_label' => match ($attendance->status) {
                         'present' => 'Hadir',
                         'late' => 'Terlambat',
                         'absent' => 'Tidak Hadir',
@@ -639,16 +656,65 @@ class ParentController extends Controller
         ]);
     }
 
+    public function getChildExtracurricularSchedules(User $user, Student $student)
+    {
+        if ($user->id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $parent = Parents::where('user_id', $user->id)->firstOrFail();
+        $isMyChild = $parent->students()->where('students.id', $student->id)->exists();
+
+        if (!$isMyChild) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke data siswa ini',
+            ], 403);
+        }
+
+        $extracurriculars = Extracurricular::whereHas('extracurricularStudents', function ($q) use ($student) {
+            $q->where('student_id', $student->id);
+        })->with('schedules')->get();
+
+        $daysMap = [
+            'monday' => 'Senin',
+            'tuesday' => 'Selasa',
+            'wednesday' => 'Rabu',
+            'thursday' => 'Kamis',
+            'friday' => 'Jumat',
+            'saturday' => 'Sabtu',
+            'sunday' => 'Minggu',
+        ];
+
+        $data = $extracurriculars->flatMap(function ($eskul) use ($daysMap) {
+            return $eskul->schedules->map(function ($schedule) use ($eskul, $daysMap) {
+                return [
+                    'id' => $schedule->id,
+                    'extracurricular_id' => $eskul->id,
+                    'extracurricular_name' => $eskul->name,
+                    'day' => $schedule->day,
+                    'day_name' => $daysMap[strtolower($schedule->day)] ?? $schedule->day,
+                    'start_time' => $schedule->start_time,
+                    'end_time' => $schedule->end_time,
+                    'location' => $schedule->location_name ?? $schedule->location,
+                    'radius' => $schedule->radius,
+                ];
+            });
+        });
+
+        return ResponseHelper::success($data);
+    }
+
     private function extractHourNumber($name)
     {
         if (!$name) {
             return '';
         }
-        
+
         if (preg_match('/(\d+)/', $name, $matches)) {
             return $matches[1];
         }
-        
+
         return $name;
     }
 
@@ -660,7 +726,7 @@ class ParentController extends Controller
 
         try {
             Excel::import(new ParentImport, $request->file('file'));
-            
+
             if ($request->expectsJson()) {
                 return ResponseHelper::success(null, 'Berhasil mengimport data orang tua');
             }

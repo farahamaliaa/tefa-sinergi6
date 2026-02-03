@@ -157,6 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{user}/children/{student}', [ParentController::class, 'childDetail']);
         Route::get('{user}/children/{student}/lessons', [ParentController::class, 'getChildLessons']);
         Route::get('{user}/children/{student}/attendance', [ParentController::class, 'childAttendance']);
+        Route::get('{user}/children/{student}/extracurricular-schedules', [ParentController::class, 'getChildExtracurricularSchedules']);
 
         // Permission management
         Route::post('{user}/permissions', [ParentController::class, 'createPermission']);

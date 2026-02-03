@@ -103,28 +103,28 @@
         }
 
         .badge-hadir {
-            background-color: #D1FAE5;
-            color: #059669;
+            background-color: #E8FFF3 !important;
+            color: #13DEB9 !important;
         }
 
         .badge-sakit {
-            background-color: #FEF3C7;
-            color: #D97706;
+            background-color: #FFF4E5 !important;
+            color: #FA896B !important;
         }
 
         .badge-izin {
-            background-color: #DBEAFE;
-            color: #2563EB;
+            background-color: #ECF2FF !important;
+            color: #5D87FF !important;
         }
 
         .badge-alpha {
-            background-color: #FEE2E2;
-            color: #DC2626;
+            background-color: #FFE1E1 !important;
+            color: #DC3545 !important;
         }
 
         .badge-belum {
-            background-color: #F3F4F6;
-            color: #6B7280;
+            background-color: #F3F4F6 !important;
+            color: #6B7280 !important;
         }
     </style>
 @endsection
@@ -249,10 +249,10 @@
                             <tr>
                                 <td>{{ $loop->iteration + ($attendances->currentPage() - 1) * $attendances->perPage() }}
                                 </td>
-                                <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('l') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('d/m/Y') }}
+                                <td>{{ \Carbon\Carbon::parse($attendance->date)->translatedFormat('l') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($attendance->date)->translatedFormat('d/m/Y') }}
                                 </td>
-                                <td>{{ $attendance->created_at ? \Carbon\Carbon::parse($attendance->created_at)->format('H:i') : '-' }}
+                                <td>{{ ($attendance->status == 'hadir' && $attendance->created_at && $attendance->created_at->format('H:i') != '00:00') ? \Carbon\Carbon::parse($attendance->created_at)->format('H:i') : '-' }}
                                 </td>
                                 <td>
                                     @php

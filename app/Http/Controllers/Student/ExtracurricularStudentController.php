@@ -65,23 +65,121 @@ class ExtracurricularStudentController extends Controller
         $status = $request->input('status');
         $search = $request->input('search');
 
+        // Cleanup: Remove invalid auto-alphas that predate schedule or enrollment
+        $invalidAttendanceIds = ExtracurricularAttendance::where('extracurricular_student_id', $enrollment->id)
+            ->where('status', 'alpha')
+            ->whereNull('extracurricular_journal_id')
+            ->get()
+            ->filter(function ($att) use ($extracurricular, $enrollment) {
+                $attDate = Carbon::parse($att->date)->startOfDay();
+                $dayName = strtolower($attDate->format('l'));
+                $sched = $extracurricular->schedules->where('day', $dayName)->first();
+
+                if (!$sched)
+                    return true; // No schedule for this day anymore
+    
+                return $attDate->lt($sched->created_at->startOfDay()) ||
+                    $attDate->lt($enrollment->created_at->startOfDay());
+            })
+            ->pluck('id');
+
+        if ($invalidAttendanceIds->isNotEmpty()) {
+            ExtracurricularAttendance::whereIn('id', $invalidAttendanceIds)->delete();
+        }
+
         // Query attendances
         $query = ExtracurricularAttendance::with(['journal.schedule'])
             ->where('extracurricular_student_id', $enrollment->id);
 
         if ($date) {
-            $query->whereDate('created_at', $date);
+            $query->where('date', $date);
         }
 
         if ($status) {
             $query->where('status', $status);
         }
-        
-        // Note: Search functionality might be limited since we don't have a direct name field on attendance, 
-        // but if requested, we could search schedule descriptions or similar. 
-        // For now, adhering to the standard filter pattern.
 
-        $attendances = $query->latest()->paginate(10);
+        // Auto-sync Alpha for past schedules to ensure they are "terekap"
+        // We look back at the last 30 days or since enrollment date
+        $enrollDate = $enrollment->created_at->startOfDay();
+        $startDate = now()->subDays(30)->startOfDay();
+
+        // Start from the later of the two dates to avoid excess Alpha records
+        if ($startDate->lt($enrollDate)) {
+            $startDate = clone $enrollDate;
+        }
+
+        $endDate = now();
+
+        $schedules = $extracurricular->schedules;
+        $dayMaps = [
+            'monday' => Carbon::MONDAY,
+            'tuesday' => Carbon::TUESDAY,
+            'wednesday' => Carbon::WEDNESDAY,
+            'thursday' => Carbon::THURSDAY,
+            'friday' => Carbon::FRIDAY,
+            'saturday' => Carbon::SATURDAY,
+            'sunday' => Carbon::SUNDAY,
+        ];
+
+        foreach ($schedules as $sched) {
+            $dayInt = $dayMaps[strtolower($sched->day)] ?? null;
+            if ($dayInt === null)
+                continue;
+
+            $currentDate = clone $startDate;
+            $scheduleCreatedDate = $sched->created_at->startOfDay();
+
+            // Move to the first occurrence of this day
+            while ($currentDate->dayOfWeek !== $dayInt) {
+                $currentDate->addDay();
+            }
+
+            while ($currentDate->lte($endDate)) {
+                $dateStr = $currentDate->toDateString();
+
+                // Check if schedule existed on this date
+                if ($currentDate->lt($scheduleCreatedDate)) {
+                    $currentDate->addWeek();
+                    continue;
+                }
+
+                // Check if time passed for this date
+                $timePassed = false;
+                if ($currentDate->isPast() && !$currentDate->isToday()) {
+                    $timePassed = true;
+                } elseif ($currentDate->isToday()) {
+                    $endTime = Carbon::parse($sched->end_time);
+                    if (now()->gt($endTime)) {
+                        $timePassed = true;
+                    }
+                }
+
+                if ($timePassed) {
+                    $exists = ExtracurricularAttendance::where('extracurricular_student_id', $enrollment->id)
+                        ->where('date', $dateStr)
+                        ->exists();
+
+                    if (!$exists) {
+                        // Check for approved permission
+                        $permission = \App\Models\ExtracurricularPermission::where('extracurricular_student_id', $enrollment->id)
+                            ->where('date', $dateStr)
+                            ->where('status', 'approved')
+                            ->first();
+
+                        ExtracurricularAttendance::create([
+                            'extracurricular_student_id' => $enrollment->id,
+                            'date' => $dateStr,
+                            'status' => $permission ? $permission->type : 'alpha',
+                            'extracurricular_journal_id' => null, // Will be linked if journal created later
+                        ]);
+                    }
+                }
+                $currentDate->addWeek();
+            }
+        }
+
+        $attendances = $query->orderBy('date', 'desc')->paginate(10);
 
         // Check if there is a schedule today for the "Absen Sekarang" button logic
         $today = strtolower(now()->locale('en')->dayName);
@@ -93,7 +191,7 @@ class ExtracurricularStudentController extends Controller
         if ($todaySchedule) {
             $todayJournal = $extracurricular->journals()
                 ->where('schedule_id', $todaySchedule->id)
-                ->whereDate('date', now()->toDateString())
+                ->where('date', now()->toDateString())
                 ->first();
 
             if ($todayJournal) {
@@ -246,7 +344,7 @@ class ExtracurricularStudentController extends Controller
         // Check for existing journal today
         $todayJournal = $extracurricular->journals()
             ->where('schedule_id', $schedule->id)
-            ->whereDate('date', now()->toDateString())
+            ->where('date', now()->toDateString())
             ->first();
 
         if ($todayJournal) {
@@ -277,7 +375,7 @@ class ExtracurricularStudentController extends Controller
         } else {
             // Check if already attended (without journal)
             $existingAttendance = ExtracurricularAttendance::where('extracurricular_student_id', $enrollment->id)
-                ->whereDate('date', now()->toDateString())
+                ->where('date', now()->toDateString())
                 ->first();
 
             if ($existingAttendance && $existingAttendance->status === 'hadir') {
@@ -302,7 +400,7 @@ class ExtracurricularStudentController extends Controller
 
         $successMessage = 'Absensi berhasil dicatat! Jarak Anda: ' . round($distance) . 'm';
         session()->flash('success', $successMessage);
-        
+
         return response()->json([
             'success' => true,
             'message' => $successMessage
@@ -425,7 +523,7 @@ class ExtracurricularStudentController extends Controller
         // Check for existing permission on same date
         $existing = \App\Models\ExtracurricularPermission::where('extracurricular_student_id', $enrollment->id)
             ->where('schedule_id', $request->schedule_id)
-            ->whereDate('date', $request->date)
+            ->where('date', $request->date)
             ->first();
 
         if ($existing) {
