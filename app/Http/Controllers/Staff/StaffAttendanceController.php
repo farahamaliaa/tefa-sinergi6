@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\EmployeePermission;
 use App\Enums\StatusPermissionEnum;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StaffAttendanceController extends Controller
@@ -25,7 +26,7 @@ class StaffAttendanceController extends Controller
     public function index(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
-        $attendances = $this->attendance->whereUserFiltered($employeeId, 'App\Models\Employee', $request);
+        $attendancesRaw = $this->attendance->whereUserFiltered($employeeId, 'App\Models\Employee', $request);
 
         $todayAttendance = Attendance::where('model_id', $employeeId)
             ->where('model_type', 'App\Models\Employee')
@@ -41,29 +42,93 @@ class StaffAttendanceController extends Controller
         $schoolConfig = config('attendance.school');
         $timeConfig = config('attendance.time');
 
-        // Inject virtual alpha record for today if past late limit and no record exists
-        $currentTime = now()->format('H:i');
-        $isTodayFiltered = !$request->date || $request->date == now()->format('Y-m-d');
+        // Generate history with gaps (similar to Journal Service)
+        $history = collect([]);
+        $now = now();
+        $days = 30; // Default history window
 
-        if ($isTodayFiltered && !$todayAttendance && !$todayPermission && $currentTime > $timeConfig['late_limit']) {
-            $virtualAlpha = new Attendance();
-            $virtualAlpha->status = AttendanceEnum::ALPHA;
-            $virtualAlpha->created_at = now();
+        // Find lower bound for history (employee creation date)
+        $employee = auth()->user()->employee;
+        $floorDate = $employee->created_at ? $employee->created_at->copy()->startOfDay() : $now->copy()->subDays($days)->startOfDay();
 
-            if ($attendances instanceof \Illuminate\Pagination\LengthAwarePaginator) {
-                if ($attendances->currentPage() == 1) {
-                    $items = $attendances->getCollection();
-                    $items->prepend($virtualAlpha);
-                    $attendances->setCollection($items);
+        // Fetch all permissions for the period to show in history
+        $permissions = EmployeePermission::where('employee_id', $employeeId)
+            ->where('status', StatusPermissionEnum::APPROVED)
+            ->whereBetween('date', [$now->copy()->subDays($days)->format('Y-m-d'), $now->format('Y-m-d')])
+            ->get();
+
+        // If search by date is active, just show that date
+        if ($request->date) {
+            $dates = [Carbon::parse($request->date)];
+        } else {
+            $dates = [];
+            for ($i = 0; $i < $days; $i++) {
+                $checkDate = $now->copy()->subDays($i);
+
+                // Stop generating gaps if before hire date
+                if ($checkDate->startOfDay()->isBefore($floorDate)) {
+                    continue;
                 }
+
+                $dates[] = $checkDate;
+            }
+        }
+
+        foreach ($dates as $date) {
+            // Skip weekends
+            if ($date->isWeekend())
+                continue;
+
+            $dateStr = $date->format('Y-m-d');
+
+            // Look for existing attendance
+            $record = Attendance::where('model_id', $employeeId)
+                ->where('model_type', 'App\Models\Employee')
+                ->whereDate('created_at', $dateStr)
+                ->first();
+
+            if ($record) {
+                $history->push($record);
             } else {
-                if ($attendances instanceof \Illuminate\Support\Collection) {
-                    $attendances->prepend($virtualAlpha);
+                // Look for permission
+                $permission = $permissions->firstWhere('date', $dateStr);
+
+                if ($permission) {
+                    $virtualPermission = new Attendance();
+                    $virtualPermission->status = match ($permission->permission_type->value) {
+                        'sick' => AttendanceEnum::SICK,
+                        'permit' => AttendanceEnum::PERMIT,
+                        'dinas' => AttendanceEnum::DINAS,
+                        default => AttendanceEnum::ALPHA
+                    };
+                    $virtualPermission->created_at = $date;
+                    $history->push($virtualPermission);
                 } else {
-                    $attendances = collect($attendances)->prepend($virtualAlpha);
+                    // Check if today and still have time
+                    $isPastLimit = now()->format('H:i') > $timeConfig['late_limit'];
+                    $isToday = $date->isToday();
+
+                    if ($isToday && !$isPastLimit) {
+                        // Don't show in list yet or show as "Belum Absen"
+                        // Usually history only shows confirmed status, but for consistency we can add a placeholder
+                    } else {
+                        // Past days or today past limit - Mark as Alpha
+                        $virtualAlpha = new Attendance();
+                        $virtualAlpha->status = AttendanceEnum::ALPHA;
+                        $virtualAlpha->created_at = $date;
+                        $history->push($virtualAlpha);
+                    }
                 }
             }
         }
+
+        // Manual pagination for the combined history
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $perPage = 10;
+        $currentItems = $history->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator($currentItems, count($history), $perPage, $currentPage, [
+            'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+        ]);
 
         return view('staff.pages.attendance-history.index', compact('attendances', 'todayAttendance', 'todayPermission', 'schoolConfig', 'timeConfig'));
     }
@@ -79,12 +144,22 @@ class StaffAttendanceController extends Controller
         ]);
 
         $employeeId = auth()->user()->employee->id;
-        $today = now()->format('Y-m-d');
+        $today = now();
+
+        // Prevent attendance on weekends
+        if ($today->isWeekend()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Absensi tidak berlaku pada hari Sabtu dan Minggu.'
+            ], 422);
+        }
+
+        $todayStr = $today->format('Y-m-d');
 
         // Check if already checked in today
         $existingAttendance = Attendance::where('model_id', $employeeId)
             ->where('model_type', 'App\Models\Employee')
-            ->whereDate('created_at', $today)
+            ->whereDate('created_at', $todayStr)
             ->first();
 
         if ($existingAttendance) {
@@ -163,12 +238,22 @@ class StaffAttendanceController extends Controller
         ]);
 
         $employeeId = auth()->user()->employee->id;
-        $today = now()->format('Y-m-d');
+        $today = now();
+
+        // Prevent attendance on weekends
+        if ($today->isWeekend()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Absensi tidak berlaku pada hari Sabtu dan Minggu.'
+            ], 422);
+        }
+
+        $todayStr = $today->format('Y-m-d');
 
         // Find today's attendance
         $attendance = Attendance::where('model_id', $employeeId)
             ->where('model_type', 'App\Models\Employee')
-            ->whereDate('created_at', $today)
+            ->whereDate('created_at', $todayStr)
             ->first();
 
         if (!$attendance) {
@@ -227,12 +312,22 @@ class StaffAttendanceController extends Controller
         ]);
 
         $employeeId = auth()->user()->employee->id;
-        $today = now()->format('Y-m-d');
+        $today = now();
+
+        // Prevent permission on weekends
+        if ($today->isWeekend()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengajuan izin tidak berlaku pada hari Sabtu dan Minggu.'
+            ], 422);
+        }
+
+        $todayStr = $today->format('Y-m-d');
 
         // Check if already checked in today
         $existingAttendance = Attendance::where('model_id', $employeeId)
             ->where('model_type', 'App\Models\Employee')
-            ->whereDate('created_at', $today)
+            ->whereDate('created_at', $todayStr)
             ->first();
 
         if ($existingAttendance) {

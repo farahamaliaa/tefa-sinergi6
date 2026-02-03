@@ -55,8 +55,8 @@ class EmployeeJournalService
                 continue;
             }
 
-            // Skip Sundays
-            if ($date->isSunday())
+            // Skip Saturdays and Sundays
+            if ($date->isSaturday() || $date->isSunday())
                 continue;
 
             $dateStr = $date->format('Y-m-d');
