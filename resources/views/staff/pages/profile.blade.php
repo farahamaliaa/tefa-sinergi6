@@ -408,8 +408,9 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Nomor Telepon</label>
-                                            <input type="text" name="phone_number"
-                                                class="form-control form-control-custom"
+                                            <input type="tel" name="phone_number"
+                                                class="form-control form-control-custom" pattern="[0-9]*"
+                                                inputmode="numeric" maxlength="13"
                                                 value="{{ old('phone_number', $employee->phone_number ?? '') }}">
                                         </div>
                                         <div class="col-md-6">

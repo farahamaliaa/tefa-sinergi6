@@ -43,8 +43,8 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="phone_number_instructor" class="form-label fw-semibold">Nomor HP</label>
-                            <input type="text" class="form-control" id="phone_number_instructor" name="phone_number"
-                                placeholder="Masukkan nomor HP">
+                            <input type="tel" class="form-control" id="phone_number_instructor" name="phone_number"
+                                pattern="[0-9]*" inputmode="numeric" maxlength="13" placeholder="Masukkan nomor HP">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="gender_instructor" class="form-label fw-semibold">Jenis Kelamin</label>

@@ -204,9 +204,9 @@
                                 <i class="ti ti-camera fs-5 text-white"></i>
                             </label>
                             <!-- The file input is technically form-linked via 'form' attribute or needs JS to link to the form,
-                                                 or we move it inside the form. But the form is in another column.
-                                                 Best approach: Use JS to trigger the file input inside the main form.
-                                            -->
+                                                     or we move it inside the form. But the form is in another column.
+                                                     Best approach: Use JS to trigger the file input inside the main form.
+                                                -->
                         </div>
 
                         <h4 class="fw-bold mb-1 text-dark">{{ $user->name }} <span
@@ -425,8 +425,9 @@
                                         <div class="col-md-6">
                                             <label class="form-label-custom">Nomor Telepon <span
                                                     class="text-danger">*</span></label>
-                                            <input type="text" name="phone_number"
-                                                class="form-control form-control-custom"
+                                            <input type="tel" name="phone_number"
+                                                class="form-control form-control-custom" pattern="[0-9]*"
+                                                inputmode="numeric" maxlength="13"
                                                 value="{{ old('phone_number', $employee->phone_number ?? '') }}" required>
                                         </div>
                                         <div class="col-md-6">

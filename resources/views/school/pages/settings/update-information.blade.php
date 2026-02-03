@@ -71,8 +71,8 @@
                         </div>
                         <div class="col-md-6 mb-4">
                             <label for="">Telepon Sekolah<span class="text-danger-1">*</span></label>
-                            <input type="text" name="phone_number" class="form-control mt-1"
-                                placeholder="Masukan telepon sekolah"
+                            <input type="tel" name="phone_number" class="form-control mt-1"
+                                placeholder="Masukan telepon sekolah" pattern="[0-9]*" inputmode="numeric" maxlength="15"
                                 value="{{ old('phone_number', $school->phone_number) }}">
                             @error('phone_number')
                                 <span class="text-danger-1">{{ $message }}</span>

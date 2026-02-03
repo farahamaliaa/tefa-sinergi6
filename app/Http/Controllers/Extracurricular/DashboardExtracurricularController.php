@@ -110,7 +110,7 @@ class DashboardExtracurricularController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
-                'phone_number' => 'nullable|string|max:13',
+                'phone_number' => ['nullable', 'string', 'max:13', 'regex:/^[0-9]+$/'],
                 'gender' => 'required|in:male,female',
                 'address' => 'nullable|string',
                 'birth_date' => 'nullable|date',
@@ -124,6 +124,7 @@ class DashboardExtracurricularController extends Controller
                 'email.email' => 'Format email tidak valid.',
                 'email.unique' => 'Email sudah digunakan.',
                 'phone_number.max' => 'Nomor telepon maksimal :max karakter.',
+                'phone_number.regex' => 'Nomor telepon hanya boleh berisi angka.',
                 'gender.required' => 'Jenis kelamin wajib dipilih.',
                 'gender.in' => 'Jenis kelamin tidak valid.',
                 'religion_id.required' => 'Agama wajib dipilih.',

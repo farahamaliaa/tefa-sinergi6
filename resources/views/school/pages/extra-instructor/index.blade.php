@@ -357,7 +357,8 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="edit_phone_number" class="form-label">Nomor HP</label>
-                                <input type="text" class="form-control" id="edit_phone_number" name="phone_number">
+                                <input type="tel" class="form-control" id="edit_phone_number" name="phone_number"
+                                    pattern="[0-9]*" inputmode="numeric" maxlength="13">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="edit_gender" class="form-label">Jenis Kelamin</label>
