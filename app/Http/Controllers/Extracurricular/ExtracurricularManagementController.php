@@ -8,9 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Extracurricular;
 use App\Models\ExtracurricularAttendance;
-use App\Models\ExtracurricularJournal;
-use App\Models\ExtracurricularPermission;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ExtracurricularManagementController extends Controller
@@ -31,7 +28,7 @@ class ExtracurricularManagementController extends Controller
     {
         $employee = auth()->user()->employee;
 
-        if (!$employee) {
+        if (! $employee) {
             $extracurriculars = collect([]);
 
             return view('extracurricular.pages.eskul.index', compact('extracurriculars'));
@@ -39,7 +36,7 @@ class ExtracurricularManagementController extends Controller
 
         $extracurriculars = Extracurricular::where('employee_id', $employee->id)
             ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'LIKE', '%' . $request->search . '%');
+                $query->where('name', 'LIKE', '%'.$request->search.'%');
             })
             ->with('extracurricularStudents')
             ->latest()
@@ -52,14 +49,14 @@ class ExtracurricularManagementController extends Controller
     {
         $extracurricularId = $request->get('extracurricular');
 
-        if (!$extracurricularId) {
+        if (! $extracurricularId) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
         // Get extracurricular info
         $extracurricular = Extracurricular::find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
@@ -68,7 +65,7 @@ class ExtracurricularManagementController extends Controller
             ->with('student.user', 'student.classroomStudents.classroom')
             ->when($request->search, function ($query) use ($request) {
                 $query->whereHas('student.user', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
                 });
             })
             ->get();
@@ -81,13 +78,13 @@ class ExtracurricularManagementController extends Controller
     {
         $extracurricularId = $request->get('extracurricular');
 
-        if (!$extracurricularId) {
+        if (! $extracurricularId) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
         $extracurricular = Extracurricular::find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
@@ -96,14 +93,14 @@ class ExtracurricularManagementController extends Controller
             ->with('student.user', 'student.classroomStudents.classroom')
             ->when($request->search, function ($query) use ($request) {
                 $query->whereHas('student.user', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
                 });
             })
             ->get();
 
         // Get date filter
         $date = $request->get('date');
-        $isHistory = !$date;
+        $isHistory = ! $date;
 
         if ($isHistory) {
             $attendancesQuery = ExtracurricularAttendance::with(['extracurricularStudent.student.user', 'extracurricularStudent.student.classroomStudents.classroom'])
@@ -117,7 +114,7 @@ class ExtracurricularManagementController extends Controller
 
             if ($request->search) {
                 $attendancesQuery->whereHas('extracurricularStudent.student.user', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
                 });
             }
 
@@ -151,7 +148,7 @@ class ExtracurricularManagementController extends Controller
             ->with('student.user', 'student.classroomStudents.classroom')
             ->when($request->search, function ($query) use ($request) {
                 $query->whereHas('student.user', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
                 });
             })
             ->get();
@@ -166,7 +163,7 @@ class ExtracurricularManagementController extends Controller
             $scheduleExistsOnDate = $dateCarbon->isAfter($schedule->created_at->startOfDay()) || $dateCarbon->isSameDay($schedule->created_at);
 
             if ($scheduleExistsOnDate) {
-                if ($dateCarbon->isPast() && !$dateCarbon->isToday()) {
+                if ($dateCarbon->isPast() && ! $dateCarbon->isToday()) {
                     $isTimePassed = true;
                 } elseif ($dateCarbon->isToday()) {
                     $endTime = \Carbon\Carbon::parse($schedule->end_time);
@@ -189,15 +186,17 @@ class ExtracurricularManagementController extends Controller
             ->get()
             ->filter(function ($att) use ($extracurricular, $extracurricularStudents) {
                 $esStudent = $extracurricularStudents->firstWhere('id', $att->extracurricular_student_id);
-                if (!$esStudent)
+                if (! $esStudent) {
                     return true;
+                }
 
                 $attDate = \Carbon\Carbon::parse($att->date)->startOfDay();
                 $dayName = strtolower($attDate->format('l'));
                 $sched = $extracurricular->schedules->where('day', $dayName)->first();
 
-                if (!$sched)
+                if (! $sched) {
                     return true;
+                }
 
                 return $attDate->lt($sched->created_at->startOfDay()) ||
                     $attDate->lt($esStudent->created_at->startOfDay());
@@ -220,14 +219,14 @@ class ExtracurricularManagementController extends Controller
         $attendanceMap = $attendances;
 
         // If no schedule today AND no attendance records, don't show students
-        if (!$schedule && $attendances->isEmpty()) {
+        if (! $schedule && $attendances->isEmpty()) {
             $extracurricularStudents = collect();
         }
 
         // Auto-create Alpha records if time has passed and no attendance recorded
         if ($isTimePassed) {
             foreach ($extracurricularStudents as $esStudent) {
-                if (!$attendanceMap->has($esStudent->id)) {
+                if (! $attendanceMap->has($esStudent->id)) {
                     // Check if student was already enrolled on this date
                     if ($esStudent->created_at->startOfDay()->gt($dateCarbon->startOfDay())) {
                         continue;
@@ -268,6 +267,7 @@ class ExtracurricularManagementController extends Controller
         if ($statusFilter) {
             $extracurricularStudents = $extracurricularStudents->filter(function ($es) use ($attendanceMap, $statusFilter) {
                 $status = $attendanceMap->get($es->id)?->status ?? 'belum';
+
                 return $status === $statusFilter;
             });
         }
@@ -285,13 +285,13 @@ class ExtracurricularManagementController extends Controller
     {
         $extracurricularId = $request->get('extracurricular');
 
-        if (!$extracurricularId) {
+        if (! $extracurricularId) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
         $extracurricular = Extracurricular::find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->route('extracurricular.dashboard')->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
@@ -363,14 +363,14 @@ class ExtracurricularManagementController extends Controller
     {
         $extracurricularId = $request->get('extracurricular');
 
-        if (!$extracurricularId) {
+        if (! $extracurricularId) {
             return redirect()->route('extracurricular.dashboard')
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
         $extracurricular = Extracurricular::with('schedules')->find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->route('extracurricular.dashboard')
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
@@ -418,7 +418,7 @@ class ExtracurricularManagementController extends Controller
     {
         $extracurricularId = $request->get('extracurricular');
 
-        if (!$extracurricularId) {
+        if (! $extracurricularId) {
             return redirect()->route('extracurricular.dashboard')
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
@@ -426,7 +426,7 @@ class ExtracurricularManagementController extends Controller
         $extracurricular = Extracurricular::with('schedules', 'journals.schedule', 'journals.attendances', 'extracurricularStudents')
             ->find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->route('extracurricular.dashboard')
                 ->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
@@ -466,7 +466,7 @@ class ExtracurricularManagementController extends Controller
                 'image' => $journal->image,
                 'attendances' => $journal->attendances,
                 'is_filled' => true,
-                'created_at' => \Carbon\Carbon::parse($journal->date)->startOfDay() // Use date for reliable sorting
+                'created_at' => \Carbon\Carbon::parse($journal->date)->startOfDay(), // Use date for reliable sorting
             ]);
         }
 
@@ -497,7 +497,7 @@ class ExtracurricularManagementController extends Controller
                         ->where('schedule_id', $sch->id)
                         ->isNotEmpty();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         $allHistory->push((object) [
                             'id' => null,
                             'date' => clone $date,
@@ -506,7 +506,7 @@ class ExtracurricularManagementController extends Controller
                             'image' => null,
                             'attendances' => collect(),
                             'is_filled' => false,
-                            'created_at' => clone $date // Sort by date
+                            'created_at' => clone $date, // Sort by date
                         ]);
                     }
                 }
@@ -518,6 +518,7 @@ class ExtracurricularManagementController extends Controller
             if ($a->date->toDateString() === $b->date->toDateString()) {
                 return strcmp($b->schedule->start_time, $a->schedule->start_time);
             }
+
             return $b->date <=> $a->date;
         });
 
@@ -547,13 +548,13 @@ class ExtracurricularManagementController extends Controller
         $extracurricular = Extracurricular::with('extracurricularStudents.student.user')
             ->find($extracurricularId);
 
-        if (!$extracurricular) {
+        if (! $extracurricular) {
             return redirect()->back()->with('error', 'Ekstrakurikuler tidak ditemukan');
         }
 
         $schedule = \App\Models\ExtracurricularSchedule::find($scheduleId);
 
-        if (!$schedule) {
+        if (! $schedule) {
             return redirect()->back()->with('error', 'Jadwal tidak ditemukan');
         }
 
@@ -594,7 +595,7 @@ class ExtracurricularManagementController extends Controller
             'extracurricular_id' => $request->extracurricular_id,
             'schedule_id' => $request->schedule_id,
             'date' => now()->toDateString(),
-            'description' => $request->title . "\n\n" . $request->description,
+            'description' => $request->title."\n\n".$request->description,
             'image' => $imagePath,
         ]);
 
@@ -624,7 +625,7 @@ class ExtracurricularManagementController extends Controller
             'attendances.extracurricularStudent.student.user'
         )->find($id);
 
-        if (!$journal) {
+        if (! $journal) {
             return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
         }
 
@@ -639,7 +640,7 @@ class ExtracurricularManagementController extends Controller
             'attendances'
         )->find($id);
 
-        if (!$journal) {
+        if (! $journal) {
             return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
         }
 
@@ -663,7 +664,7 @@ class ExtracurricularManagementController extends Controller
     {
         $journal = \App\Models\ExtracurricularJournal::find($id);
 
-        if (!$journal) {
+        if (! $journal) {
             return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
         }
 
@@ -704,7 +705,7 @@ class ExtracurricularManagementController extends Controller
     {
         $journal = \App\Models\ExtracurricularJournal::find($id);
 
-        if (!$journal) {
+        if (! $journal) {
             return redirect()->back()->with('error', 'Jurnal tidak ditemukan');
         }
 
