@@ -3,30 +3,43 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Contracts\Interfaces\AttendanceJournalInterface;
-use App\Models\LessonSchedule;
-use App\Models\TeacherJournal;
+use App\Contracts\Interfaces\ClassroomStudentInterface;
+use App\Contracts\Interfaces\LessonHourInterface;
+use App\Contracts\Interfaces\LessonScheduleInterface;
+use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
 use App\Http\Controllers\Controller;
-use App\Services\Teacher\TeacherJournalService;
 use App\Http\Requests\StoreTeacherJournalRequest;
 use App\Http\Requests\UpdateTeacherJournalRequest;
-use App\Contracts\Interfaces\LessonScheduleInterface;
-use App\Contracts\Interfaces\ClassroomStudentInterface;
-use App\Contracts\Interfaces\Teachers\TeacherJournalInterface;
-use App\Services\AttendanceJournalService;
-use App\Contracts\Interfaces\LessonHourInterface; // Added LessonHourInterface
 use Illuminate\Http\Request;
+use App\Models\LessonSchedule;
+use App\Models\TeacherJournal;
+use App\Services\AttendanceJournalService;
+use App\Services\Teacher\TeacherJournalService;
+use App\Models\SchoolYear;
+use App\Services\SemesterService;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+
 
 class TeacherJournalController extends Controller
 {
     private AttendanceJournalService $serviceAttendance;
-    private AttendanceJournalInterface $attendanceJournal;
-    private TeacherJournalInterface $teacherJournal;
-    private LessonScheduleInterface $lessonSchedule;
-    private TeacherJournalService $service;
-    private ClassroomStudentInterface $classroomStudent;
-    private LessonHourInterface $lessonHour; // Added property for LessonHourInterface
 
-    public function __construct(TeacherJournalInterface $teacherJournal, AttendanceJournalInterface $attendanceJournal, TeacherJournalService $service, LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent, AttendanceJournalService $serviceAttendance, LessonHourInterface $lessonHour)
+    private AttendanceJournalInterface $attendanceJournal;
+
+    private TeacherJournalInterface $teacherJournal;
+
+    private LessonScheduleInterface $lessonSchedule;
+
+    private TeacherJournalService $service;
+
+    private ClassroomStudentInterface $classroomStudent;
+
+    private LessonHourInterface $lessonHour;
+
+    private SemesterService $semesterService;
+
+    public function __construct(TeacherJournalInterface $teacherJournal, AttendanceJournalInterface $attendanceJournal, TeacherJournalService $service, LessonScheduleInterface $lessonSchedule, ClassroomStudentInterface $classroomStudent, AttendanceJournalService $serviceAttendance, LessonHourInterface $lessonHour, SemesterService $semesterService)
     {
         $this->serviceAttendance = $serviceAttendance;
         $this->attendanceJournal = $attendanceJournal;
@@ -34,7 +47,8 @@ class TeacherJournalController extends Controller
         $this->lessonSchedule = $lessonSchedule;
         $this->service = $service;
         $this->classroomStudent = $classroomStudent;
-        $this->lessonHour = $lessonHour; // Initialize the LessonHourInterface property
+        $this->lessonHour = $lessonHour;
+        $this->semesterService = $semesterService;
     }
 
     /**
@@ -43,9 +57,86 @@ class TeacherJournalController extends Controller
     public function index(Request $request)
     {
         $teacherSchedules = $this->lessonSchedule->whereTeacher(auth()->user()->id, now());
-        // dd($teacherSchedules);
-        $histories = $this->teacherJournal->histories(auth()->user()->id, $request);
-        // dd($teacherSchedules);
+        $filledHistories = $this->teacherJournal->histories(auth()->user()->id, $request);
+
+        $filledJournalDates = TeacherJournal::query()
+            ->whereRelation('lessonSchedule.teacherSubject.employee.user', 'id', auth()->user()->id)
+            ->whereHas('lessonSchedule.classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
+            ->get(['lesson_schedule_id', 'date']);
+
+        $filledLookup = [];
+        foreach ($filledJournalDates as $j) {
+            $d = Carbon::parse($j->date)->format('Y-m-d');
+            $filledLookup[$j->lesson_schedule_id . '_' . $d] = true;
+        }
+
+        $allSchedules = $this->lessonSchedule->getByTeacher(auth()->user()->id);
+
+        $activeSchoolYear = SchoolYear::where('active', true)->first();
+        $startDate = $activeSchoolYear ? $activeSchoolYear->created_at : now(); 
+        
+        if ($request->date) {
+            $startDate = Carbon::parse($request->date);
+            $endDate = Carbon::parse($request->date);
+        } else {
+            $endDate = now()->subDay();
+        }
+
+        $missingJournals = collect();
+
+        if ($startDate->lte($endDate) && !$request->search) {
+            $period = CarbonPeriod::create($startDate, $endDate);
+            \Log::info("Journal Debug: period Start={$startDate->toDateString()}, End={$endDate->toDateString()}");
+
+            foreach ($period as $date) {
+                \Log::info("Journal Debug: iteration date=" . $date->toDateString());
+                $dayName = strtolower($date->format('l'));
+                
+                if (isset($allSchedules[$dayName])) {
+                    foreach ($allSchedules[$dayName] as $schedule) {
+                        // Safeguard: Only show missing journals for dates on or after the schedule was created
+                        if ($date->lt(Carbon::parse($schedule->created_at)->startOfDay())) {
+                            continue;
+                        }
+
+                        $key = $schedule->id . '_' . $date->format('Y-m-d');
+                        
+                        if (!isset($filledLookup[$key])) {
+                            $fake = new TeacherJournal();
+                            $fake->id = 'missing_' . $key;
+                            $fake->lesson_schedule_id = $schedule->id;
+                            $fake->date = $date->format('Y-m-d H:i:s');
+                            $fake->is_filled = false;
+                            
+                            $fake->setRelation('lessonSchedule', $schedule);
+                            $fake->setRelation('attendanceJournals', collect());
+                            
+                            $missingJournals->push($fake);
+                        }
+                    }
+                }
+            }
+        }
+
+        $histories = $filledHistories->toBase()->map(function ($journal) {
+            $journal->is_filled = true;
+            return $journal;
+        })->merge($missingJournals);
+        
+        if ($request->filter === 'terlama') {
+             $histories = $histories->sortBy(function ($item) {
+                return Carbon::parse($item->date)->timestamp;
+            });
+        } else {
+            $histories = $histories->sortByDesc(function ($item) {
+                return Carbon::parse($item->date)->timestamp;
+            });
+        }
+        
+        $histories = $histories->values();
+
         return view('teacher.pages.journals.index', compact('teacherSchedules', 'histories'));
     }
 
@@ -56,6 +147,7 @@ class TeacherJournalController extends Controller
     {
         $classroomStudents = $this->classroomStudent->where($lessonSchedule->classroom->id, $request);
         $studentsPaginator = $classroomStudents;
+
         return view('teacher.pages.journals.create', compact('classroomStudents', 'lessonSchedule', 'studentsPaginator'));
     }
 
@@ -64,10 +156,18 @@ class TeacherJournalController extends Controller
      */
     public function store(StoreTeacherJournalRequest $request, LessonSchedule $lessonSchedule)
     {
+        $todayDayName = strtolower(now()->format('l'));
+        $scheduleDayName = strtolower($lessonSchedule->day);
+        
+        if ($todayDayName !== $scheduleDayName) {
+            return redirect()->back()->with('error', 'Tidak dapat mengisi jurnal untuk hari yang sudah lewat');
+        }
+
         try {
             $data = $this->service->store($request, $lessonSchedule);
             $teacherJournal = $this->teacherJournal->store($data);
             $this->serviceAttendance->storeJournal($request['attendance'], $teacherJournal);
+
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengirim jurnal');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
@@ -80,6 +180,7 @@ class TeacherJournalController extends Controller
     public function show(TeacherJournal $journal)
     {
         $attendanceJournals = $journal->attendanceJournals()->paginate(10);
+
         return view('teacher.pages.journals.detail', compact('journal', 'attendanceJournals'));
     }
 
@@ -89,6 +190,7 @@ class TeacherJournalController extends Controller
     public function edit(TeacherJournal $teacherJournal)
     {
         $classroomStudents = $this->attendanceJournal->getByTeacherJournal($teacherJournal->id);
+
         return view('teacher.pages.journals.update', compact('teacherJournal', 'classroomStudents'));
     }
 
@@ -101,6 +203,7 @@ class TeacherJournalController extends Controller
             $data = $this->service->update($request, $teacherJournal->lessonSchedule);
             $this->teacherJournal->update($teacherJournal->id, $data);
             $this->serviceAttendance->updateJournal($request['attendance'], $teacherJournal);
+
             return to_route('teacher.journals.index')->with('success', 'Berhasil mengupdate jurnal');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
@@ -114,6 +217,7 @@ class TeacherJournalController extends Controller
     {
         try {
             $this->teacherJournal->delete($teacherJournal->id);
+
             return redirect()->back()->with('success', 'Berhasi menghapus jurnal');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());

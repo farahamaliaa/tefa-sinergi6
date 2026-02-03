@@ -63,16 +63,28 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
 
     public function updateWithAttribute(array $attribute, array $data): mixed
     {
-        // Use updateOrCreate to handle both new and existing attendance records
-        // This will create a new record if not found, or update the existing one
-        return $this->model->query()->updateOrCreate(
-            [
-                'model_type' => $attribute['model_type'],
-                'model_id' => $attribute['model_id'],
-                'created_at' => $attribute['created_at']
-            ],
-            $data
-        );
+        // Only allow updating these specific attendance fields
+        $allowedFields = ['checkin', 'checkout', 'status', 'point', 'proof'];
+        $updateData = array_intersect_key($data, array_flip($allowedFields));
+
+        // First, find existing attendance record for the same model on the same date
+        // Use whereDate to properly compare dates (ignoring time portion)
+        $existing = $this->model->query()
+            ->where('model_type', $attribute['model_type'])
+            ->where('model_id', $attribute['model_id'])
+            ->whereDate('created_at', $attribute['created_at'])
+            ->first();
+
+        if ($existing) {
+            // Update existing record with only allowed fields
+            $existing->update($updateData);
+            return $existing;
+        } else {
+            // Create new record
+            $updateData['model_type'] = $attribute['model_type'];
+            $updateData['model_id'] = $attribute['model_id'];
+            return $this->model->query()->create($updateData);
+        }
     }
 
     public function delete(mixed $id): mixed
@@ -134,13 +146,16 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->student->query()
             ->whereHas('attendances', function ($query) use ($date, $request, $startDate, $endDate) {
                 $query->whereDate('created_at', $date)
-                ->when($request->start, function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('created_at', [$startDate, $endDate]);
-                });
+                    ->when($request->start, function ($q) use ($startDate, $endDate) {
+                        $q->whereBetween('created_at', [$startDate, $endDate]);
+                    });
             })
-            ->with(['student.user', 'attendances' => function ($query) use ($date) {
-                $query->whereDate('created_at', $date);
-            }])
+            ->with([
+                'student.user',
+                'attendances' => function ($query) use ($date) {
+                    $query->whereDate('created_at', $date);
+                }
+            ])
             ->where('classroom_id', $classroom_id)
             ->when($request->name, function ($query) use ($request) {
                 $query->whereRelation('student.user', 'name', 'LIKE', '%' . $request->name . '%');
@@ -193,7 +208,13 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
     public function AttendanceDasboard(mixed $model, mixed $query, Request $request): mixed
     {
         $result = $this->model->query();
-        $result->with('model.user');
+
+        if ($model === 'App\Models\ClassroomStudent') {
+            $result->with('model.student.user');
+        } else {
+            $result->with('model.user');
+        }
+
         $result->where('model_type', $model);
         $result->where('status', $query);
         $request->date ? $result->whereDate('created_at', $request->date) : $result->whereDate('created_at', now());
@@ -205,9 +226,11 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->model->query()
             ->whereDate('created_at', $date)
             ->where('model_type', 'App\Models\ClassroomStudent')
-            ->with(['model' => function ($query) {
-                $query->with('classroom'); // Memuat relasi classroom dari model
-            }])
+            ->with([
+                'model' => function ($query) {
+                    $query->with('classroom'); // Memuat relasi classroom dari model
+                }
+            ])
             ->get()
             ->groupBy(function ($item) {
                 // Mengelompokkan berdasarkan classroom_id dari relasi model
@@ -290,7 +313,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $this->model->query()
             ->where('model_type', $model)
             ->where('model_id', $id)
-            ->whereDay('created_at', today()->day)
+            ->whereDate('created_at', today())
             ->first();
     }
 
@@ -313,15 +336,15 @@ class AttendanceRepository extends BaseRepository implements AttendanceInterface
         return $condition == 'get' ? $result->get() : $result->count();
     }
 
-    public function getSickAndPermit(Request $request, array $status) : mixed
+    public function getSickAndPermit(Request $request, array $status): mixed
     {
         return $this->model->query()
             ->where('model_type', 'App\Models\ClassroomStudent')
             ->whereIn('status', $status)
-            ->when($request->status, function($query) use ($request) {
+            ->when($request->status, function ($query) use ($request) {
                 $query->where('status', 'like', '%' . $request->status . '%');
             })
-            ->when($request->classroom, function($query) use ($request) {
+            ->when($request->classroom, function ($query) use ($request) {
                 $query->where('model_id', $request->classroom);
             })
             ->latest()->get();

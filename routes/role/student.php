@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->prefix('student')->name('student.')->group(function () {
     Route::get('', [DashboardStudentController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardStudentController::class, 'profile'])->name('profile');
+    Route::put('/profile', [DashboardStudentController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('lesson-schedule', [LessonScheduleController::class, 'index'])->name('lesson-schedule');
 

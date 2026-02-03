@@ -386,13 +386,13 @@
                         if (document.getElementById('employee-alpha-count')) document.getElementById(
                             'employee-alpha-count').innerText = data.counts.employee_alpha + " Guru";
 
-                        // Extra (re-using employee data as per current implementation)
-                        if (document.getElementById('extra-late-count')) document.getElementById(
-                            'extra-late-count').innerText = data.counts.employee_late + " Pembina";
+                        // Extra Student Attendance
+                        if (document.getElementById('extra-present-count')) document.getElementById(
+                            'extra-present-count').innerText = data.counts.extra_student_present + " Siswa";
                         if (document.getElementById('extra-permit-count')) document.getElementById(
-                            'extra-permit-count').innerText = data.counts.employee_permit + " Pembina";
+                            'extra-permit-count').innerText = data.counts.extra_student_permit + " Siswa";
                         if (document.getElementById('extra-alpha-count')) document.getElementById(
-                            'extra-alpha-count').innerText = data.counts.employee_alpha + " Pembina";
+                            'extra-alpha-count').innerText = data.counts.extra_student_alpha + " Siswa";
                     }
 
                     // Update Panes/Tables
@@ -413,13 +413,13 @@
                         if (document.getElementById('employee-alpha-table')) document.getElementById(
                             'employee-alpha-table').innerHTML = data.panes.employee_alpha;
 
-                        // Extra Tables (re-using Student data as per current implementation mirror)
-                        if (document.getElementById('extra-late-table')) document.getElementById(
-                            'extra-late-table').innerHTML = data.panes.student_late;
-                        if (document.getElementById('extra-permit-table')) document.getElementById(
-                            'extra-permit-table').innerHTML = data.panes.student_permit;
-                        if (document.getElementById('extra-alpha-table')) document.getElementById(
-                            'extra-alpha-table').innerHTML = data.panes.student_alpha;
+                        // Extra Student Tables
+                        if (document.getElementById('extra-student-present-table')) document.getElementById(
+                            'extra-student-present-table').innerHTML = data.panes.extra_student_present;
+                        if (document.getElementById('extra-student-permit-table')) document.getElementById(
+                            'extra-student-permit-table').innerHTML = data.panes.extra_student_permit;
+                        if (document.getElementById('extra-student-alpha-table')) document.getElementById(
+                            'extra-student-alpha-table').innerHTML = data.panes.extra_student_alpha;
 
                         // Journal Panes
                         if (document.getElementById('staff-journal-container')) document.getElementById(
@@ -427,7 +427,7 @@
                         if (document.getElementById('teacher-journal-container')) document.getElementById(
                             'teacher-journal-container').innerHTML = data.panes.teacher_journal;
                         if (document.getElementById('extra-teacher-journal-container')) document.getElementById(
-                            'extra-teacher-journal-container').innerHTML = data.panes.teacher_journal;
+                            'extra-teacher-journal-container').innerHTML = data.panes.extra_journal;
                     }
 
                     // Update Charts
@@ -463,9 +463,27 @@
                         if (window.studentStatisticChart && data.charts.student) {
                             var stuData = data.charts.student;
                             window.studentStatisticChart.updateSeries([
-                                stuData.chartSick, // Izin/Sakit
-                                stuData.chartLate, // Telat
-                                stuData.chartAlpha // Alfa
+                                stuData.chartSick,
+                                stuData.chartLate,
+                                stuData.chartAlpha
+                            ]);
+                        }
+
+                        if (window.employeeStatisticChart && data.charts.employee) {
+                            var empData = data.charts.employee;
+                            window.employeeStatisticChart.updateSeries([
+                                empData.chartSick,
+                                empData.chartLate,
+                                empData.chartAlpha
+                            ]);
+                        }
+
+                        if (window.extraStatisticChart && data.charts.extra) {
+                            var extData = data.charts.extra;
+                            window.extraStatisticChart.updateSeries([
+                                extData.chartSick,
+                                extData.chartLate,
+                                extData.chartAlpha
                             ]);
                         }
 

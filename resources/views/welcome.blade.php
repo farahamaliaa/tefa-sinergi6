@@ -111,7 +111,8 @@
         }
 
         .mobile-dual {
-            background: linear-gradient(135deg, #0f172a 50%, #1e293b 50%);
+            background: #0F172A;
+            /* background: linear-gradient(135deg, #0f172a 50%, #1e293b 50%); */
             padding: 100px 0;
             color: white;
             position: relative;
@@ -256,28 +257,8 @@
 
                 <div class="col-lg-7" data-aos="fade-left">
                     <div class="perspective-container">
-                        <div class="float-widget float-top-right">
-                            <div style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%;"></div>
-                            <span style="font-weight: 700; font-size: 0.9rem;">Kehadiran 98%</span>
-                        </div>
-
-                        <div class="float-widget float-bottom-left">
-                            <div class="d-flex align-items-center">
-                                <i class="icofont-check-circled text-primary mr-2"></i>
-                                <div>
-                                    <span style="font-weight: 700; font-size: 0.9rem;">Laporan
-                                        Dibuat</span>
-                                    {{-- <strong class="d-block" style="font-size: 0.8rem; line-height: 1.2;">Laporan
-                                        Dibuat</strong>
-                                    <small class="text-muted" style="font-size: 0.7rem;">Baru saja</small> --}}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="hero-card-3d">
-                            <img src="{{ asset('landing_assets/images/landing/dashboard_mockup1.png') }}" class="hero-img"
-                                alt="Sinergi6 Dashboard">
-                        </div>
+                        <img src="{{ asset('landing_assets/images/landing/dashboard_mockup1.webp') }}" class="hero-img"
+                            alt="Sinergi6 Dashboard">
                     </div>
                 </div>
             </div>
@@ -387,15 +368,15 @@
                     </div>
                 </div>
                 <div class="col-lg-6 text-center" data-aos="fade-left">
-                    <img src="{{ asset('landing_assets/images/landing/about.png') }}"
-                        style="max-width: 80%; transform: rotate(-5deg); border-radius: 30px; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); border: 4px solid #334155;"
+                    <img src="{{ asset('landing_assets/images/landing/phone-app.webp') }}"
+                        style="max-width: 50%; transform: rotate(-5deg);"
                         alt="App Mockup">
                 </div>
             </div>
         </div>
     </section>
 
-    @if (isset($schools) && count($schools) > 0)
+    <!-- @if (isset($schools) && count($schools) > 0)
         <section class="partners-refined">
             <div class="container">
                 <div class="partners-title">DIPERCAYA OLEH SEKOLAH UNGGULAN</div>
@@ -411,7 +392,7 @@
                 </div>
             </div>
         </section>
-    @endif
+    @endif -->
 @endsection
 
 @section('script')

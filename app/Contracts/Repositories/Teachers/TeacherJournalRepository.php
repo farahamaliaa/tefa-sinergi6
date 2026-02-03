@@ -60,6 +60,9 @@ class TeacherJournalRepository extends BaseRepository implements TeacherJournalI
     {
         return $this->model->query()
             ->whereRelation('lessonSchedule.teacherSubject.employee.user', 'id', $id)
+            ->whereHas('lessonSchedule.classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->with('attendanceJournals')
             ->when($request->search, function ($query) use ($request) {
                 $query->where('title', 'LIKE', '%' . $request->search . '%');
@@ -95,6 +98,9 @@ class TeacherJournalRepository extends BaseRepository implements TeacherJournalI
     {
         return $this->model->query()
             ->whereRelation('lessonSchedule.teacherSubject', 'employee_id', $employee_id)
+            ->whereHas('lessonSchedule.classroom.schoolYear', function ($query) {
+                $query->where('active', true);
+            })
             ->get();
     }
 

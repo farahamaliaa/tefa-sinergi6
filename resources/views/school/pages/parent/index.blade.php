@@ -36,6 +36,18 @@
         background-size: cover;
         opacity: 1;
     }
+
+    .btn-import {
+        background-color: #1EB196 !important;
+        border-color: #1EB196 !important;
+        color: #fff !important;
+    }
+
+    .btn-import:hover {
+        background-color: #1e9c87 !important;
+        border-color: #1e9c87 !important;
+    }
+
 </style>
 
 @extends('school.layouts.app')
@@ -51,7 +63,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a class="text-white text-decoration-none" href="javascript:void(0)">
-                                    Daftar - orang ua
+                                    Daftar Data Orang Tua
                                 </a>
                             </li>
                         </ol>
@@ -83,6 +95,13 @@
         </div>
         @endif
 
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
         @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <ul class="mb-0">
@@ -95,21 +114,34 @@
         @endif
 
         <div class="row mb-3 align-items-center">
-            <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white">
-                        <i class="ti ti-search"></i>
-                    </span>
-                    <input type="text" class="form-control border-start-0" placeholder="Cari" id="searchInput">
+            <div class="col-md-2">
+                <div class="position-relative flex-grow-1">
+                    <input type="text" name="name" class="form-control product-search ps-5" id="input-search" placeholder="Cari..." value="{{ old('name', request('name')) }}">
+                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                 </div>
             </div>
-            <div class="col-md-3">
-                <select class="form-select" id="filterKelas">
-                    <option value="">Kelas</option>
-                    <option value="XI RPL 1">XI RPL 1</option>
-                </select>
+            <div class="col-md-2">
+                <div class="d-flex align-items-center gap-2">
+                    <select class="form-select" id="filterKelas">
+                        <option value="">Kelas</option>
+                        @foreach($students->pluck('classroom')->unique()->sort() as $class)
+                            @if($class && $class != 'No Class')
+                                <option value="{{ $class }}">{{ $class }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    <button class="btn text-white" style="background-color: #0993CD;" id="filterBtn">Filter</button>
+                </div>
             </div>
-            <div class="col-md-5 text-end">
+            <div class="col-md-8 text-end">
+                {{-- <a href="{{ route('school.parent.download-template') }}" class="btn btn-outline-success me-2">
+                    <i class="ti ti-download"></i> Template
+                </a> --}}
+                <button class="btn btn-import me-2" data-bs-toggle="modal" data-bs-target="#importParentModal">
+                                        <svg width="20" height="25" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.7699 8.92256V23.1726M13.7699 8.92256L18.5199 13.6726M13.7699 8.92256L9.0199 13.6726M22.4782 16.8392C24.8833 16.8392 26.4366 14.8901 26.4366 12.4851C26.4365 11.5329 26.1243 10.607 25.5478 9.84915C24.9712 9.09133 24.1622 8.54338 23.2446 8.28923C23.1034 6.51346 22.3674 4.8372 21.1557 3.53146C19.9439 2.22573 18.3272 1.36684 16.5669 1.09366C14.8066 0.820475 13.0056 1.14897 11.4551 2.02602C9.90454 2.90308 8.69515 4.27744 8.0224 5.9269C6.60599 5.53427 5.09162 5.72038 3.81244 6.44431C2.53325 7.16823 1.59403 8.37065 1.2014 9.78707C0.808771 11.2035 0.994888 12.7178 1.71881 13.997C2.44273 15.2762 3.64516 16.2154 5.06157 16.6081" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>  Import
+                </button>
                 <button class="btn text-white" style="background-color: #0993CD;" data-bs-toggle="modal" data-bs-target="#createParentModal">
                     <i class="ti ti-plus"></i> Tambah Orang Tua
                 </button>
@@ -134,7 +166,7 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="{{ $parent->user->image ? asset('storage/' . $parent->user->image) : asset('admin_assets/dist/images/profile/user-1.jpg') }}" alt="avatar" 
+                                <img src="{{ $parent->user->image && Storage::exists($parent->user->image) ? asset('storage/' . $parent->user->image) : asset('assets/images/default-user.jpeg') }}" alt="avatar" 
                                      class="rounded-circle me-2" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
                                 <div>
@@ -151,15 +183,68 @@
                         </td>
                         <td>{{ $parent->phone_number ?? '-' }}</td>
                         <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
+                            <div class="dropdown dropstart">
+                                <a href="#" class="text-muted" id="dropdownMenuButton{{ $parent->id }}"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="category">
+                                        <div class="category-business"></div>
+                                        <div class="category-social"></div>
+                                        <span class="more-options text-dark">
+                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $parent->id }}"
+                                    style="z-index: 20000;">
+                                    <li>
+                                        <button type="button"
+                                            onclick="detailParent('{{ urlencode(json_encode([
+                                                'name' => $parent->user->name,
+                                                'email' => $parent->user->email,
+                                                'phone_number' => $parent->phone_number,
+                                                'gender' => $parent->user->gender,
+                                                'image' => $parent->user->image,
+                                                'student_details' => $parent->students->map(function($s) {
+                                                    return [
+                                                        'name' => $s->user ? $s->user->name : $s->name,
+                                                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
+                                                    ];
+                                                })
+                                            ])) }}')"
+                                            class="dropdown-item d-flex align-items-center gap-3">
+                                            <i class="fs-4 ti ti-eye"></i>Detail
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            class="dropdown-item d-flex align-items-center gap-3"
+                                            onclick="editParent('{{ urlencode(json_encode([
+                                                'id' => $parent->id,
+                                                'name' => $parent->user->name,
+                                                'email' => $parent->user->email,
+                                                'phone_number' => $parent->phone_number,
+                                                'gender' => $parent->user->gender,
+                                                'image' => $parent->user->image,
+                                                'student_ids' => $parent->students->pluck('id'),
+                                                'student_details' => $parent->students->map(function($s) {
+                                                    return [
+                                                        'name' => $s->user ? $s->user->name : $s->name,
+                                                        'classroom' => $s->classroomStudents->first()?->classroom?->name ?? '-'
+                                                    ];
+                                                })
+                                            ])) }}')">
+                                            <i class="fs-4 ti ti-pencil"></i>Edit
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            onclick="deleteParent('{{ $parent->id }}')"
+                                            class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                            <i class="fs-4 ti ti-trash"></i>Hapus
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -173,63 +258,98 @@
     </div>
 </div>
 
-<!-- Modal Create Parent -->
-<div class="modal fade" id="createParentModal" tabindex="-1" aria-labelledby="createParentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #0993CD; color: white;">
-                <h5 class="modal-title text-white" id="createParentModalLabel">Tambah Data Orang Tua</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('school.parent.store') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="name" name="name" required placeholder="Masukkan nama lengkap">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required placeholder="Masukkan email">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="phone_number" class="form-label">Nomor HP</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" required placeholder="Masukkan nomor HP">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="gender" class="form-label">Jenis Kelamin</label>
-                            <select class="form-select" id="gender" name="gender" required>
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="male">Laki-laki</option>
-                                <option value="female">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="students" class="form-label">Pilih Siswa (Anak)</label>
-                            <select class="form-select" id="students" name="students[]" size="5" multiple style="height: 150px;">
-                                @foreach($students as $student)
-                                    <option value="{{ $student['id'] }}">{{ $student['name'] }} - {{ $student['classroom'] }}</option>
-                                @endforeach
-                            </select>
-                            <small class="text-muted">Tahan CTRL untuk memilih lebih dari satu anak.</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-white" style="background-color: #0993CD;">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@include('school.pages.parent.widgets.create-parent')
+
+@include('school.pages.parent.widgets.edit-parent')
+
+<x-delete-modal-component />
+
+@include('school.pages.parent.widgets.import-parent')
+@include('school.pages.parent.widgets.detail-parent')
 
 <script>
+    function previewCreateImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('create-preview-img').src = URL.createObjectURL(file);
+        }
+    }
+
+    function previewEditImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('edit-preview-img').src = URL.createObjectURL(file);
+        }
+    }
+
+    function editParent(data) {
+        const parent = JSON.parse(decodeURIComponent(data));
+        
+        document.getElementById('edit_name').value = parent.name;
+        document.getElementById('edit_email').value = parent.email;
+        document.getElementById('edit_phone_number').value = parent.phone_number;
+        document.getElementById('edit_gender').value = parent.gender;
+        
+        const studentSelect = document.getElementById('edit_students');
+        Array.from(studentSelect.options).forEach(option => {
+            option.selected = parent.student_ids.includes(parseInt(option.value));
+        });
+
+        const previewImg = document.getElementById('edit-preview-img');
+        if (parent.image) {
+            previewImg.src = "{{ asset('storage') }}/" + parent.image;
+        } else {
+             previewImg.src = "{{ asset('assets/images/default-user.jpeg') }}";
+        }
+        
+        const form = document.getElementById('editParentForm');
+        form.action = `/school/parents/${parent.id}`;
+        
+        const modal = new bootstrap.Modal(document.getElementById('editParentModal'));
+        modal.show();
+    }
+
+    function deleteParent(id) {
+         const form = document.getElementById('form-delete');
+         form.action = `/school/parents/${id}`;
+         
+         const modal = new bootstrap.Modal(document.getElementById('modal-delete'));
+         modal.show();
+    }
+
+    function detailParent(data) {
+        const parent = JSON.parse(decodeURIComponent(data));
+        
+        document.getElementById('detail_name').textContent = parent.name;
+        document.getElementById('detail_email').textContent = parent.email;
+        document.getElementById('detail_phone_number').textContent = parent.phone_number || '-';
+        document.getElementById('detail_gender').textContent = parent.gender === 'male' ? 'Laki-laki' : 'Perempuan';
+        
+        const previewImg = document.getElementById('detail-preview-img');
+        if (parent.image) {
+            previewImg.src = "{{ asset('storage') }}/" + parent.image;
+        } else {
+             previewImg.src = "{{ asset('assets/images/default-user.jpeg') }}";
+        }
+
+        const studentsContainer = document.getElementById('detail_students');
+        studentsContainer.innerHTML = '';
+        
+        if (parent.student_details) {
+            parent.student_details.forEach(student => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-light text-dark border';
+                badge.textContent = `${student.name} (${student.classroom})`;
+                studentsContainer.appendChild(badge);
+            });
+        } else {
+             studentsContainer.textContent = '-';
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('detailParentModal'));
+        modal.show();
+    }
+
     setInterval(function() {
         fetch("{{ route('school.parent.index') }}", {
             headers: {
@@ -248,13 +368,30 @@
             }
 
             data.forEach((parent, index) => {
-                let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('admin_assets/dist/images/profile/user-1.jpg') }}";
+                let userImage = parent.user && parent.user.image ? "{{ asset('storage') }}/" + parent.user.image : "{{ asset('assets/images/default-user.jpeg') }}";
                 let genderLabel = parent.user && parent.user.gender == 'male' ? 'Laki-laki' : 'Perempuan';
                 let userName = parent.user ? parent.user.name : '-';
+                let userEmail = parent.user ? parent.user.email : '';
+                let userGender = parent.user ? parent.user.gender : '';
+                let userImageRaw = parent.user ? parent.user.image : null;
                 
                 let studentNames = parent.students.map(s => s.user ? s.user.name : s.name).join(', ');
+                let studentIds = parent.students.map(s => s.id);
                 
-                // Extract unique classrooms
+                let studentDetails = [];
+                if(parent.students) {
+                    parent.students.forEach(s => {
+                        let cName = '-';
+                        if(s.classroom_students && s.classroom_students.length > 0 && s.classroom_students[0].classroom) {
+                            cName = s.classroom_students[0].classroom.name;
+                        }
+                        studentDetails.push({
+                            name: s.user ? s.user.name : s.name,
+                            classroom: cName
+                        });
+                    });
+                }
+                
                 let classrooms = [];
                 if(parent.students) {
                     parent.students.forEach(s => {
@@ -269,6 +406,18 @@
                 let classroomStr = classrooms.join(', ');
 
                 let phone = parent.phone_number || '-';
+
+                let editData = {
+                    id: parent.id,
+                    name: userName,
+                    email: userEmail,
+                    phone_number: parent.phone_number,
+                    gender: userGender,
+                    image: userImageRaw,
+                    student_ids: studentIds,
+                    student_details: studentDetails
+                };
+                let editDataStr = encodeURIComponent(JSON.stringify(editData));
 
                 let row = `
                     <tr>
@@ -286,15 +435,42 @@
                         <td>${classroomStr}</td>
                         <td>${phone}</td>
                         <td>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(9, 147, 205, 0.1); color: #0993CD; border: none;" title="Lihat">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                            <button class="btn btn-sm me-1" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border: none;" title="Edit">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: none;" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
+                             <div class="dropdown dropstart">
+                                <a href="#" class="text-muted" id="dropdownMenuButton${parent.id}"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="category">
+                                        <div class="category-business"></div>
+                                        <div class="category-social"></div>
+                                        <span class="more-options text-dark">
+                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${parent.id}"
+                                    style="z-index: 20000;">
+                                    <li>
+                                        <button type="button"
+                                            onclick="detailParent('${editDataStr}')"
+                                            class="dropdown-item d-flex align-items-center gap-3">
+                                            <i class="fs-4 ti ti-eye"></i>Detail
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            class="dropdown-item d-flex align-items-center gap-3"
+                                            onclick="editParent('${editDataStr}')">
+                                            <i class="fs-4 ti ti-pencil"></i>Edit
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button"
+                                            onclick="deleteParent('${parent.id}')"
+                                            class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                            <i class="fs-4 ti ti-trash"></i>Hapus
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 `;

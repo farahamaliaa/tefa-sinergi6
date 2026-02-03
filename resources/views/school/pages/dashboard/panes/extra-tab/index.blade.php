@@ -121,8 +121,9 @@
     <div class="col-md-6 col-lg-4">
         <div class="stat-card border">
             <div>
-                <div class="stat-title">Jumlah Pembina Telat</div>
-                <div class="stat-badge bg-primary-soft" id="extra-late-count">{{ $lates_teacher->count() }} Pembina</div>
+                <div class="stat-title">Jumlah Siswa Ekstra Hadir</div>
+                <div class="stat-badge bg-primary-soft" id="extra-present-count">{{ $extraPresentStudent->count() }} Siswa
+                </div>
             </div>
             <div class="icon-box bg-primary-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,8 +146,9 @@
     <div class="col-md-6 col-lg-4">
         <div class="stat-card border">
             <div>
-                <div class="stat-title">Jumlah Pembina Izin/Sakit</div>
-                <div class="stat-badge bg-warning-soft" id="extra-permit-count">{{ $totalPermit_teacher }} Pembina</div>
+                <div class="stat-title">Jumlah Siswa Ekstra Izin/Sakit</div>
+                <div class="stat-badge bg-warning-soft" id="extra-permit-count">{{ $totalPermitExtraStudent }} Siswa
+                </div>
             </div>
             <div class="icon-box bg-warning-soft">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none"
@@ -163,8 +165,8 @@
     <div class="col-md-6 col-lg-4">
         <div class="stat-card border">
             <div>
-                <div class="stat-title">Jumlah Pembina Alfa</div>
-                <div class="stat-badge bg-danger-soft" id="extra-alpha-count">{{ $alpha_teacher->count() }} Pembina
+                <div class="stat-title">Jumlah Siswa Ekstra Alfa</div>
+                <div class="stat-badge bg-danger-soft" id="extra-alpha-count">{{ $extraAlphaStudent->count() }} Siswa
                 </div>
             </div>
             <div class="icon-box bg-danger-soft">
@@ -184,23 +186,23 @@
     <div class="col-lg-8 col-md-12 d-flex mb-4">
         <div class="card w-100 h-100 border">
             <div class="card-body">
-                <h5 class="mb-4"><b>Data Absensi Pembina</b></h5>
+                <h5 class="mb-4"><b>Data Absensi Siswa Ekstrakurikuler</b></h5>
                 <ul class="nav nav-pills mb-4 p-1 rounded-pill bg-light d-inline-flex">
                     <li class="nav-item">
-                        <a href="#late-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2 active"
-                            id="late">
-                            Telat
+                        <a href="#extra-present-content" data-bs-toggle="tab"
+                            class="nav-link rounded-pill px-4 py-2 active" id="extra-present-tab">
+                            Hadir
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#permission-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
-                            id="permission">
+                        <a href="#extra-permission-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
+                            id="extra-permission-tab">
                             Izin
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#alpha-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
-                            id="alpha">
+                        <a href="#extra-alpha-content" data-bs-toggle="tab" class="nav-link rounded-pill px-4 py-2"
+                            id="extra-alpha-tab">
                             Alfa
                         </a>
                     </li>
@@ -208,26 +210,33 @@
 
 
                 <div class="tab-content">
-                    <div id="late-content" class="tab-pane fade show active">
+                    <div id="extra-present-content" class="tab-pane fade show active">
                         <div class="note-has-grid row">
-                            <div class="col-12" id="extra-late-table">
-                                @include('school.pages.dashboard.panes.student-tab.late-tab')
+                            <div class="col-12" id="extra-student-present-table">
+                                @include('school.pages.dashboard.panes.extra-tab.present-student-tab', [
+                                    'present' => $extraPresentStudent,
+                                ])
                             </div>
                         </div>
                     </div>
 
-                    <div id="permission-content" class="tab-pane fade">
+                    <div id="extra-permission-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12" id="extra-permit-table">
-                                @include('school.pages.dashboard.panes.student-tab.permisson-tab')
+                            <div class="col-12" id="extra-student-permit-table">
+                                @include('school.pages.dashboard.panes.extra-tab.permission-student-tab', [
+                                    'sick' => $extraSickStudent,
+                                    'permit' => $extraPermitStudent,
+                                ])
                             </div>
                         </div>
                     </div>
 
-                    <div id="alpha-content" class="tab-pane fade">
+                    <div id="extra-alpha-content" class="tab-pane fade">
                         <div class="note-has-grid row">
-                            <div class="col-12" id="extra-alpha-table">
-                                @include('school.pages.dashboard.panes.student-tab.alpha-tab')
+                            <div class="col-12" id="extra-student-alpha-table">
+                                @include('school.pages.dashboard.panes.extra-tab.alpha-student-tab', [
+                                    'alpha' => $extraAlphaStudent,
+                                ])
                             </div>
                         </div>
                     </div>
@@ -240,9 +249,9 @@
         <div class="card w-100 h-100 overflow-hidden border">
             <div class="card-body">
                 <div class="row align-items-center">
-                    <h5 class="card-title fw-semibold">Statistik Absensi Siswa</h5>
+                    <h5 class="card-title fw-semibold">Statistik Absensi Siswa Ekstra</h5>
                     <h6 class="mb-3">Hari ini</h6>
-                    <div id="chart-student" class="d-flex justify-content-center"></div>
+                    <div id="chart-extra" class="d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -329,7 +338,7 @@
 </h4>
 
 <div id="extra-teacher-journal-container">
-    @include('school.pages.dashboard.panes.teacher-journal')
+    @include('school.pages.dashboard.panes.extra-journal')
 </div>
 
 

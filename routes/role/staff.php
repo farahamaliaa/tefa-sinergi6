@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:staff|teacher'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [DashboardStaffController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardStaffController::class, 'profile'])->name('profile');
+    Route::put('/profile', [DashboardStaffController::class, 'updateProfile'])->name('profile.update');
 
     // Staff Permissions (Staff Biasa)
     Route::resource('permission', StaffPermissionController::class);
@@ -34,7 +36,9 @@ Route::middleware(['auth', 'role:staff|teacher'])->prefix('employee')->name('emp
     // fitur buku tamu
     Route::resource('guestbook', GuestBookController::class);
     // fitur jurnal
-    Route::resource('journal', EmployeeJournalController::class)->except('show');
+    Route::resource('journal', EmployeeJournalController::class)->except('show')->parameters([
+        'journal' => 'employeeJournal'
+    ]);
     Route::get('journal/detail/{employeeJournal}', [EmployeeJournalController::class, 'detail'])->name('journal.detail');
 
     // fitur absensi

@@ -3,32 +3,27 @@
         <thead class="text-dark fs-4" style="position: sticky; top: 0; background-color: #0896d1;">
             <tr class="">
                 <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">No</th>
-                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama</th>
-                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Kelas</th>
-                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Surat</th>
+                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama Siswa</th>
+                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Ekstrakurikuler</th>
                 <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Status</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($permit as $data)
+            @forelse ($alpha as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $data->model->student->user->name }}</td>
-                    <td>{{ $data->model->classroom->name }}</td>
-                    @if ($data->proof)
-                        <td><img src="{{ asset('storage/'.$data->proof) }}" alt="" width="100px"></td>
-                    @else
-                        <td>Tidak ada</td>
-                    @endif
+                    <td>{{ $item->extracurricularStudent->student->user->name }}</td>
+                    <td>{{ $item->extracurricularStudent->extracurricular->name }}</td>
                     <td>
-                        <span class="badge bg-light-warning text-warning fw-semibold fs-2">Izin</span>
+                        <span class="badge bg-light-danger text-danger fw-semibold fs-2">Alpha</span>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center align-middle">
+                    <td colspan="4" class="text-center align-middle">
                         <div class="d-flex flex-column justify-content-center align-items-center">
-                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
+                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                width="300px">
                             <p class="fs-5 text-dark text-center mt-2">Belum ada data</p>
                         </div>
                     </td>

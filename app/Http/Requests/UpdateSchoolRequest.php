@@ -25,7 +25,7 @@ class UpdateSchoolRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|email',
             'npsn' => 'required|max:8',
-            'phone_number' => 'required|max:15',
+            'phone_number' => ['required', 'max:15', 'regex:/^[0-9]+$/'],
             'image' => 'nullable|mimes:png,jpg,jpeg',
             'pas_code' => 'required|max:10',
             'address' => 'required',
@@ -52,6 +52,7 @@ class UpdateSchoolRequest extends FormRequest
             'npsn.max' => 'NPSN harus terdiri dari maximal :max karakter.',
             'phone_number.required' => 'Nomor telepon wajib diisi.',
             'phone_number.max' => 'Nomor telepon harus terdiri dari maximal :max karakter.',
+            'phone_number.regex' => 'Nomor telepon hanya boleh berisi angka.',
             'image.mimes' => 'Gambar harus berekstensi png, jpg atau jpeg.',
             'pas_code.required' => 'Kode PAS wajib diisi.',
             'pas_code.max' => 'Kode PAS harus terdiri dari maximal :max karakter.',
@@ -59,6 +60,7 @@ class UpdateSchoolRequest extends FormRequest
             'head_school.required' => 'Nama kepala sekolah wajib diisi.',
             'nip.required' => 'NIP wajib diisi.',
             'accreditation.required' => 'Akreditasi harus diisi',
+            'website_school.url' => 'Format website tidak valid (contoh: https://sekolah.sch.id).',
         ];
     }
 }

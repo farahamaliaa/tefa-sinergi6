@@ -84,9 +84,17 @@ class StudentRepository extends BaseRepository implements StudentInterface
 
     public function doesntHaveClassroom(Request $request): mixed
     {
+        $activeSchoolYear = \App\Models\SchoolYear::where('active', 1)->first();
+
         return $this->model->query()
         ->with('user')
-        ->whereDoesntHave('classroomStudents')
+        ->whereDoesntHave('classroomStudents', function ($query) use ($activeSchoolYear) {
+            if ($activeSchoolYear) {
+                $query->whereHas('classroom', function ($q) use ($activeSchoolYear) {
+                    $q->where('school_year_id', $activeSchoolYear->id);
+                });
+            }
+        })
         ->when($request->name, function ($query) use ($request) {
             $query->whereHas('user', function($q) use ($request){
                 $q->where('name', 'LIKE', '%' .  $request->name . '%');

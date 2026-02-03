@@ -31,7 +31,7 @@
                     <div>
                         <h4 class="mb-3 me-2"><b>Semester Saat ini</b></h4>
                         <h3 class="fw-semibold mb-0" style="color: #098FC6">
-                            <b>{{ $semester->type == 'ganjil' ? 'Ganjil' : 'Genap' }}</b>
+                            <b>{{ $currentSemesterType == 'ganjil' ? 'Ganjil' : 'Genap' }}</b>
                         </h3>
                     </div>
                     <div>

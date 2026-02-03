@@ -181,10 +181,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const targetLat = {{ $todaySchedule->latitude }};
-            const targetLng = {{ $todaySchedule->longitude }};
+            const targetLat = {{ $todaySchedule->latitude ?? 0 }};
+            const targetLng = {{ $todaySchedule->longitude ?? 0 }};
             const radius = {{ $todaySchedule->radius ?? 100 }};
-            const scheduleId = {{ $todaySchedule->id }};
+            const scheduleId = {{ $todaySchedule->id ?? 'null' }};
             const extracurricularId = '{{ $extracurricular->id }}';
 
             let userLat = null;

@@ -118,7 +118,7 @@
                                             <button type="button"
                                                 class="btn-update dropdown-item d-flex align-items-center gap-3 btn-edit-employee"
                                                 data-id="{{ $staff->id }}"
-                                                data-image="{{ asset('storage/' . $staff->image) }}"
+                                                data-image="{{ $staff->image ? asset('storage/' . $staff->image) : asset('assets/images/default-user.jpeg') }}"
                                                 data-name="{{ $staff->user->name }}" data-nip="{{ $staff->nip }}"
                                                 data-religion_id="{{ $staff->religion_id }}"
                                                 data-birth_date="{{ $staff->birth_date }}"

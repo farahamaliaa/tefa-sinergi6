@@ -119,13 +119,24 @@ Route::middleware(['auth', 'role:school'])->prefix('school')->name('school.')->g
 
     // Extra instructor page
     Route::get('extra-instructor', [ExtraInstructorController::class, 'index'])->name('extra-instructor.index');
+    Route::post('extra-instructor', [ExtraInstructorController::class, 'store'])->name('extra-instructor.store');
+    Route::put('extra-instructor/{user}', [ExtraInstructorController::class, 'update'])->name('extra-instructor.update');
+    Route::delete('extra-instructor/{user}', [ExtraInstructorController::class, 'destroy'])->name('extra-instructor.destroy');
+    Route::post('import-extra-instructor', [ExtraInstructorController::class, 'import'])->name('extra-instructor.import');
+    Route::get('download-template-extra-instructor', [ExtraInstructorController::class, 'downloadTemplate'])->name('extra-instructor.download-template');
+
 
     //parent
     Route::get('parents', [ParentController::class, 'index'])->name('parent.index');
     Route::post('parents', [ParentController::class, 'store'])->name('parent.store');
     Route::get('parents/{id}', [ParentController::class, 'show'])->name('parent.show');
+    Route::put('parents/{id}', [ParentController::class, 'update'])->name('parent.update');
+    Route::delete('parents/{id}', [ParentController::class, 'destroy'])->name('parent.destroy');
     Route::post('parents/{id}/students', [ParentController::class, 'attachStudent']);
     Route::delete('parents/{id}/students/{studentId}', [ParentController::class, 'detachStudent']);
+    Route::post('import-parent', [ParentController::class, 'import'])->name('parent.import');
+    Route::get('download-template-parent', [ParentController::class, 'downloadTemplate'])->name('parent.download-template');
+
 
     // siswa ekstrakurikuler
     Route::post('extracurricular-students/{extracurricular}', [ExtracurricularStudentController::class, 'store'])->name('extracurricular-students.store');

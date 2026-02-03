@@ -27,14 +27,14 @@ class WeeklyScheduleResource extends JsonResource
                 'id' => $this->teacherSubject->subject->id,
                 'name' => $this->teacherSubject->subject->name,
             ] : null,
-            
+
             // Time information
             'start_time' => $this->start ? $this->start->start : null,
             'end_time' => $this->end ? $this->end->end : null,
-            'hour' => $this->start && $this->end 
+            'hour' => $this->start && $this->end
                 ? \Carbon\Carbon::parse($this->start->start)->format('H:i') . ' - ' . \Carbon\Carbon::parse($this->end->end)->format('H:i')
                 : null,
-            
+
             // Lesson hour numbers (Jam ke-X sampai Y)
             'lesson_hour_start' => $this->lesson_hour_start,
             'lesson_hour_end' => $this->lesson_hour_end,
@@ -44,6 +44,9 @@ class WeeklyScheduleResource extends JsonResource
             'time' => $this->start && $this->end && $this->start->name && $this->end->name
                 ? $this->extractHourNumber($this->start->name) . ' - ' . $this->extractHourNumber($this->end->name)
                 : null,
+            'teacher_name' => $this->teacherSubject && $this->teacherSubject->employee && $this->teacherSubject->employee->user
+                ? $this->teacherSubject->employee->user->name
+                : ($this->teacher_name ?? '-'),
         ];
     }
 
@@ -73,12 +76,12 @@ class WeeklyScheduleResource extends JsonResource
         if (!$lessonHour) {
             return '';
         }
-        
+
         // Extract hour number from the name (e.g., "Jam - 1" -> "1")
         if ($lessonHour->name) {
             return $this->extractHourNumber($lessonHour->name);
         }
-        
+
         return (string) $lessonHour->id;
     }
 
@@ -91,12 +94,12 @@ class WeeklyScheduleResource extends JsonResource
         if (!$name) {
             return '';
         }
-        
+
         // Try to extract number from name like "Jam - 1"
         if (preg_match('/(\d+)/', $name, $matches)) {
             return $matches[1];
         }
-        
+
         return $name;
     }
 }

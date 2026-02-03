@@ -85,3 +85,21 @@
         filter: brightness(200%);
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('import-teacher');
+        const fileInput = modal.querySelector('.file-input');
+        const dropzoneText = modal.querySelector('.dropzone-import p');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                dropzoneText.textContent = e.target.files[0].name;
+                dropzoneText.style.color = '#0896D1';
+            } else {
+                dropzoneText.textContent = 'Seret dan lepas file kamu di sini';
+                dropzoneText.style.color = '';
+            }
+        });
+    });
+</script>

@@ -12,4 +12,5 @@ enum UploadDiskEnum: string
 
     case PROOF_REPAIR = "proof_repair";
     case PROOF = "proof";
+    case PARENT = "parent";
 }

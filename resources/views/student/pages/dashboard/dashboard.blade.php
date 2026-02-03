@@ -327,11 +327,12 @@
                             <div class="card-body">
                                 <h5 class="mb-4"><b>Wali Kelasmu</b></h5>
                                 <div class="d-flex flex-column flex-sm-row align-items-center mb-3">
-                                    <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" alt=""
-                                        class="rounded-circle img-fluid mb-2" style="max-width: 100px; height: auto;">
+                                    <img src="{{ $studentClasses->classroom->employee?->image ? asset('storage/' . $studentClasses->classroom->employee->image) : asset('admin_assets/dist/images/profile/user-4.jpg') }}"
+                                        alt="" class="rounded-circle img-fluid mb-2"
+                                        style="max-width: 100px; height: auto; object-fit: cover;">
 
                                     <div class="ms-3 text-center text-sm-start">
-                                        <h4><b>{{ $studentClasses->classroom->employee->user->name }}</b></h4>
+                                        <h4><b>{{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</b></h4>
                                         <h6>Tahun Ajaran {{ $studentClasses->classroom->schoolYear->school_year }}</h6>
 
                                     </div>
@@ -339,7 +340,7 @@
                                 <div class="d-flex flex-wrap justify-content-center justify-content-sm-start gap-2"
                                     id="subject-container">
                                     @php
-                                        $subjects = $studentClasses->classroom->employee->teacherSubjects;
+                                        $subjects = $studentClasses->classroom->employee?->teacherSubjects ?? collect();
                                         $displayedSubjects = $subjects->take(2);
                                         $remainingSubjects = $subjects->count() - $displayedSubjects->count();
                                     @endphp
@@ -465,9 +466,9 @@
                     </div>
                 </div>
                 <div class="card-body text-center pt-0 mt-n5 position-relative">
-                    <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : asset('assets/images/default-user.jpeg') }}"
+                    <img src="{{ auth()->user()->student && auth()->user()->student->image ? asset('storage/' . auth()->user()->student->image) : asset('assets/images/default-user.jpeg') }}"
                         alt="user" class="rounded-circle border border-3 border-white mb-3" width="100"
-                        height="100">
+                        height="100" style="object-fit: cover;">
                     <h5 class="fw-semibold">{{ auth()->user()->name }}</h5>
                     <span class="badge bg-light-primary text-primary rounded-pill px-3 py-1">Student</span>
 
@@ -524,10 +525,12 @@
                     <div class="card-body p-3">
                         <h5 class="fw-semibold mb-3">Wali Kelasmu</h5>
                         <div class="d-flex align-items-center">
-                            <img src="{{ asset('admin_assets/dist/images/profile/user-4.jpg') }}" class="rounded-circle"
-                                width="45" height="45" alt="">
+                            <img src="{{ $studentClasses->classroom->employee?->image ? asset('storage/' . $studentClasses->classroom->employee->image) : asset('admin_assets/dist/images/profile/user-4.jpg') }}"
+                                class="rounded-circle" width="45" height="45" alt=""
+                                style="object-fit: cover;">
                             <div class="ms-3">
-                                <h6 class="mb-0 fw-semibold">{{ $studentClasses->classroom->employee->user->name }}</h6>
+                                <h6 class="mb-0 fw-semibold">
+                                    {{ $studentClasses->classroom->employee?->user->name ?? 'Belum ada Wali Kelas' }}</h6>
                                 <span class="fs-2 text-muted">Tahun Ajaran
                                     {{ $studentClasses->classroom->schoolYear->school_year }}</span>
                             </div>

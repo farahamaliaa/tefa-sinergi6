@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \App\Http\Middleware\EncryptCookies::class,
+            \App\Http\Middleware\AutoRolloverMiddleware::class,
             // \App\Http\Middleware\RedirectAuthenticated::class
         ],
 
@@ -66,6 +67,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'auto.rollover' => \App\Http\Middleware\AutoRolloverMiddleware::class,
     ];
 }

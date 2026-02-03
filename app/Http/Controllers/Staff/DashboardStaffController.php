@@ -12,9 +12,16 @@ use App\Contracts\Interfaces\StudentViolationInterface;
 use App\Enums\AttendanceEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Traits\UploadTrait;
+use App\Enums\UploadDiskEnum;
+use App\Models\EmployeePermission;
+use App\Enums\StatusPermissionEnum;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardStaffController extends Controller
 {
+    use UploadTrait;
     private ClassroomStudentInterface $classroomStudent;
     private StudentViolationInterface $studentViolation;
     private EmployeeJournalInterface $employeeJournal;
@@ -23,8 +30,18 @@ class DashboardStaffController extends Controller
     private AttendanceInterface $attendance;
     private StudentInterface $student;
 
-    public function __construct(ClassroomStudentInterface $classroomStudent, StudentViolationInterface $studentViolation, StudentRepairInterface $studentRepair, SchoolPointInterface $schoolPoint, StudentInterface $student, EmployeeJournalInterface $employeeJournal, AttendanceInterface $attendance)
-    {
+    private \App\Services\EmployeeJournalService $journalService;
+
+    public function __construct(
+        ClassroomStudentInterface $classroomStudent,
+        StudentViolationInterface $studentViolation,
+        StudentRepairInterface $studentRepair,
+        SchoolPointInterface $schoolPoint,
+        StudentInterface $student,
+        EmployeeJournalInterface $employeeJournal,
+        AttendanceInterface $attendance,
+        \App\Services\EmployeeJournalService $journalService
+    ) {
         $this->classroomStudent = $classroomStudent;
         $this->studentViolation = $studentViolation;
         $this->employeeJournal = $employeeJournal;
@@ -32,6 +49,7 @@ class DashboardStaffController extends Controller
         $this->schoolPoint = $schoolPoint;
         $this->attendance = $attendance;
         $this->student = $student;
+        $this->journalService = $journalService;
     }
 
     /**
@@ -44,10 +62,139 @@ class DashboardStaffController extends Controller
         $studentViolation = $this->studentViolation->countByStudent();
         $maxPoint = $this->schoolPoint->getMaxPoint();
         $studentHighPoint = $this->student->highestPoint($maxPoint);
-        $employeeJournals = $this->employeeJournal->getEmployee(auth()->user()->id, 'take');
 
-        return view('staff.pages.dashboard.dashboard', compact('countViolation', 'countRepair', 'studentViolation', 'studentHighPoint', 'employeeJournals'));
+        // Use service to get history including gaps, take only limited amount for dashboard if needed
+        $employeeJournals = $this->journalService->getHistory(auth()->user(), 3);
+
+        // Get today's attendance for the logged in employee
+        $employee = auth()->user()->employee;
+        $todayAttendance = null;
+        $todayPermission = null;
+        if ($employee) {
+            $todayAttendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
+
+            // Get today's approved permission
+            $todayPermission = EmployeePermission::where('employee_id', $employee->id)
+                ->where('date', now()->format('Y-m-d'))
+                ->where('status', StatusPermissionEnum::APPROVED)
+                ->first();
+        }
+
+        $timeConfig = config('attendance.time');
+
+        return view('staff.pages.dashboard.dashboard', compact('countViolation', 'countRepair', 'studentViolation', 'studentHighPoint', 'employeeJournals', 'todayAttendance', 'todayPermission', 'timeConfig'));
     }
+
+    public function profile()
+    {
+        $user = auth()->user();
+        $employee = $user->employee;
+        $religions = \App\Models\Religion::all();
+        return view('staff.pages.profile', compact('user', 'employee', 'religions'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $employee = $user->employee;
+
+        // Check if this is a password update or profile update
+        if ($request->filled('current_password') || $request->filled('password')) {
+            // Password Update Logic
+            $request->validate([
+                'current_password' => 'required|string',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/[a-z]/',
+                    'regex:/[A-Z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[@$!%*#?&]/',
+                ],
+            ], [
+                'password.confirmed' => 'Konfirmasi password tidak cocok dengan password baru.',
+                'password.min' => 'Password harus minimal 8 karakter.',
+                'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus (@$!%*#?&).',
+            ]);
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return redirect()->back()->withErrors(['current_password' => 'Password lama tidak sesuai'])->withInput();
+            }
+
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
+
+            return redirect()->back()->with('success', 'Password berhasil diperbarui');
+        } else {
+            // Profile Info Update Logic
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone_number' => ['nullable', 'string', 'max:13', 'regex:/^[0-9]+$/'],
+                'gender' => 'required|in:male,female',
+                'address' => 'nullable|string',
+                'birth_date' => 'nullable|date',
+                'birth_place' => 'nullable|string',
+                'religion_id' => 'required|exists:religions,id',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ], [
+                'name.required' => 'Nama lengkap wajib diisi.',
+                'name.max' => 'Nama lengkap maksimal :max karakter.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'email.unique' => 'Email sudah digunakan.',
+                'phone_number.max' => 'Nomor telepon maksimal :max karakter.',
+                'phone_number.regex' => 'Nomor telepon hanya boleh berisi angka.',
+                'gender.required' => 'Jenis kelamin wajib dipilih.',
+                'gender.in' => 'Jenis kelamin tidak valid.',
+                'religion_id.required' => 'Agama wajib dipilih.',
+                'religion_id.exists' => 'Agama tidak valid.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
+            ]);
+
+
+            try {
+                DB::transaction(function () use ($request, $user, $employee) {
+                    $dataUser = [
+                        'name' => $request->name,
+                        'email' => $request->email,
+                    ];
+
+                    $user->update($dataUser);
+
+                    if ($employee) {
+                        $dataEmployee = [
+                            'phone_number' => $request->phone_number,
+                            'address' => $request->address,
+                            'gender' => $request->gender,
+                            'birth_date' => $request->birth_date,
+                            'birth_place' => $request->birth_place,
+                            'religion_id' => $request->religion_id,
+                        ];
+
+                        if ($request->hasFile('image')) {
+                            if ($employee->image) {
+                                $this->remove($employee->image);
+                            }
+                            $dataEmployee['image'] = $this->upload(UploadDiskEnum::STAFF->value, $request->file('image'));
+                        }
+
+                        $employee->update($dataEmployee);
+                    }
+                });
+
+                return redirect()->back()->with('success', 'Profil berhasil diperbarui');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+            }
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.

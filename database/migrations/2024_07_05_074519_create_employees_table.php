@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\RoleEnum;
 use App\Traits\Migrations\HasForeign;
 use App\Traits\Migrations\HasGender;
 use Illuminate\Database\Migrations\Migration;
@@ -19,14 +18,14 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->text('image')->nullable();
-            $table->char('nip', 18);
-            $table->date('birth_date');
-            $table->string('birth_place');
+            $table->char('nip', 18)->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('birth_place')->nullable();
             $this->addGender($table);
-            $table->char('nik', 16);
-            $table->char('phone_number', 13);
-            $table->longText('address');
-            $table->enum('status', [RoleEnum::TEACHER->value, RoleEnum::STAFF->value]);
+            $table->char('nik', 16)->nullable();
+            $table->char('phone_number', 13)->nullable();
+            $table->longText('address')->nullable();
+            $table->string('status')->nullable();
             $table->boolean('active')->default(true);
             $this->addForeignIdNull($table, 'religion_id');
             $this->addForeignId($table, 'user_id');

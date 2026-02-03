@@ -16,6 +16,11 @@
     .btn-close {
         filter: invert(1) brightness(200%);
     }
+    .btn-danger {
+        background-color: #E02123 !important;
+        border-color: #E02123 !important;
+        color: #fff !important;
+    }
 </style>
 
 <div class="modal fade" id="modal-delete" tabindex="-1" aria-labelledby="tambahdataLabel" aria-hidden="true">

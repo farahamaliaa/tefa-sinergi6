@@ -157,10 +157,17 @@
                                                 Mengisi
                                             </span>
                                         @else
-                                            <span class="badge rounded-2 px-3 py-2 fs-2 fw-semibold"
-                                                style="background-color: #FDEDED; color: #D9534F;">
-                                                Tidak Mengisi
-                                            </span>
+                                            @if (\Carbon\Carbon::parse($employeeJournal->created_at)->isToday())
+                                                <span class="badge rounded-2 px-3 py-2 fs-2 fw-semibold"
+                                                    style="background-color: #FFF9E1; color: #F9A825;">
+                                                    Belum Mengisi
+                                                </span>
+                                            @else
+                                                <span class="badge rounded-2 px-3 py-2 fs-2 fw-semibold"
+                                                    style="background-color: #FDEDED; color: #D9534F;">
+                                                    Tidak Mengisi
+                                                </span>
+                                            @endif
                                         @endif
                                     </td>
                                     <td>
@@ -172,13 +179,19 @@
                                                 <i class="ti ti-eye fs-5"></i>
                                             </button>
                                             @if ($employeeJournal->created_at->isToday())
-                                                <button type="button"
-                                                    class="btn btn-sm btn-light-warning text-warning btn-edit-journal"
-                                                    data-id="{{ $employeeJournal->id }}"
-                                                    data-title="{{ $employeeJournal->title }}"
-                                                    data-description="{{ $employeeJournal->description }}">
-                                                    <i class="ti ti-edit fs-5"></i>
-                                                </button>
+                                                @if ($employeeJournal->id)
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-light-warning text-warning btn-edit-journal"
+                                                        data-id="{{ $employeeJournal->id }}" data-title="{{ $employeeJournal->title }}"
+                                                        data-description="{{ $employeeJournal->description }}">
+                                                        <i class="ti ti-edit fs-5"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-light-warning text-warning"
+                                                        data-bs-toggle="modal" data-bs-target="#modal-create-journal">
+                                                        <i class="ti ti-edit fs-5"></i>
+                                                    </button>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>
@@ -187,8 +200,8 @@
                                 <tr>
                                     <td colspan="6" class="text-center align-middle">
                                         <div class="d-flex flex-column justify-content-center align-items-center">
-                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
-                                                alt="" width="300px">
+                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt=""
+                                                width="300px">
                                             <p class="fs-5 text-dark text-center mt-2">
                                                 Belum ada data
                                             </p>
@@ -199,7 +212,7 @@
                         </tbody>
                     </table>
                     <div class="pagination justify-content-end mt-2 mb-0">
-                        {{-- <x-paginate-component :paginator="$attendances" /> --}}
+                        <x-paginate-component :paginator="$employeeJournals" />
                     </div>
                 </div>
             </div>

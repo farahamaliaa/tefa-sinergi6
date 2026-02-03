@@ -21,6 +21,34 @@
                 : SemesterEnum::GENAP->value;
         }
 
+        /**
+         * Calculate School Year Label based on date
+         * July (7) starts a new year cycle.
+         * 
+         * @param mixed $date
+         * @return string (e.g. 2024/2025)
+         */
+        public function getSchoolYearLabel($date): string
+        {
+            $carbon = \Carbon\Carbon::parse($date);
+            $year = $carbon->year;
+            $month = $carbon->month;
+
+            if ($month >= 7) {
+                return $year . '/' . ($year + 1);
+            } else {
+                return ($year - 1) . '/' . $year;
+            }
+        }
+
+        /**
+         * Get the expected label for the current date
+         */
+        public function getCurrentSchoolYearLabel(): string
+        {
+            return $this->getSchoolYearLabel(now());
+        }
+
         public function store(array $data)
         {
             return Semester::create($data);

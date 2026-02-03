@@ -15,16 +15,11 @@ use App\Services\SemesterService;
 class SchoolYearController extends Controller
 {
     private SchoolYearInterface $schoolYear;
-    private SchoolYearService $service;
-    private ModelHasRfidInterface $rfid;
-    private SemesterInterface $semester;
     private SemesterService $semesterService;
 
-    public function __construct(SchoolYearInterface $schoolYear, SchoolYearService $service, ModelHasRfidInterface $rfid, SemesterInterface $semester, SemesterService $semesterService)
+    public function __construct(SchoolYearInterface $schoolYear, SemesterService $semesterService)
     {
         $this->schoolYear = $schoolYear;
-        $this->service = $service;
-        $this->rfid = $rfid;
         $this->semesterService = $semesterService;
     }
 
@@ -52,11 +47,17 @@ class SchoolYearController extends Controller
     public function store(StoreSchoolYearRequest $request)
     {
         try {
-            $this->schoolYear->setNonactive();
-            $this->schoolYear->store(['school_year' => $request->school_year]);
-            return redirect()->back()->with('success', 'Berhasil menambahkan tahun ajaran');
+            $activeYear = \App\Models\SchoolYear::where('active', true)->first();
+            
+            if ($activeYear) {
+                $activeYear->update(['school_year' => $request->school_year]);
+            } else {
+                $this->schoolYear->store(['school_year' => $request->school_year, 'active' => true]);
+            }
+            
+            return redirect()->back()->with('success', 'Berhasil mengubah tahun ajaran');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$th->getMessage());
         }
     }
 
@@ -111,9 +112,10 @@ class SchoolYearController extends Controller
         try {
             $this->schoolYear->setNonactive();
             $this->schoolYear->update($schoolYear->id, ['active' => 1]);
-            return back()->with('success', 'Berhasil');
+
+            return back()->with('success', 'Berhasil mengaktifkan tahun ajaran');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan'.$th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
         }
     }
 }

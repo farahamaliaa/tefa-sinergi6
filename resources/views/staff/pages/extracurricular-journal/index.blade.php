@@ -126,7 +126,8 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ ucfirst(DayEnum::tryFrom($schedule->day)?->label() ?? $schedule->day) }}</td>
                                 <td>{{ Carbon::parse($schedule->start_time)->format('H:i') }} -
-                                    {{ Carbon::parse($schedule->end_time)->format('H:i') }}</td>
+                                    {{ Carbon::parse($schedule->end_time)->format('H:i') }}
+                                </td>
                                 <td>{{ $attendanceCount }} Siswa Hadir</td>
                                 <td>
                                     @if (!$existingJournal)
@@ -195,57 +196,62 @@
         @forelse ($journalHistory as $journal)
             <div class="col-md-12 d-flex align-items-stretch mb-4">
                 <div class="card w-100 shadow-sm border" style="border-radius: 8px; overflow: hidden;">
-                    <div class="card-header" style="color: #0896D1 !important; background-color: #0896D1 !important;">
+                    <div class="card-header d-flex justify-content-between align-items-center"
+                        style="background-color: #0896D1 !important;">
                         <h4 class="mb-0 text-white card-title">
                             {{ $extracurricular->name }} -
                             {{ ucfirst(DayEnum::tryFrom($journal->schedule->day)?->label() ?? $journal->schedule->day) }}
                         </h4>
-                        <div class="position-absolute top-0 end-0" style="padding: 0px; position: relative;">
-                            <img src="{{ asset('assets/images/background/arrow-leftwarning1.png') }}" alt="" class="img-fluid"
-                                style="max-width: 268px; height: auto; position: relative;">
-                            <span class="d-flex align-items-right ms-5"
-                                style="position: absolute; top: 50%; left: 65%; transform: translate(-50%, -50%); color: white; font-weight: bold;width: 100%; font-size: 13px">
-                                <i class="ti ti-calendar me-2"></i>
-                                {{ $journal->date->format('d M Y') }}
-                            </span>
-                        </div>
+                        <span class="text-white fw-bold">
+                            <i class="ti ti-calendar me-1"></i>
+                            {{ $journal->date->translatedFormat('l, d M Y') }}
+                        </span>
                     </div>
 
                     <div class="card-body p-4">
                         <div class="d-flex flex-column flex-md-row gap-4">
                             <div style="min-width: 200px; max-width: 200px;">
-                                <img src="{{ asset('storage/' . $journal->image) }}" class="img-fluid rounded-3 w-100"
+                                <img src="{{ $journal->is_filled ? asset('storage/' . $journal->image) : asset('assets/images/background/no-image.png') }}"
+                                    class="img-fluid rounded-3 w-100 {{ !$journal->is_filled ? 'bg-light p-4' : '' }}"
                                     style="height: 140px; object-fit: cover;" alt="Dokumentasi">
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="fw-semibold text-dark mb-2">Deskripsi</h5>
                                 <p class="text-muted mb-0" style="line-height: 1.6; text-align: justify;">
-                                    {{ Str::limit($journal->description, 200) }}
+                                    {{ $journal->is_filled ? Str::limit($journal->description, 200) : '-' }}
                                 </p>
                                 <div class="mt-2">
-                                    <span class="badge bg-light-success text-success">
-                                        {{ $journal->attendances->where('status', 'hadir')->count() }} Hadir
-                                    </span>
-                                    <span class="badge bg-light-warning text-warning">
-                                        {{ $journal->attendances->where('status', 'izin')->count() }} Izin
-                                    </span>
-                                    <span class="badge bg-light-info text-info">
-                                        {{ $journal->attendances->where('status', 'sakit')->count() }} Sakit
-                                    </span>
-                                    <span class="badge bg-light-danger text-danger">
-                                        {{ $journal->attendances->where('status', 'alpha')->count() }} Alpha
-                                    </span>
+                                    @if ($journal->is_filled)
+                                        <span class="badge bg-light-success text-success">
+                                            {{ $journal->attendances->where('status', 'hadir')->count() }} Hadir
+                                        </span>
+                                        <span class="badge bg-light-warning text-warning">
+                                            {{ $journal->attendances->where('status', 'izin')->count() }} Izin
+                                        </span>
+                                        <span class="badge bg-light-info text-info">
+                                            {{ $journal->attendances->where('status', 'sakit')->count() }} Sakit
+                                        </span>
+                                        <span class="badge bg-light-danger text-danger">
+                                            {{ $journal->attendances->where('status', 'alpha')->count() }} Alpha
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light-danger text-danger">
+                                            <i class="ti ti-alert-circle me-1"></i> Tidak Mengisi Jurnal
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                            <a href="{{ route('employee.extracurricular-journal.show', ['id' => $journal->id]) }}"
-                                class="btn btn-primary d-inline-flex align-items-center px-4 py-2"
-                                style="background-color: #0896D1; border: none;">
-                                Lihat Detail Jurnal
-                                <i class="ti ti-arrow-right ms-2 fs-5"></i>
-                            </a>
+                            @if ($journal->is_filled)
+                                <a href="{{ route('employee.extracurricular-journal.show', ['id' => $journal->id]) }}"
+                                    class="btn btn-primary d-inline-flex align-items-center px-4 py-2"
+                                    style="background-color: #0896D1; border: none;">
+                                    Lihat Detail Jurnal
+                                    <i class="ti ti-arrow-right ms-2 fs-5"></i>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

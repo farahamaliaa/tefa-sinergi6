@@ -103,18 +103,20 @@
 
                 @php
                     $employee = auth()->user()->employee;
-                    $extracurriculars = $employee ? \App\Models\Extracurricular::where('employee_id', $employee->id)->get() : collect([]);
+                    $extracurriculars = $employee
+                        ? \App\Models\Extracurricular::where('employee_id', $employee->id)->get()
+                        : collect([]);
                 @endphp
 
                 @if ($extracurriculars->count() > 0)
-                    <li class="nav-small-cap">
+                    {{-- <li class="nav-small-cap">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                         <span class="hide-menu">Ekstrakurikuler</span>
-                    </li>
+                    </li> --}}
 
-                    @foreach ($extracurriculars as $extracurricular)
+                    @if ($extracurriculars->count() > 0)
                         <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow {{ request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}"
+                            <a class="sidebar-link has-arrow {{ request()->routeIs('extracurricular.students.*') || request()->routeIs('extracurricular.attendance.*') || request()->routeIs('extracurricular.permission.*') || request()->routeIs('extracurricular.schedule.*') || request()->routeIs('extracurricular.journal.*') ? 'active' : '' }}"
                                 href="javascript:void(0)" aria-expanded="false">
                                 <span>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -124,47 +126,57 @@
                                             fill="#0896D1" />
                                     </svg>
                                 </span>
-                                <span class="hide-menu">{{ $extracurricular->name }}</span>
+                                <span class="hide-menu">Ekstrakurikuler</span>
                             </a>
                             <ul aria-expanded="false"
-                                class="collapse first-level {{ request()->get('extracurricular') == $extracurricular->id ? 'in' : '' }}">
-                                <li class="sidebar-item">
-                                    <a href="{{ route('extracurricular.students.index', ['extracurricular' => $extracurricular->id]) }}"
-                                        class="sidebar-link {{ request()->routeIs('extracurricular.students.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
-                                        <span class="hide-menu">Daftar Siswa</span>
-                                    </a>
-                                </li>
+                                class="collapse first-level {{ request()->routeIs('extracurricular.students.*') || request()->routeIs('extracurricular.attendance.*') || request()->routeIs('extracurricular.permission.*') || request()->routeIs('extracurricular.schedule.*') || request()->routeIs('extracurricular.journal.*') ? 'in' : '' }}">
+                                @foreach ($extracurriculars as $extracurricular)
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                            aria-expanded="false">
+                                            <span class="hide-menu">{{ $extracurricular->name }}</span>
+                                        </a>
+                                        <ul aria-expanded="false" class="collapse first-level">
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('extracurricular.students.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('extracurricular.students.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                                    <span class="hide-menu">Daftar Siswa</span>
+                                                </a>
+                                            </li>
 
-                                <li class="sidebar-item">
-                                    <a href="{{ route('extracurricular.attendance.index', ['extracurricular' => $extracurricular->id]) }}"
-                                        class="sidebar-link {{ request()->routeIs('extracurricular.attendance.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
-                                        <span class="hide-menu">Absensi Siswa</span>
-                                    </a>
-                                </li>
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('extracurricular.attendance.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('extracurricular.attendance.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                                    <span class="hide-menu">Absensi Siswa</span>
+                                                </a>
+                                            </li>
 
-                                <li class="sidebar-item">
-                                    <a href="{{ route('extracurricular.permission.index', ['extracurricular' => $extracurricular->id]) }}"
-                                        class="sidebar-link {{ request()->routeIs('extracurricular.permission.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
-                                        <span class="hide-menu">Perizinan</span>
-                                    </a>
-                                </li>
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('extracurricular.permission.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('extracurricular.permission.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                                    <span class="hide-menu">Perizinan</span>
+                                                </a>
+                                            </li>
 
-                                <li class="sidebar-item">
-                                    <a href="{{ route('extracurricular.schedule.index', ['extracurricular' => $extracurricular->id]) }}"
-                                        class="sidebar-link {{ request()->routeIs('extracurricular.schedule.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
-                                        <span class="hide-menu">Jadwal</span>
-                                    </a>
-                                </li>
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('extracurricular.schedule.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('extracurricular.schedule.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                                    <span class="hide-menu">Jadwal</span>
+                                                </a>
+                                            </li>
 
-                                <li class="sidebar-item">
-                                    <a href="{{ route('extracurricular.journal.index', ['extracurricular' => $extracurricular->id]) }}"
-                                        class="sidebar-link {{ request()->routeIs('extracurricular.journal.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
-                                        <span class="hide-menu">Jurnal</span>
-                                    </a>
-                                </li>
+                                            <li class="sidebar-item">
+                                                <a href="{{ route('extracurricular.journal.index', ['extracurricular' => $extracurricular->id]) }}"
+                                                    class="sidebar-link {{ request()->routeIs('extracurricular.journal.*') && request()->get('extracurricular') == $extracurricular->id ? 'active' : '' }}">
+                                                    <span class="hide-menu">Jurnal</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endforeach
                             </ul>
                         </li>
-                    @endforeach
+                    @endif
                 @endif
             </ul>
         </nav>

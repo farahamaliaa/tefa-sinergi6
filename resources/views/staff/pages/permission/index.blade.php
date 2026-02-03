@@ -112,7 +112,7 @@
         <div class="card-body">
             <h4>Perizinan Staff</h4>
             <div class="row">
-                <div class="col-12 col-lg-5 mt-3 mb-4">
+                <div class="col-12 col-lg-7 mt-3 mb-4">
                     <form class="d-flex gap-2 flex-column flex-lg-row align-items-stretch align-items-lg-center"
                         method="GET" action="{{ url()->current() }}">
                         <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
@@ -120,9 +120,9 @@
                                 id="search-name" placeholder="Cari..." value="{{ request('search') }}">
                             <i class="ti ti-search position-absolute top-50 translate-middle-y fs-6 text-dark ms-3"></i>
                         </div>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1" style="min-width: 120px;">
                             <select name="status" class="form-select" id="search-status">
-                                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Pilih</option>
+                                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Pilih Status</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
                                 </option>
                                 <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui
@@ -132,13 +132,13 @@
                             </select>
                         </div>
                         <div class="position-relative flex-grow-1 mb-2 mb-lg-0">
-                            <input type="date" name="search" class="form-control search-chat" id="search-name"
-                                placeholder="Cari..." value="{{ request('search') }}">
+                            <input type="date" name="date" class="form-control search-chat" id="search-date"
+                                value="{{ request('date') }}">
                         </div>
                         <button type="submit" class="btn btn-primary w-lg-auto">Filter</button>
                     </form>
                 </div>
-                <div class="col-12 col-lg-7 mt-3 mb-4 d-flex flex-wrap justify-content-lg-end gap-2">
+                <div class="col-12 col-lg-5 mt-3 mb-4 d-flex flex-wrap justify-content-lg-end gap-2">
                     <a href="{{ route('employee.permission.create') }}" class="btn btn-primary w-lg-auto">
                         <i class="ti ti-plus me-1"></i> Buat Izin
                     </a>
@@ -166,12 +166,12 @@
                                 <td>{{ Str::limit($permission->proof, 50) }}</td>
                                 {{-- <td>
                                     @if ($permission->proof_image)
-                                        <a href="{{ asset('storage/' . $permission->proof_image) }}" target="_blank"
-                                            class="btn btn-sm btn-info">
-                                            Lihat
-                                        </a>
+                                    <a href="{{ asset('storage/' . $permission->proof_image) }}" target="_blank"
+                                        class="btn btn-sm btn-info">
+                                        Lihat
+                                    </a>
                                     @else
-                                        <span class="text-muted">-</span>
+                                    <span class="text-muted">-</span>
                                     @endif
                                 </td> --}}
                                 <td>
@@ -184,28 +184,27 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-primary btn-view-detail"
-                                        data-bs-toggle="modal" data-bs-target="#student-permission-modal"
-                                        data-id="{{ $permission->id }}"
+                                    <button type="button" class="btn btn-sm btn-primary btn-view-detail" data-bs-toggle="modal"
+                                        data-bs-target="#student-permission-modal" data-id="{{ $permission->id }}"
                                         data-name="{{ $permission->employee->user->name ?? 'Unknown' }}"
                                         data-date="{{ Carbon\Carbon::parse($permission->date)->format('d/m/Y') }}"
                                         data-type="{{ $permission->permission_type->label() ?? $permission->permission_type->value }}"
-                                        data-proof="{{ $permission->proof }}"
+                                        data-proof="{{ $permission->proof }}" data-duration="{{ $permission->duration }}"
                                         data-proof-image="{{ $permission->proof_image ? asset('storage/' . $permission->proof_image) : '' }}"
                                         data-status="{{ $permission->status->value }}">
                                         {{-- <i class="ti ti-eye"></i> --}}
                                         Lihat
                                     </button>
                                     {{-- @if ($permission->status == \App\Enums\StatusPermissionEnum::PENDING)
-                                        <form action="{{ route('employee.permission.destroy', $permission->id) }}"
-                                            method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Hapus pengajuan ini?')">
-                                                <i class="ti ti-trash"></i>
-                                            </button>
-                                        </form>
+                                    <form action="{{ route('employee.permission.destroy', $permission->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Hapus pengajuan ini?')">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </form>
                                     @endif --}}
                                 </td>
                             </tr>
@@ -236,10 +235,10 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('student-permission-modal');
 
-            modal.addEventListener('show.bs.modal', function(event) {
+            modal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
 
                 // Get data from button attributes
@@ -247,6 +246,7 @@
                 const date = button.getAttribute('data-date');
                 const type = button.getAttribute('data-type');
                 const proof = button.getAttribute('data-proof');
+                const duration = button.getAttribute('data-duration');
                 const proofImage = button.getAttribute('data-proof-image');
                 const status = button.getAttribute('data-status');
 
@@ -254,6 +254,7 @@
                 modal.querySelector('#modal-staff-name').value = name;
                 modal.querySelector('#modal-date').value = date;
                 modal.querySelector('#modal-type').value = type;
+                modal.querySelector('#modal-duration').value = duration || '-';
                 modal.querySelector('#modal-proof').value = proof || '-';
 
                 // Update proof image
