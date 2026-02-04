@@ -300,36 +300,89 @@ class StafApiController extends Controller
             return ResponseHelper::notFound('Data pegawai tidak ditemukan');
         }
 
-        $history_attendance = $this->attendance->whereUser($employee->id, 'App\Models\Employee');
-        $single_attendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
-
-        // Get today's permission if any
-        $todayPermission = EmployeePermission::where('employee_id', $employee->id)
-            ->where('date', now()->format('Y-m-d'))
-            ->where('status', StatusPermissionEnum::APPROVED)
-            ->first();
-
         $timeConfig = config('attendance.time');
-        $currentTime = now()->format('H:i');
 
+        // Generate history with gaps (similar to web controller)
+        $history = collect([]);
+        $now = now();
+        $days = 30; // Default history window
+
+        // Find lower bound for history (employee join date)
+        $floorDate = $employee->created_at ? $employee->created_at->copy()->startOfDay() : $now->copy()->subDays($days)->startOfDay();
+
+        // Get permissions for the period
+        $permissions = EmployeePermission::where('employee_id', $employee->id)
+            ->where('status', StatusPermissionEnum::APPROVED)
+            ->whereBetween('date', [$now->copy()->subDays($days)->format('Y-m-d'), $now->format('Y-m-d')])
+            ->get();
+
+        // Single attendance for today action card
+        $single_attendance = $this->attendance->userToday('App\Models\Employee', $employee->id);
+        $todayPermission = $permissions->firstWhere('date', now()->format('Y-m-d'));
+
+        for ($i = 0; $i < $days; $i++) {
+            $checkDate = $now->copy()->subDays($i);
+
+            // Stop if before hire date
+            if ($checkDate->startOfDay()->isBefore($floorDate)) {
+                continue;
+            }
+
+            // Skip weekends
+            if ($checkDate->isWeekend()) {
+                continue;
+            }
+
+            $dateStr = $checkDate->format('Y-m-d');
+
+            // Look for existing attendance
+            $record = Attendance::where('model_id', $employee->id)
+                ->where('model_type', 'App\Models\Employee')
+                ->whereDate('created_at', $dateStr)
+                ->first();
+
+            if ($record) {
+                $history->push($record);
+            } else {
+                // Look for permission
+                $permission = $permissions->firstWhere('date', $dateStr);
+
+                if ($permission) {
+                    $virtualPermission = new Attendance();
+                    $virtualPermission->status = match ($permission->permission_type->value) {
+                        'sick' => AttendanceEnum::SICK,
+                        'permit' => AttendanceEnum::PERMIT,
+                        'dinas' => AttendanceEnum::DINAS,
+                        default => AttendanceEnum::ALPHA
+                    };
+                    $virtualPermission->created_at = $checkDate;
+                    $history->push($virtualPermission);
+                } else {
+                    // Check if today and still have time
+                    $isPastLimit = now()->format('H:i') > $timeConfig['late_limit'];
+                    $isToday = $checkDate->isToday();
+
+                    if ($isToday && !$isPastLimit) {
+                        // Skip today in history if not yet Alpha
+                    } else {
+                        // Past days or today past limit - Mark as Alpha
+                        $virtualAlpha = new Attendance();
+                        $virtualAlpha->status = AttendanceEnum::ALPHA;
+                        $virtualAlpha->created_at = $checkDate;
+                        $history->push($virtualAlpha);
+                    }
+                }
+            }
+        }
+
+        // Status for today's card
         $statusLabel = 'Belum Absen';
         if ($single_attendance) {
             $statusLabel = $single_attendance->status->label();
         } elseif ($todayPermission) {
             $statusLabel = $todayPermission->permission_type->label();
-        } elseif ($currentTime > $timeConfig['late_limit']) {
+        } elseif (now()->format('H:i') > $timeConfig['late_limit'] && !now()->isWeekend()) {
             $statusLabel = 'Alpha';
-
-            // Inject virtual Alpha to history
-            $virtualAlpha = new Attendance();
-            $virtualAlpha->status = AttendanceEnum::ALPHA;
-            $virtualAlpha->created_at = now();
-
-            if ($history_attendance instanceof \Illuminate\Support\Collection) {
-                $history_attendance->prepend($virtualAlpha);
-            } else {
-                $history_attendance = collect($history_attendance)->prepend($virtualAlpha);
-            }
         }
 
         return ResponseHelper::success([
@@ -343,7 +396,7 @@ class StafApiController extends Controller
                 'status' => $statusLabel,
                 'is_late' => $single_attendance ? ($single_attendance->status == \App\Enums\AttendanceEnum::LATE) : false,
             ],
-            'attendance_history' => $history_attendance->count() > 0 ? HistoryAttendanceResource::collection($history_attendance) : [],
+            'attendance_history' => $history->count() > 0 ? HistoryAttendanceResource::collection($history) : [],
         ]);
     }
 

@@ -70,10 +70,16 @@ class EmployeeJournalController extends Controller
     public function store(StoreEmployeeJournalRequest $request)
     {
         $employee = auth()->user()->employee;
+        $now = now();
+
+        // Prevent journal submission on weekends
+        if ($now->isWeekend()) {
+            return redirect()->back()->with('error', 'Pengisian jurnal tidak berlaku pada hari Sabtu dan Minggu.');
+        }
 
         // Enforce 1 journal per day per employee
         $existingJournal = \App\Models\EmployeeJournal::where('employee_id', $employee->id)
-            ->whereDate('created_at', now()->toDateString())
+            ->whereDate('created_at', $now->toDateString())
             ->exists();
 
         if ($existingJournal) {
