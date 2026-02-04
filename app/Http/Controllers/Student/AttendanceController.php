@@ -22,6 +22,16 @@ class AttendanceController extends Controller
     {
         $studentClasses = $this->studentClass->whereStudent(auth()->user()->student->id);
         $attendances = $this->attendance->whereUserFiltered($studentClasses->id, 'App\Models\ClassroomStudent', $request);
-        return view('student.pages.attendance.index', compact('attendances', 'studentClasses'));
+
+        // Calculate Summary
+        $allAttendances = $this->attendance->whereUser($studentClasses->id, 'App\Models\ClassroomStudent');
+        $summary = [
+            'hadir' => $allAttendances->where('status', \App\Enums\AttendanceEnum::PRESENT)->count(),
+            'izin' => $allAttendances->where('status', \App\Enums\AttendanceEnum::PERMIT)->count(),
+            'sakit' => $allAttendances->where('status', \App\Enums\AttendanceEnum::SICK)->count(),
+            'alpha' => $allAttendances->where('status', \App\Enums\AttendanceEnum::ALPHA)->count(),
+        ];
+
+        return view('student.pages.attendance.index', compact('attendances', 'studentClasses', 'summary'));
     }
 }

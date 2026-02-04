@@ -28,6 +28,16 @@ class ExtracurricularApiController extends Controller
             $extracurriculars = Extracurricular::with('extracurricularStudents')
                 ->latest()
                 ->get();
+        } elseif ($user->hasRole('student')) {
+            $student = $user->student;
+            if ($student) {
+                $extracurriculars = Extracurricular::whereHas('extracurricularStudents', function ($query) use ($student) {
+                    $query->where('student_id', $student->id);
+                })
+                    ->with('extracurricularStudents')
+                    ->latest()
+                    ->get();
+            }
         } else {
             $employee = $user->employee;
 
@@ -323,8 +333,20 @@ class ExtracurricularApiController extends Controller
         $isHistory = !$date;
 
         if ($isHistory) {
-            $attendancesQuery = ExtracurricularAttendance::whereIn('extracurricular_student_id', $extracurricular->extracurricularStudents->pluck('id'))
-                ->with('extracurricularStudent.student.user')
+            $user = auth()->user();
+            $query = ExtracurricularAttendance::query();
+
+            if ($user->hasRole('student')) {
+                $studentId = $user->student?->id;
+                $eskulStudentIds = $extracurricular->extracurricularStudents
+                    ->where('student_id', $studentId)
+                    ->pluck('id');
+                $attendancesQuery = $query->whereIn('extracurricular_student_id', $eskulStudentIds);
+            } else {
+                $attendancesQuery = $query->whereIn('extracurricular_student_id', $extracurricular->extracurricularStudents->pluck('id'));
+            }
+
+            $attendancesQuery->with('extracurricularStudent.student.user')
                 ->orderBy('date', 'desc')
                 ->orderBy('created_at', 'desc');
 
@@ -591,6 +613,118 @@ class ExtracurricularApiController extends Controller
     }
 
     /**
+     * Student self check-in (location based)
+     */
+    public function studentCheckIn(Request $request)
+    {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'extracurricular_id' => 'required|exists:extracurriculars,id',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::validationError($validator->errors()->first());
+        }
+
+        $user = auth()->user();
+        if (!$user->hasRole('student')) {
+            return ResponseHelper::error('Hanya siswa yang dapat melakukan absen mandiri', 403);
+        }
+
+        $studentId = $user->student?->id;
+        if (!$studentId) {
+            return ResponseHelper::error('Data siswa tidak ditemukan', 404);
+        }
+
+        // Find the extracurricular student record
+        $eskulStudent = \App\Models\ExtracurricularStudent::where('extracurricular_id', $request->extracurricular_id)
+            ->where('student_id', $studentId)
+            ->first();
+
+        if (!$eskulStudent) {
+            return ResponseHelper::error('Anda tidak terdaftar di ekstrakurikuler ini', 404);
+        }
+
+        // Check if there's a schedule for today
+        $today = Carbon::today();
+        $dayName = strtolower($today->format('l'));
+
+        $schedule = ExtracurricularSchedule::where('extracurricular_id', $request->extracurricular_id)
+            ->where('day', $dayName)
+            ->first();
+
+        if (!$schedule) {
+            return ResponseHelper::error('Tidak ada jadwal eskul hari ini', 400);
+        }
+
+        // Check if already checked in today
+        $existingAttendance = ExtracurricularAttendance::where('extracurricular_student_id', $eskulStudent->id)
+            ->where('date', $today->format('Y-m-d'))
+            ->where('status', 'hadir')
+            ->first();
+
+        if ($existingAttendance) {
+            return ResponseHelper::error('Anda sudah absen hari ini', 400);
+        }
+
+        // Validate location if schedule has location settings
+        if ($schedule->latitude && $schedule->longitude && $schedule->radius) {
+            $distance = $this->calculateDistance(
+                $request->latitude,
+                $request->longitude,
+                $schedule->latitude,
+                $schedule->longitude
+            );
+
+            if ($distance > $schedule->radius) {
+                return ResponseHelper::error(
+                    "Anda berada di luar radius lokasi absen. Jarak: " . round($distance) . "m, Maksimal: " . $schedule->radius . "m",
+                    400
+                );
+            }
+        }
+
+        // Create or update attendance record
+        $attendance = ExtracurricularAttendance::updateOrCreate(
+            [
+                'extracurricular_student_id' => $eskulStudent->id,
+                'date' => $today->format('Y-m-d'),
+            ],
+            [
+                'status' => 'hadir',
+            ]
+        );
+
+        return ResponseHelper::success([
+            'attendance_id' => $attendance->id,
+            'status' => 'hadir',
+            'check_in_time' => $attendance->updated_at->format('H:i:s'),
+        ], 'Absen masuk berhasil!');
+    }
+
+    /**
+     * Calculate distance between two coordinates in meters (Haversine formula)
+     */
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371000; // meters
+
+        $lat1Rad = deg2rad($lat1);
+        $lat2Rad = deg2rad($lat2);
+        $deltaLat = deg2rad($lat2 - $lat1);
+        $deltaLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($deltaLat / 2) * sin($deltaLat / 2) +
+            cos($lat1Rad) * cos($lat2Rad) *
+            sin($deltaLon / 2) * sin($deltaLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c;
+    }
+
+    /**
      * Store new schedule
      */
     public function storeSchedule(Request $request)
@@ -648,34 +782,50 @@ class ExtracurricularApiController extends Controller
 
         return ResponseHelper::success(null, 'Jadwal berhasil dihapus');
     }
-
     /**
      * Get permissions for students in the extracurricular.
      */
-    public function permissions($extracurricularId)
+    public function permissions($extracurricularId, Request $request)
     {
-        $extracurricular = Extracurricular::findOrFail($extracurricularId);
+        $extracurricular = Extracurricular::with('extracurricularStudents.student.user')->findOrFail($extracurricularId);
+        $user = auth()->user();
 
-        $studentIds = $extracurricular->extracurricularStudents()->pluck('student_id');
+        $query = \App\Models\ExtracurricularPermission::where('extracurricular_id', $extracurricularId)
+            ->with(['extracurricularStudent.student.user']);
 
-        $permissions = \App\Models\StudentPermission::whereIn('student_id', $studentIds)
-            ->with(['student.user', 'classroom'])
-            ->latest()
-            ->get()
-            ->map(function ($perm) {
-                return [
-                    'id' => $perm->id,
-                    'student_name' => $perm->student->user ? $perm->student->user->name : '-',
-                    'class_name' => $perm->classroom ? $perm->classroom->name : '-',
-                    'gender' => $perm->student->gender ?? '-',
-                    'type' => $perm->permission_type,
-                    'status' => $perm->status,
-                    'date' => $perm->date,
-                    'duration' => '1 Hari',
-                    'description' => $perm->proof,
-                    'attachment_url' => $perm->proof_image ? asset('storage/' . $perm->proof_image) : null,
-                ];
-            });
+        // If student, only show their own permissions
+        if ($user->hasRole('student')) {
+            $studentId = $user->student?->id;
+            $eskulStudentIds = $extracurricular->extracurricularStudents
+                ->where('student_id', $studentId)
+                ->pluck('id');
+            $query->whereIn('extracurricular_student_id', $eskulStudentIds);
+        }
+
+        // Filter by status
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        $permissions = $query->latest()->get()->map(function ($perm) use ($extracurricular) {
+            $student = $perm->extracurricularStudent?->student;
+            return [
+                'id' => $perm->id,
+                'student_name' => $student?->user?->name ?? '-',
+                'student_id' => $student?->id,
+                'class_name' => $student?->classroom?->name ?? '-',
+                'gender' => $student?->gender ?? '-',
+                'type' => $perm->type,
+                'status' => $perm->status,
+                'date' => $perm->date?->format('Y-m-d'),
+                'date_formatted' => $perm->date?->translatedFormat('d F Y'),
+                'duration' => '1 Hari',
+                'reason' => $perm->reason,
+                'attachment_url' => $perm->attachment ? asset('storage/' . $perm->attachment) : null,
+                'rejection_note' => $perm->rejection_note,
+                'created_at' => $perm->created_at?->format('Y-m-d H:i:s'),
+            ];
+        });
 
         return ResponseHelper::success(['permissions' => $permissions], 'Berhasil mengambil data perizinan');
     }
@@ -687,13 +837,14 @@ class ExtracurricularApiController extends Controller
     {
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'status' => 'required|in:pending,approved,rejected,disetujui,ditolak',
+            'rejection_note' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return ResponseHelper::validationError($validator->errors()->first());
         }
 
-        $permission = \App\Models\StudentPermission::find($permissionId);
+        $permission = \App\Models\ExtracurricularPermission::find($permissionId);
 
         if (!$permission) {
             return ResponseHelper::notFound('Data perizinan tidak ditemukan');
@@ -706,8 +857,65 @@ class ExtracurricularApiController extends Controller
             $status = 'rejected';
 
         $permission->status = $status;
+        if ($request->rejection_note) {
+            $permission->rejection_note = $request->rejection_note;
+        }
         $permission->save();
 
         return ResponseHelper::success($permission, 'Status perizinan berhasil diperbarui');
+    }
+
+    /**
+     * Store new extracurricular permission (for students)
+     */
+    public function storePermission(Request $request)
+    {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'extracurricular_id' => 'required|exists:extracurriculars,id',
+            'type' => 'required|in:izin,sakit',
+            'date' => 'required|date',
+            'reason' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::validationError($validator->errors()->first());
+        }
+
+        $user = auth()->user();
+        if (!$user->hasRole('student')) {
+            return ResponseHelper::error('Hanya siswa yang dapat mengajukan perizinan', 403);
+        }
+
+        $studentId = $user->student?->id;
+        if (!$studentId) {
+            return ResponseHelper::error('Data siswa tidak ditemukan', 404);
+        }
+
+        // Find the extracurricular student record
+        $eskulStudent = \App\Models\ExtracurricularStudent::where('extracurricular_id', $request->extracurricular_id)
+            ->where('student_id', $studentId)
+            ->first();
+
+        if (!$eskulStudent) {
+            return ResponseHelper::error('Anda tidak terdaftar di ekstrakurikuler ini', 404);
+        }
+
+        // Handle attachment upload
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('extracurricular-permissions', 'public');
+        }
+
+        $permission = \App\Models\ExtracurricularPermission::create([
+            'extracurricular_id' => $request->extracurricular_id,
+            'extracurricular_student_id' => $eskulStudent->id,
+            'date' => $request->date,
+            'type' => $request->type,
+            'reason' => $request->reason,
+            'attachment' => $attachmentPath,
+            'status' => 'pending',
+        ]);
+
+        return ResponseHelper::success($permission, 'Perizinan berhasil diajukan');
     }
 }
