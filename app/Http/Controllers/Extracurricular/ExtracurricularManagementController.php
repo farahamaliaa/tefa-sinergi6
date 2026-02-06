@@ -425,6 +425,45 @@ class ExtracurricularManagementController extends Controller
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus');
     }
 
+    public function scheduleUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'day' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'location_name' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'radius' => 'required|integer|min:10|max:500',
+        ]);
+
+        $schedule = \App\Models\ExtracurricularSchedule::findOrFail($id);
+
+        // Check if another schedule exists for the same day (exclude current)
+        $existingSchedule = \App\Models\ExtracurricularSchedule::where('extracurricular_id', $schedule->extracurricular_id)
+            ->where('day', $request->day)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($existingSchedule) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Jadwal untuk hari ini sudah ada.');
+        }
+
+        $schedule->update([
+            'day' => $request->day,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'location_name' => $request->location_name,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'radius' => $request->radius,
+        ]);
+
+        return redirect()->back()->with('success', 'Jadwal berhasil diperbarui');
+    }
+
     public function journalIndex(Request $request)
     {
         $extracurricularId = $request->get('extracurricular');

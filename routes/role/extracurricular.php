@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:extracurricular|staff|teacher'])->prefix('extra
     Route::prefix('schedule')->name('schedule.')->group(function () {
         Route::get('/', [ExtracurricularManagementController::class, 'scheduleIndex'])->name('index');
         Route::post('/store', [ExtracurricularManagementController::class, 'scheduleStore'])->name('store');
+        Route::put('/update/{id}', [ExtracurricularManagementController::class, 'scheduleUpdate'])->name('update');
         Route::delete('/destroy/{id}', [ExtracurricularManagementController::class, 'scheduleDestroy'])->name('destroy');
     });
 

@@ -201,12 +201,142 @@
                             </td>
                             <td>{{ $schedule->radius ?? '-' }} m</td>
                             <td class="text-center">
+                                {{-- Edit Button --}}
+                                <button type="button" class="btn btn-sm btn-light-primary me-1" data-bs-toggle="modal"
+                                    data-bs-target="#modal-edit-{{ $schedule->id }}">
+                                    <i class="ti ti-edit text-primary"></i>
+                                </button>
+
+                                {{-- Delete Button --}}
                                 <button type="button" class="btn btn-sm btn-light-danger btn-delete"
-                                    data-bs-toggle="modal" data-bs-target="#modal-delete"
-                                    data-action="{{ route('employee.extracurricular-schedule.destroy', $schedule->id) }}"
-                                    data-bs-toggle="tooltip" title="Hapus Jadwal">
+                                    data-bs-toggle="modal" data-bs-target="#modal-delete-{{ $schedule->id }}">
                                     <i class="ti ti-trash text-danger"></i>
                                 </button>
+
+                                {{-- Edit Modal --}}
+                                <div class="modal fade" id="modal-edit-{{ $schedule->id }}" tabindex="-1"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Jadwal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form
+                                                action="{{ route('employee.extracurricular-schedule.update', $schedule->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-body text-start">
+                                                    <input type="hidden" name="latitude"
+                                                        id="edit_latitude_{{ $schedule->id }}"
+                                                        value="{{ $schedule->latitude }}">
+                                                    <input type="hidden" name="longitude"
+                                                        id="edit_longitude_{{ $schedule->id }}"
+                                                        value="{{ $schedule->longitude }}">
+
+                                                    <div class="row">
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label">Hari <span
+                                                                    class="text-danger">*</span></label>
+                                                            <select name="day" class="form-select" required>
+                                                                @foreach (DayEnum::cases() as $day)
+                                                                    <option value="{{ $day->value }}"
+                                                                        {{ $schedule->day == $day->value ? 'selected' : '' }}>
+                                                                        {{ $day->label() }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label">Jam Mulai <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="time" name="start_time" class="form-control"
+                                                                value="{{ Carbon::parse($schedule->start_time)->format('H:i') }}"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label">Jam Selesai <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="time" name="end_time" class="form-control"
+                                                                value="{{ Carbon::parse($schedule->end_time)->format('H:i') }}"
+                                                                required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-8 mb-3">
+                                                            <label class="form-label">Nama Lokasi <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="text" name="location_name"
+                                                                class="form-control"
+                                                                value="{{ $schedule->location_name }}" required>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label">Radius (m) <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="number" name="radius"
+                                                                class="form-control edit-radius"
+                                                                data-id="{{ $schedule->id }}"
+                                                                value="{{ $schedule->radius }}" min="10"
+                                                                max="500" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">
+                                                            <i class="ti ti-map-pin me-1"></i>
+                                                            Lokasi Titik Kumpul <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div id="edit_map_{{ $schedule->id }}"
+                                                            style="height: 250px; border-radius: 8px; border: 2px solid #E0E6ED;">
+                                                        </div>
+                                                        <div class="location-info mt-2">
+                                                            <i class="ti ti-info-circle me-1"></i>
+                                                            <span
+                                                                id="edit_locationText_{{ $schedule->id }}">{{ $schedule->location_name }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan
+                                                        Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Delete Modal --}}
+                                <div class="modal fade" id="modal-delete-{{ $schedule->id }}" tabindex="-1"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Hapus Jadwal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                Apakah Anda yakin ingin menghapus jadwal hari
+                                                <strong>{{ DayEnum::tryFrom($schedule->day)?->label() }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <form
+                                                    action="{{ route('employee.extracurricular-schedule.destroy', $schedule->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -409,6 +539,82 @@
                     searchResults.style.display = 'none';
                 }
             });
+        });
+
+        // Initialize edit modal maps
+        @php
+            $scheduleMapData = $extracurricular->schedules
+                ->map(function ($s) {
+                    return ['id' => $s->id, 'lat' => $s->latitude, 'lng' => $s->longitude, 'radius' => $s->radius];
+                })
+                ->values()
+                ->toArray();
+        @endphp
+        const editModalData = @json($scheduleMapData);
+
+        editModalData.forEach(function(schedule) {
+            const modalId = 'modal-edit-' + schedule.id;
+            const modal = document.getElementById(modalId);
+
+            if (modal) {
+                modal.addEventListener('shown.bs.modal', function() {
+                    const mapContainer = document.getElementById('edit_map_' + schedule.id);
+
+                    // Check if map already initialized
+                    if (mapContainer._leaflet_id) return;
+
+                    const lat = parseFloat(schedule.lat) || -6.2;
+                    const lng = parseFloat(schedule.lng) || 106.8;
+                    const radius = parseInt(schedule.radius) || 100;
+
+                    const editMap = L.map('edit_map_' + schedule.id).setView([lat, lng], 17);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(editMap);
+
+                    const editMarker = L.marker([lat, lng], {
+                        draggable: true
+                    }).addTo(editMap);
+                    const editCircle = L.circle([lat, lng], {
+                        color: '#0896D1',
+                        fillColor: '#0896D1',
+                        fillOpacity: 0.2,
+                        radius: radius
+                    }).addTo(editMap);
+
+                    function updateEditLocation(lat, lng, id) {
+                        document.getElementById('edit_latitude_' + id).value = lat;
+                        document.getElementById('edit_longitude_' + id).value = lng;
+                        document.getElementById('edit_locationText_' + id).textContent =
+                            `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                        editCircle.setLatLng([lat, lng]);
+                    }
+
+                    editMarker.on('dragend', function(e) {
+                        const pos = editMarker.getLatLng();
+                        updateEditLocation(pos.lat, pos.lng, schedule.id);
+                    });
+
+                    editMap.on('click', function(e) {
+                        editMarker.setLatLng(e.latlng);
+                        updateEditLocation(e.latlng.lat, e.latlng.lng, schedule.id);
+                    });
+
+                    // Update radius on change
+                    const radiusInput = modal.querySelector('.edit-radius');
+                    if (radiusInput) {
+                        radiusInput.addEventListener('change', function() {
+                            editCircle.setRadius(parseInt(this.value) || 100);
+                        });
+                    }
+
+                    // Fix map sizing issue
+                    setTimeout(function() {
+                        editMap.invalidateSize();
+                    }, 100);
+                });
+            }
         });
     </script>
 @endsection
