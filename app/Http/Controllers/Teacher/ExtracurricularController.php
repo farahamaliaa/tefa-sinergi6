@@ -534,6 +534,17 @@ class ExtracurricularController extends Controller
 
         $extracurricular = Extracurricular::findOrFail($request->extracurricular_id);
 
+        // Check if schedule already exists for this day
+        $existingSchedule = $extracurricular->schedules()
+            ->where('day', $request->day)
+            ->exists();
+
+        if ($existingSchedule) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Jadwal untuk hari ini sudah ada. Hanya 1 jadwal per hari yang diizinkan.');
+        }
+
         $extracurricular->schedules()->create([
             'day' => $request->day,
             'start_time' => $request->start_time,
