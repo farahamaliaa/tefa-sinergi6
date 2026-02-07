@@ -750,8 +750,17 @@ class ExtracurricularApiController extends Controller
             'location' => 'required|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'radius' => 'nullable|numeric',
+            'radius' => 'nullable|numeric|min:10|max:500',
         ]);
+
+        // Check if schedule already exists for this day
+        $existingSchedule = ExtracurricularSchedule::where('extracurricular_id', $request->input('extracurricular_id'))
+            ->where('day', $request->input('day'))
+            ->exists();
+
+        if ($existingSchedule) {
+            return ResponseHelper::error('Jadwal untuk hari ini sudah ada. Hanya 1 jadwal per hari yang diizinkan.', 422);
+        }
 
         $schedule = ExtracurricularSchedule::create([
             'extracurricular_id' => $request->input('extracurricular_id'),
@@ -768,6 +777,63 @@ class ExtracurricularApiController extends Controller
     }
 
     /**
+     * Update schedule
+     */
+    public function updateSchedule(Request $request, $id)
+    {
+        $schedule = ExtracurricularSchedule::find($id);
+
+        if (!$schedule) {
+            return ResponseHelper::notFound('Jadwal tidak ditemukan');
+        }
+
+        // Verify ownership - must be pembina OR school role
+        $user = auth()->user();
+        $isSchool = $user->hasRole('school');
+
+        if (!$isSchool) {
+            $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+            $extracurricular = $schedule->extracurricular;
+
+            if (!$employee || !$extracurricular || $extracurricular->employee_id !== $employee->id) {
+                return ResponseHelper::unauthorized();
+            }
+        }
+
+        $request->validate([
+            'day' => 'required|string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'location' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'radius' => 'nullable|numeric|min:10|max:500',
+        ]);
+
+        // Check if another schedule exists for the same day (exclude current)
+        $existingSchedule = ExtracurricularSchedule::where('extracurricular_id', $schedule->extracurricular_id)
+            ->where('day', $request->input('day'))
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($existingSchedule) {
+            return ResponseHelper::error('Jadwal untuk hari ini sudah ada.', 422);
+        }
+
+        $schedule->update([
+            'day' => $request->input('day'),
+            'start_time' => $request->input('start_time'),
+            'end_time' => $request->input('end_time'),
+            'location_name' => $request->input('location'),
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
+            'radius' => $request->input('radius', 100),
+        ]);
+
+        return ResponseHelper::success(null, 'Jadwal berhasil diperbarui');
+    }
+
+    /**
      * Delete schedule
      */
     public function deleteSchedule($scheduleId)
@@ -776,6 +842,19 @@ class ExtracurricularApiController extends Controller
 
         if (!$schedule) {
             return ResponseHelper::notFound('Jadwal tidak ditemukan');
+        }
+
+        // Verify ownership
+        $user = auth()->user();
+        $isSchool = $user->hasRole('school');
+
+        if (!$isSchool) {
+            $employee = $user->employee ?? \App\Models\Employee::where('user_id', $user->id)->first();
+            $extracurricular = $schedule->extracurricular;
+
+            if (!$employee || !$extracurricular || $extracurricular->employee_id !== $employee->id) {
+                return ResponseHelper::unauthorized();
+            }
         }
 
         $schedule->delete();
