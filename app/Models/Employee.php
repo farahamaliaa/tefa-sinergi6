@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\GenderEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Models\HasManyEmployeeJournal;
 use App\Traits\Models\HasManyExtracurricular;
 use App\Traits\Models\HasManyTeacherSubject;
 use App\Traits\Models\BelongsToReligion;
@@ -20,7 +21,7 @@ class Employee extends Model
     use HasFactory, BelongsToUser,
     BelongsToReligion,HasManyClassroom,
     HasManyTeacherSubject, HasManyExtracurricular,
-    MorphManyAttendance, MorphManyRfid, HasManyStudentViolation;
+    MorphManyAttendance, MorphManyRfid, HasManyStudentViolation, HasManyEmployeeJournal;
 
     protected $guarded = ['id'];
     protected $casts = [

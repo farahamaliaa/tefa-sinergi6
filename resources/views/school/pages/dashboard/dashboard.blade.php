@@ -381,10 +381,19 @@
                         // Employee
                         if (document.getElementById('employee-late-count')) document.getElementById(
                             'employee-late-count').innerText = data.counts.employee_late + " Staff";
-                        if (document.getElementById('employee-permit-count')) document.getElementById(
-                            'employee-permit-count').innerText = data.counts.employee_permit + " Guru";
-                        if (document.getElementById('employee-alpha-count')) document.getElementById(
-                            'employee-alpha-count').innerText = data.counts.employee_alpha + " Guru";
+                        if (document.getElementById('staff-total-count')) document.getElementById(
+                            'staff-total-count').innerText = data.counts.staff_total_count + " Staff";
+                        if (document.getElementById('staff-journal-fill-count')) document.getElementById(
+                                'staff-journal-fill-count').innerText = data.counts.staff_journal_fill +
+                            " Staff";
+                        if (document.getElementById('staff-journal-notfill-count')) document.getElementById(
+                                'staff-journal-notfill-count').innerText = data.counts.staff_journal_notfill +
+                            " Staff";
+                        // Teacher Journal (reusing existing IDs or those in teacher-journal pane)
+                        if (document.getElementById('journal-fill-count')) document.getElementById(
+                            'journal-fill-count').innerText = data.counts.journal_fill + " Jurnal";
+                        if (document.getElementById('journal-notfill-count')) document.getElementById(
+                            'journal-notfill-count').innerText = data.counts.journal_notfill + " Jurnal";
 
                         // Extra Student Attendance
                         if (document.getElementById('extra-present-count')) document.getElementById(

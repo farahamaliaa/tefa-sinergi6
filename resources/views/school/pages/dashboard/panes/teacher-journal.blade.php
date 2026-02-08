@@ -71,7 +71,7 @@
                 <div class="card border rounded-4 p-0 card-body-with-line2">
                     <div class="card-body">
                         <h5><b>Jurnal Diisi</b></h5>
-                        <h3 class="text-success">{{ $fill->count() }} Jurnal</h3>
+                        <h3 class="text-success" id="journal-fill-count">{{ $fill->count() }} Jurnal</h3>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                 <div class="card border rounded-4 p-0 card-body-with-line3">
                     <div class="card-body">
                         <h5><b>Jurnal Tidak Diisi</b></h5>
-                        <h3 class="text-danger">{{ $notfill->count() }} Jurnal</h3>
+                        <h3 class="text-danger" id="journal-notfill-count">{{ $notfill->count() }} Jurnal</h3>
                     </div>
                 </div>
             </div>

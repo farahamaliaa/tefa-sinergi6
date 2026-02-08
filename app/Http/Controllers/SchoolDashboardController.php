@@ -102,6 +102,17 @@ class SchoolDashboardController extends Controller
         $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
         $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
 
+        $staffTotalCount = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)->count();
+        $staffFilled = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)
+            ->whereHas('employeeJournals', function ($query) {
+                $query->whereDate('created_at', now());
+            })->get();
+
+        $staffNotFilled = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)
+            ->whereDoesntHave('employeeJournals', function ($query) {
+                $query->whereDate('created_at', now());
+            })->get();
+
         $extraFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
             ->whereHas('journals', function ($query) {
                 $query->whereDate('date', now());
@@ -185,7 +196,7 @@ class SchoolDashboardController extends Controller
             'studentChart', 'employeeChart', 'extraChart', 'fill', 'notfill', 'extraFill', 'extraNotFill', 'classrooms', 'violations',
             'extraPresentStudent', 'extraLatesStudent', 'extraAlphaStudent', 'extraSickStudent', 'extraPermitStudent', 'totalPermitExtraStudent',
             'schoolYear', 'currentSemesterType',
-            'attendanceChart', 'alumni',
+            'attendanceChart', 'alumni', 'staffTotalCount', 'staffFilled', 'staffNotFilled',
             'teachers', 'employees', 'students',
             'subjects', 'schoolPoints', 'maxPoint', 'violationChart'));
     }
@@ -273,6 +284,17 @@ class SchoolDashboardController extends Controller
         $fill = $this->lessonSchedule->dahsboardSchool('fill', now());
         $notfill = $this->lessonSchedule->dahsboardSchool('notfill', now());
 
+        $staffTotalCount = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)->count();
+        $staffFilled = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)
+            ->whereHas('employeeJournals', function ($query) {
+                $query->whereDate('created_at', now());
+            })->get();
+
+        $staffNotFilled = \App\Models\Employee::whereRelation('user.roles', 'name', RoleEnum::STAFF->value)
+            ->whereDoesntHave('employeeJournals', function ($query) {
+                $query->whereDate('created_at', now());
+            })->get();
+
         $extraFill = ExtracurricularSchedule::where('day', strtolower(now()->format('l')))
             ->whereHas('journals', function ($query) {
                 $query->whereDate('date', now());
@@ -301,7 +323,7 @@ class SchoolDashboardController extends Controller
         $extraPermitTable = view('school.pages.dashboard.panes.extra-tab.permission-student-tab', ['sick' => $extraSickStudent, 'permit' => $extraPermitStudent])->render();
         $extraAlphaTable = view('school.pages.dashboard.panes.extra-tab.alpha-student-tab', ['alpha' => $extraAlphaStudent])->render();
 
-        $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('teachers', 'fill', 'notfill'))->render();
+        $staffJournalPane = view('school.pages.dashboard.panes.staff-journal', compact('staffTotalCount', 'staffFilled', 'staffNotFilled'))->render();
         $teacherJournalPane = view('school.pages.dashboard.panes.teacher-journal', compact('fill', 'notfill'))->render();
         $extraJournalPane = view('school.pages.dashboard.panes.extra-journal', compact('extraFill', 'extraNotFill'))->render();
 
@@ -322,6 +344,9 @@ class SchoolDashboardController extends Controller
                 'employee_alpha' => $alpha_teacher->count(),
                 'journal_fill' => $fill->count(),
                 'journal_notfill' => $notfill->count(),
+                'staff_journal_fill' => $staffFilled->count(),
+                'staff_journal_notfill' => $staffNotFilled->count(),
+                'staff_total_count' => $staffTotalCount,
                 'extra_journal_fill' => $extraFill->count(),
                 'extra_journal_notfill' => $extraNotFill->count(),
                 'extra_student_present' => $extraPresentStudent->count(),
