@@ -278,6 +278,9 @@ class ParentController extends Controller
                     'level' => $currentClassroom->classroom->levelClass->name ?? null,
                     'homeroom_teacher' => $homeroomTeacher?->user?->name ?? $homeroomTeacher?->name ?? null,
                     'homeroom_teacher_id' => $homeroomTeacher?->id ?? null,
+                    'homeroom_teacher_photo' => ($homeroomTeacher?->user?->image)
+                        ? request()->root() . '/storage/' . $homeroomTeacher->user->image
+                        : request()->root() . '/public/admin_assets/dist/images/profile/user-1.jpg',
                 ] : null,
             ];
         });
