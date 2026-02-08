@@ -223,10 +223,10 @@
             @endforeach
         </ul>
 
-        <!-- Back Button -->
+        {{-- <!-- Back Button -->
         <a href="{{ route('student.dashboard') }}" class="btn-back">
             <i class="ti ti-arrow-left"></i> Kembali
-        </a>
+        </a> --}}
     </div>
 
     <!-- Schedule Content Grid -->

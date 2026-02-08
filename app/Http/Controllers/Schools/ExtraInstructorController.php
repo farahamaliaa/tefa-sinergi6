@@ -141,9 +141,11 @@ class ExtraInstructorController extends Controller
 
             $user->employee->update($dataEmployee);
 
+            // Clear current assignments for this employee
             Extracurricular::where('employee_id', $user->employee->id)
                 ->update(['employee_id' => null]);
 
+            // Assign selected extracurriculars to this employee
             if ($request->has('extracurricular_ids') && !empty($request->extracurricular_ids)) {
                 Extracurricular::whereIn('id', $request->extracurricular_ids)
                     ->update(['employee_id' => $user->employee->id]);

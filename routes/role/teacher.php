@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::prefix('extracurricular-schedule')->name('extracurricular-schedule.')->group(function () {
         Route::get('/', [ExtracurricularController::class, 'scheduleIndex'])->name('index');
         Route::post('/store', [ExtracurricularController::class, 'scheduleStore'])->name('store');
+        Route::put('/update/{id}', [ExtracurricularController::class, 'scheduleUpdate'])->name('update');
         Route::delete('/destroy/{id}', [ExtracurricularController::class, 'scheduleDestroy'])->name('destroy');
     });
 });

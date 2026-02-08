@@ -37,6 +37,7 @@ Route::post('attendance/add', [AttendanceController::class, 'store'])->name('att
 Route::get('attendance/hours', [AttendanceRuleApiController::class, 'index'])->name('attendance.hour');
 
 Route::post('login', [LoginApiController::class, 'login'])->middleware('throttle:5,1');
+Route::post('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user-detail/{user}', [LoginApiController::class, 'user_detail']);
 
@@ -135,6 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('journal', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeJournal']);
         Route::put('journal/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'updateJournal']);
         Route::post('schedule', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'storeSchedule']);
+        Route::put('schedule/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'updateSchedule']);
         Route::delete('schedule/{id}', [\App\Http\Controllers\Api\ExtracurricularApiController::class, 'deleteSchedule']);
     });
 
