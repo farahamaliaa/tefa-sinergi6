@@ -8,10 +8,14 @@
                         <thead class="text-dark fs-4">
                             <tr>
                                 <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">No</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama Guru</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Tanggal</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Kelas - Mapel</th>
-                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Status</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Nama
+                                    Guru</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">
+                                    Tanggal</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Kelas
+                                    - Mapel</th>
+                                <th class="fs-4 fw-semibold mb-0" style="background-color: #0896d1; color: white">Status
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -22,15 +26,18 @@
                                     <td>{{ $value->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                                     <td>{{ $value->classroom->name }} - {{ $value->teacherSubject->subject->name }}</td>
                                     <td>
-                                        <span class="badge bg-light-danger text-danger fw-semibold fs-2">Tidak Mengisi</span>
+                                        <span class="badge bg-light-danger text-danger fw-semibold fs-2">Tidak
+                                            Mengisi</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="7" class="text-center align-middle">
                                         <div class="d-flex flex-column justify-content-center align-items-center">
-                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}" alt="" width="300px">
-                                            <p class="fs-5 text-dark text-center mt-2">Tidak ada guru yang belum mengisi jurnal</p>
+                                            <img src="{{ asset('admin_assets/dist/images/empty/no-data.png') }}"
+                                                alt="" width="300px">
+                                            <p class="fs-5 text-dark text-center mt-2">Tidak ada guru yang belum mengisi
+                                                jurnal</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -63,16 +70,16 @@
             <div class="col-12">
                 <div class="card border rounded-4 p-0 card-body-with-line2">
                     <div class="card-body">
-                        <h5><b>Journal Diisi</b></h5>
-                        <h3 class="text-success">{{ $fill->count() }} Guru</h3>
+                        <h5><b>Jurnal Diisi</b></h5>
+                        <h3 class="text-success">{{ $fill->count() }} Jurnal</h3>
                     </div>
                 </div>
             </div>
             <div class="col-12">
                 <div class="card border rounded-4 p-0 card-body-with-line3">
                     <div class="card-body">
-                        <h5><b>Journal Tidak Diisi</b></h5>
-                        <h3 class="text-danger">{{ $notfill->count() }} Guru</h3>
+                        <h5><b>Jurnal Tidak Diisi</b></h5>
+                        <h3 class="text-danger">{{ $notfill->count() }} Jurnal</h3>
                     </div>
                 </div>
             </div>

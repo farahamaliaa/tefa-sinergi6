@@ -100,12 +100,18 @@ class LessonScheduleRepository extends BaseRepository implements LessonScheduleI
 
     public function dahsboardSchool(mixed $query, mixed $day): mixed
     {
-        $result = $this->model->query()
-            ->where('day', strtolower($day->format('l')));
+        if ($query == 'fill') {
+            return \App\Models\TeacherJournal::query()
+                ->whereDate('date', $day)
+                ->get();
+        }
 
-        $query == 'fill' ? $result->whereHas('teacherJournals') : $result->whereDoesntHave('teacherJournals');
-
-        return $result->get();
+        return $this->model->query()
+            ->where('day', strtolower($day->format('l')))
+            ->whereDoesntHave('teacherJournals', function ($q) use ($day) {
+                $q->whereDate('date', $day);
+            })
+            ->get();
     }
 
     public function whereJournalTeacher(mixed $query, Request $request): mixed
